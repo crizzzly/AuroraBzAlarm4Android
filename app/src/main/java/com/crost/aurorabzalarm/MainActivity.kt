@@ -1,7 +1,5 @@
 package com.crost.aurorabzalarm
 
-import android.content.Context
-import java.util.concurrent.TimeUnit
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -23,6 +21,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : ComponentActivity() {
@@ -61,6 +60,7 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.UPDATE, // Choose the appropriate policy
             workRequest
         )
+
 
 
         setContent {
