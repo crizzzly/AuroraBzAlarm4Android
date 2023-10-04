@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import java.net.URL
 
 class DataFetchWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
-    val wcp = WebsiteContentParser(context)
+    val wcp = AceSiteContentParser(context)
     override fun doWork(): Result {
         val success = wcp.parseAceSatelliteData()
 

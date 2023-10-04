@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Values(spaceWeatherData: SpaceWeatherData, modifier: Modifier = Modifier){
+fun Values(spaceWeatherData: CurrentSpaceWeatherData, modifier: Modifier = Modifier){
     Text(
         text = "Bz Value:\t ${spaceWeatherData.bzVal}\n" +
                 "Hemispheric Power: ${spaceWeatherData.hemisphericPower} GW",
@@ -91,7 +91,7 @@ fun MainComposable(permissionManager: PermissionManager, permissionLauncher: Act
     val permissionState by permissionManager.permissionState.collectAsState()
     val context = LocalContext.current
 
-    Values(spaceWeatherData = SpaceWeatherData())
+    Values(spaceWeatherData = CurrentSpaceWeatherData())
 
     Log.d("setContent - Surface", "checking permission")
     if (! permissionState) {
@@ -112,6 +112,6 @@ fun MainComposable(permissionManager: PermissionManager, permissionLauncher: Act
 @Composable
 fun ValuesPreview() {
     AuroraBzAlarmTheme {
-        Values(SpaceWeatherData())
+        Values(CurrentSpaceWeatherData())
     }
 }

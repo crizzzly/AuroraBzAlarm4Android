@@ -17,10 +17,10 @@ class WebsiteContentParserTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         Assert.assertEquals("com.crost.aurorabzalarm", appContext.packageName)
 
-        val parser = WebsiteContentParser(appContext)
+        val parser = AceSiteContentParser(appContext)
 
         // Call the method you want to test
-        val content = parser.getAceSatelliteData()
+        val content = parser.getSatelliteData()
 
         // Add assertions to validate the behavior of the extractAceData method
         // For example, you can assert on properties or behaviors affected by extractAceData
