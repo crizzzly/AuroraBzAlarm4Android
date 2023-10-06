@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.parser
+package com.crost.aurorabzalarm.data
 
 import android.util.Log
 import org.jsoup.Jsoup

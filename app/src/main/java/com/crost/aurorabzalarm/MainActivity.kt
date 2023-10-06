@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,21 +18,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crost.aurorabzalarm.data.SatelliteDataParser
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
+
+const val WEBPARSING_JOB_ID = 1
 
 class MainActivity : ComponentActivity() {
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var permissionManager: PermissionManager
-    var showContent = false
+    private lateinit var satelliteDataParser: SatelliteDataParser
+    private var showContent = false
+    private val viewModel: DataViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val application = applicationContext//: MainActivity = application as MainActivity
 
         permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -49,17 +56,38 @@ class MainActivity : ComponentActivity() {
         }
         permissionManager = PermissionManager()
 
-        val repeatInterval = 1L // 15 minutes
-        val timeUnit = TimeUnit.MINUTES
+        satelliteDataParser = SatelliteDataParser(viewModel)
+        CoroutineScope(Dispatchers.Default).launch {
+            satelliteDataParser.parseSatelliteData()
+        }
 
-        val workRequest = PeriodicWorkRequestBuilder<DataFetchWorker>(
-            repeatInterval, timeUnit
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "fetchDataWork",
-            ExistingPeriodicWorkPolicy.UPDATE, // Choose the appropriate policy
-            workRequest
-        )
+
+        // TODO: Get It To Work!
+//        val workManager = WorkManager.getInstance(application)
+//        var parsingWorkRequest = PeriodicWorkRequestBuilder<WebParsingWorker>(60, TimeUnit.SECONDS)
+//            .build()
+//        workManager.enqueue(parsingWorkRequest)
+
+
+//        Log.d("MainActivity", "starting JobService")
+//        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+//        val jobId = WEBPARSING_JOB_ID
+//        val extras = PersistableBundle().apply {
+//            // Put your ViewModel instance in the extras bundle
+//            putString("dataViewModel", viewModel.uniqueId)
+//        }
+//        val jobInfo = JobInfo.Builder(
+//            jobId,
+//            ComponentName(this, WebParsingJobService::class.java)
+//        )
+//            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+//            // .setPeriodic(30 * 1000) // 30 seconds interval
+//            .setPersisted(true)
+//            .setExtras(extras)
+//
+//            .build()
+//
+//        jobScheduler.schedule(jobInfo)
 
 
 
@@ -78,10 +106,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Values(spaceWeatherData: CurrentSpaceWeatherData, modifier: Modifier = Modifier){
+fun Values(viewModel: DataViewModel = viewModel(), modifier: Modifier = Modifier){
+    val currentData: CurrentSpaceWeatherState by viewModel.currentSpaceWeather.collectAsState()
+
     Text(
-        text = "Bz Value:\t ${spaceWeatherData.bzVal}\n" +
-                "Hemispheric Power: ${spaceWeatherData.hemisphericPower} GW",
+        text = "Bz Value:\t ${currentData.bzVal}\n" + // does not update!
+                "Hemispheric Power: ${currentData.hpVal} GW",
         modifier = modifier,
     )
 }
@@ -91,7 +121,7 @@ fun MainComposable(permissionManager: PermissionManager, permissionLauncher: Act
     val permissionState by permissionManager.permissionState.collectAsState()
     val context = LocalContext.current
 
-    Values(spaceWeatherData = CurrentSpaceWeatherData())
+    Values()
 
     Log.d("setContent - Surface", "checking permission")
     if (! permissionState) {
@@ -112,6 +142,6 @@ fun MainComposable(permissionManager: PermissionManager, permissionLauncher: Act
 @Composable
 fun ValuesPreview() {
     AuroraBzAlarmTheme {
-        Values(CurrentSpaceWeatherData())
+        Values()
     }
 }
