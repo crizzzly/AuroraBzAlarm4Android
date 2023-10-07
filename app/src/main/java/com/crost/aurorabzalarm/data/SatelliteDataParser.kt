@@ -1,14 +1,6 @@
 package com.crost.aurorabzalarm.data
 
-import android.util.Log
-import com.crost.aurorabzalarm.DataViewModel
-
-class SatelliteDataParser(private val viewModel: DataViewModel) {
-//    private var _currentSpaceWeather = mutableStateOf(CurrentSpaceWeatherState())
-//    val currentSpaceWeather: State<CurrentSpaceWeatherState>
-//        get() = _currentSpaceWeather
-
-
+class SatelliteDataParser() {
     private val urls = listOf(
         "https://services.swpc.noaa.gov/text/ace-magnetometer.txt",//ContextCompat.getString(context, R.string.aceValsUrl),
         "https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt"//ContextCompat.getString(context, R.string.hpValsUrl)
@@ -33,7 +25,9 @@ class SatelliteDataParser(private val viewModel: DataViewModel) {
         DataParser(valuesCountList[index], url, valueNamesList[index], importantValues[index])
     }
 
-    fun parseSatelliteData(): Boolean {
+    private var latestValues = mutableListOf<Float>()
+
+    fun parseSatelliteData(): List<Float> {
         var success = true
         for (index in urls.indices) {
             val parser = parsers[index]
@@ -45,16 +39,14 @@ class SatelliteDataParser(private val viewModel: DataViewModel) {
             }
         }
         updateCurrentSpaceWeatherData()
-        return success
+        return latestValues
     }
 
     private fun updateCurrentSpaceWeatherData(){
-        val newVals = mutableListOf<Float>()
+        latestValues = mutableListOf()
         parsers.forEach(){  dataParser ->
-            newVals.add(dataParser.value)
+            latestValues.add(dataParser.value)
         }
-        Log.d("updateCurrentSpaceWeatherData", "Bz: ${newVals[0]} nT, Hp: ${newVals[1]}GW")
-        viewModel.updateSpaceWeatherState(newVals)
     //        _currentSpaceWeather.value.bzVal = newVals[0]
 //        _currentSpaceWeather.value.hemisphericPower = newVals[1]
     }

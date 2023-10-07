@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.androidx.work.gcm)
     implementation(libs.androidx.work.testing)
     implementation(libs.androidx.work.multiprocess)
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

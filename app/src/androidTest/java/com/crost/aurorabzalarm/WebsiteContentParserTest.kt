@@ -1,6 +1,5 @@
 package com.crost.aurorabzalarm
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert
@@ -17,18 +16,17 @@ class WebsiteContentParserTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         Assert.assertEquals("com.crost.aurorabzalarm", appContext.packageName)
 
-        val parser = AceSiteContentParser(appContext)
+//        val parser = DataParser(appContext)
 
         // Call the method you want to test
-        val content = parser.getSatelliteData()
+//        val content = parser.getData()
 
         // Add assertions to validate the behavior of the extractAceData method
         // For example, you can assert on properties or behaviors affected by extractAceData
         // assertEquals(expectedValue, actualValue)
 
         // You can also use Logcat to log messages for debugging purposes
-        println(content)
-        Log.d("WebsiteContentParserTest", content)
+//        println(content)
 
     }
 }

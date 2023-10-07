@@ -1,17 +1,22 @@
 package com.crost.aurorabzalarm
 
+import com.crost.aurorabzalarm.data.DataParser
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class DataParserTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun `extractAceData should extract data correctly`() {
+        val htmlString = "-----\nSome data here-----\n"
+        val parser = DataParser()
+        val data = parser.getSatelliteData()
+        println(data)
+        // Add assertions here to validate the output of extractAceData function
+        // For example:
+        // assertEquals(expectedValue, parser.someOutputVariable)
     }
 }

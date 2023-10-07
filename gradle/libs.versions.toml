@@ -1,5 +1,7 @@
 [versions]
+#noinspection GradleDependency
 agp = "8.2.0-alpha15"
+#noinspection GradleDependency
 kotlin = "1.8.10"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -22,7 +24,7 @@ work-rxjava2 = "2.8.1"
 work-gcm = "2.8.1"
 work-testing = "2.8.1"
 work-multiprocess = "2.8.1"
-ui-desktop = "1.6.0-alpha07"
+#ui-desktop = "1.6.0-alpha07"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.12.0" }
@@ -37,7 +39,6 @@ ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version = "
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version = "1.6.0-alpha07" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version = "1.6.0-alpha07" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.6.0-alpha07" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.6.0-alpha07" }
 material3 = { group = "androidx.compose.material3", name = "material3", version = "1.1.2" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.8.1" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
@@ -53,7 +54,7 @@ androidx-work-rxjava2 = { group = "androidx.work", name = "work-rxjava2", versio
 androidx-work-gcm = { group = "androidx.work", name = "work-gcm", version.ref = "work-gcm" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-testing" }
 androidx-work-multiprocess = { group = "androidx.work", name = "work-multiprocess", version.ref = "work-multiprocess" }
-androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version = "1.6.0-alpha07" }
+#androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version = "1.6.0-alpha07" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

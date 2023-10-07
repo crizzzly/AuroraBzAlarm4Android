@@ -32,7 +32,12 @@ class DataExtractor(valCount: Int){
         for (i in 0..rowCount){
             val pos0 = i * valuesCount
             val pos1 = i * valuesCount + valuesCount
-            val row = splittedList.subList(pos0, pos1)
+            var row: List<String>
+            try {
+                row = splittedList.subList(pos0, pos1)
+            } catch (e: IndexOutOfBoundsException){
+                row = splittedList.subList(pos0, pos1)
+            }
             Log.d("Row$i", row.toString())
             rows.add(row)
         }
