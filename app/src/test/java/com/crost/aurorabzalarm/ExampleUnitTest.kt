@@ -1,6 +1,5 @@
 package com.crost.aurorabzalarm
 
-import com.crost.aurorabzalarm.data.DataParser
 import org.junit.Test
 
 /**
@@ -12,9 +11,9 @@ class DataParserTest {
     @Test
     fun `extractAceData should extract data correctly`() {
         val htmlString = "-----\nSome data here-----\n"
-        val parser = DataParser()
-        val data = parser.getSatelliteData()
-        println(data)
+//        val parser = DataParser()
+//        val data = parser.getSatelliteData()
+//        println(data)
         // Add assertions here to validate the output of extractAceData function
         // For example:
         // assertEquals(expectedValue, parser.someOutputVariable)

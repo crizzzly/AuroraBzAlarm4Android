@@ -1,6 +1,6 @@
 package com.crost.aurorabzalarm.data
 
-class SatelliteDataParser() {
+class SatelliteDataParser {
     private val urls = listOf(
         "https://services.swpc.noaa.gov/text/ace-magnetometer.txt",//ContextCompat.getString(context, R.string.aceValsUrl),
         "https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt"//ContextCompat.getString(context, R.string.hpValsUrl)
@@ -21,33 +21,29 @@ class SatelliteDataParser() {
         mapOf(Pair("North-Hemispheric-Power-Index", "GW"))
     )
 
-    private val parsers = urls.mapIndexed { index, url ->
-        DataParser(valuesCountList[index], url, valueNamesList[index], importantValues[index])
+    private val managers = urls.mapIndexed { index, url ->
+        SatelliteDataManager(valuesCountList[index], url, valueNamesList[index], importantValues[index])
     }
 
     private var latestValues = mutableListOf<Float>()
 
     fun parseSatelliteData(): List<Float> {
-        var success = true
         for (index in urls.indices) {
-            val parser = parsers[index]
+            val parser = managers[index]
 
-            val result = parser.parseSatelliteData()
+            val result = parser.getDataTable()
             if (!result) {
-                success = false
                 // Handle the failure, if necessary
             }
         }
-        updateCurrentSpaceWeatherData()
+        updateLatestValues()
         return latestValues
     }
 
-    private fun updateCurrentSpaceWeatherData(){
+    private fun updateLatestValues(){
         latestValues = mutableListOf()
-        parsers.forEach(){  dataParser ->
-            latestValues.add(dataParser.value)
+        managers.forEach { dataManager ->
+            latestValues.add(dataManager.value)
         }
-    //        _currentSpaceWeather.value.bzVal = newVals[0]
-//        _currentSpaceWeather.value.hemisphericPower = newVals[1]
     }
 }

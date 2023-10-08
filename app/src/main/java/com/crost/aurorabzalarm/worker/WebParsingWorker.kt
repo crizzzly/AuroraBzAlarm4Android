@@ -1,36 +1,38 @@
-package com.crost.aurorabzalarm
+package com.crost.aurorabzalarm.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.crost.aurorabzalarm.ui.DataViewModel
 
 class WebParsingWorker(
     ctx: Context,
+    var viewModel: DataViewModel,
     params: WorkerParameters,
 ): CoroutineWorker(ctx,params) {
     override suspend fun doWork(): Result {
-        var viewModel = ViewModelFactory.getDataViewModel()
+        // TODO: Test if this also works. if so get rid of factory if
+//        var viewModel = ViewModelFactory.getDataViewModel()
+        Log.d("WebParsingWorker viewModel", viewModel.toString())
         return try {
-//            setForeground(getForegroundInfo())
             viewModel.fetchData()
-
             Result.success()
         } catch (throwable: Throwable) {
+            Log.e("WebParsingWorker", throwable.stackTraceToString())
             Result.failure()
         } catch (e: IllegalStateException){
+            Log.e("WebParsingWorker", e.stackTraceToString())
             Result.failure()
         }
     }
-//    override suspend fun getForegroundInfo(): ForegroundInfo {
-//        return ForegroundInfo(
-//        )
-//    }
 }
 
 
-class MyWorkerFactory() : WorkerFactory() {
+class MyWorkerFactory(val viewModel: DataViewModel
+) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
@@ -38,7 +40,7 @@ class MyWorkerFactory() : WorkerFactory() {
     ): ListenableWorker? {
         return when (workerClassName) {
             WebParsingWorker::class.java.name -> {
-                WebParsingWorker(appContext, workerParameters)
+                WebParsingWorker(appContext, viewModel, workerParameters)
             }
             else -> null
         }

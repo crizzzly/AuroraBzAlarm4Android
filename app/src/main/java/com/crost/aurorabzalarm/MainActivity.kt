@@ -9,25 +9,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crost.aurorabzalarm.ui.MainComposable
+import com.crost.aurorabzalarm.ui.ViewModelFactory
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 
-
-const val WEBPARSING_JOB_ID = 1
 
 class MainActivity : ComponentActivity() {
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val viewModel = ViewModelFactory.getDataViewModel()
+        Log.d("MainActivity viewModel", viewModel.toString())
         permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -49,53 +43,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainComposable()
+                    MainComposable(viewModel)
                 }
             }
         }
-    }
-}
-
-
-@Composable
-fun Values(viewModel: DataViewModel = viewModel(), modifier: Modifier = Modifier){
-    val currentData: CurrentSpaceWeatherState by viewModel.currentSpaceWeatherStateFlow.collectAsState()
-
-    Text(
-        text = "Bz Value:\t ${currentData.bzVal}\n" + // does not update!
-                "Hemispheric Power: ${currentData.hpVal} GW",
-        modifier = modifier,
-    )
-}
-
-
-@Composable
-fun MainComposable(
-    viewModel: DataViewModel = viewModel(),
-) {
-    val context = LocalContext.current
-
-    Values()
-
-//    Log.d("setContent - Surface", "checking permission")
-//    if (! permissionState) {
-//        if (permissionManager.hasPermission(context)) {
-//            permissionManager.onPermissionGranted()
-//            val aUrl = stringResource(R.string.aceValsUrl)
-//            //readUrlPages(aUrl)
-//            Text(text = "Reading Webpages")
-//        } else {
-//            Text(text = "No Permissions")
-//            permissionManager.requestPermission(context, permissionLauncher)
-//        }
-//    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ValuesPreview() {
-    AuroraBzAlarmTheme {
-        Values()
     }
 }

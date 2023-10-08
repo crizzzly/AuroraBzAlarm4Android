@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".AuroraScopeEurope"
+        android:name=".AuroraScopeEuropeApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -26,7 +28,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".WebParsingWorker"
+            android:name=".worker.WebParsingWorker"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false" />
         <provider
@@ -38,7 +40,6 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
-
         </provider>
     </application>
 
