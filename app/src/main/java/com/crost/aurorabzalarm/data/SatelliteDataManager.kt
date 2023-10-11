@@ -15,6 +15,7 @@ class SatelliteDataManager(
 
     private val sdd = SatelliteDataDownloader(valuesCount)
     var value: Float = 0.0f
+    var key: String = ""
 
     fun getDataTable(): Boolean {
         val dataRows = sdd.getLatestDataTable(url)

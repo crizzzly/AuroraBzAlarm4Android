@@ -11,6 +11,8 @@ import com.crost.aurorabzalarm.ui.ViewModelFactory
 import com.crost.aurorabzalarm.worker.MyWorkerFactory
 import com.crost.aurorabzalarm.worker.WebParsingWorker
 import java.util.concurrent.TimeUnit
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
 
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
     private lateinit var permissionManager: PermissionManager

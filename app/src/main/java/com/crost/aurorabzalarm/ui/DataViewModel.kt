@@ -3,9 +3,6 @@ package com.crost.aurorabzalarm.ui
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -18,23 +15,31 @@ import kotlinx.coroutines.launch
 
 @Stable
 interface CurrentSpaceWeatherState {
-    val bzVal: Float?
-    val hpVal: Float?
+    val weatherData: Map<String, Any>
 
     fun getAsPrintableString(): String{
-        return "Bz: $bzVal, HP: $hpVal"
+        var string = ""
+        val iter = weatherData.iterator()
+
+        iter.forEach {entry: Map.Entry<String, Any> ->
+            string += "${entry.key}: ${entry.value}\n"
+        }
+
+        return string
+    }
+
+    operator fun get(s: String): Any? {
+        return weatherData[s]
+
     }
 }
 
 private class MutableCurrentSpaceWeatherState : CurrentSpaceWeatherState {
-    override var bzVal: Float? by mutableStateOf(-15f)
-    override var hpVal: Float? by mutableStateOf(35f)
-
+    override var weatherData: MutableMap<String, Any> by mutableMapOf<String, Any>()
 }
 
 data class SpaceWeatherState(
-    override var bzVal: Float?,
-    override var hpVal: Float?
+    override val weatherData: Map<String, Any>,
 ) : CurrentSpaceWeatherState
 
 
@@ -49,11 +54,11 @@ class DataViewModel : ViewModel() {
 
 
     fun fetchData(){
-        Log.d("dvm fetchData viewModel", this.toString())
+//        Log.d("dvm fetchData viewModel", this.toString())
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val newData = spaceWeatherRepository.fetchData()
-                Log.e("DataViewModel fetchData", "newData: ${newData.bzVal}, ${newData.hpVal}")
+                Log.e("DataViewModel fetchData key-val", "newData: ${newData.weatherData.keys}, ${newData.weatherData.values}")
                 updateData(newData)
 
             } catch (e: Exception){
@@ -64,10 +69,9 @@ class DataViewModel : ViewModel() {
 
     private fun updateData(newData: CurrentSpaceWeatherState){
         Log.d("Dvm - updateData", newData.getAsPrintableString())
-        _currentSpaceWeatherStateFlow.value.hpVal = newData.hpVal
-        _currentSpaceWeatherStateFlow.value.bzVal = newData.bzVal
+        _currentSpaceWeatherStateFlow.value.weatherData = newData.weatherData as MutableMap<String, Any>
 
-        Log.d("Dvm - currentSpaceWeatherLiveData", currentSpaceWeatherLiveData.value?.bzVal.toString())
+        Log.d("Dvm - currentSpaceWeatherLiveData.value ", currentSpaceWeatherLiveData.value.toString())
     }
 }
 

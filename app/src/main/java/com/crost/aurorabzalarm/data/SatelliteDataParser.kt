@@ -16,6 +16,7 @@ class SatelliteDataParser {
     )
 
     private val valuesCountList = listOf(13, 4)
+    // TODO: should be string resource 
     private val importantValues = listOf(
         mapOf(Pair("Bz", "nT")),
         mapOf(Pair("North-Hemispheric-Power-Index", "GW"))
@@ -25,9 +26,9 @@ class SatelliteDataParser {
         SatelliteDataManager(valuesCountList[index], url, valueNamesList[index], importantValues[index])
     }
 
-    private var latestValues = mutableListOf<Float>()
+    private var latestValues = mutableMapOf<String, Any>()
 
-    fun parseSatelliteData(): List<Float> {
+    fun parseSatelliteData(): MutableMap<String, Any> {
         for (index in urls.indices) {
             val parser = managers[index]
 
@@ -37,13 +38,13 @@ class SatelliteDataParser {
             }
         }
         updateLatestValues()
-        return latestValues
+        return  latestValues
     }
 
     private fun updateLatestValues(){
-        latestValues = mutableListOf()
-        managers.forEach { dataManager ->
-            latestValues.add(dataManager.value)
+        latestValues = mutableMapOf()
+        managers.forEach { data ->
+            latestValues[data.key] = data.value
         }
     }
 }
