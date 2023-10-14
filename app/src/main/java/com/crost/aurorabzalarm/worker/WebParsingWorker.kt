@@ -18,7 +18,7 @@ class WebParsingWorker(
 //        var viewModel = ViewModelFactory.getDataViewModel()
         Log.d("WebParsingWorker viewModel", viewModel.toString())
         return try {
-            viewModel.fetchData()
+            viewModel.fetchSpaceWeatherData()
             Result.success()
         } catch (throwable: Throwable) {
             Log.e("WebParsingWorker", throwable.stackTraceToString())

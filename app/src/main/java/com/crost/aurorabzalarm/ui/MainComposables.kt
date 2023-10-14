@@ -20,7 +20,7 @@ fun MainComposable(viewModel: DataViewModel) {
         Values(viewModel)
         Button(onClick = {
 
-            viewModel.fetchData()
+            viewModel.fetchSpaceWeatherData()
         }) {
             Text(text = "Reload")
         }
@@ -36,14 +36,16 @@ fun Values(viewModel: DataViewModel, modifier: Modifier = Modifier){
     val currentLiveData = viewModel.currentSpaceWeatherLiveData.observeAsState()
 //    var vmodel: DataViewModel by activityViewModels()
     Log.d("Composables value.toString()", currentLiveData.value.toString())
+    // TODO: better manage in ViewModel?
+    val outputText = viewModel.outputText
+    val outputTextColor = viewModel.outputTextColor
+
 
     Column {
         Text(
-            text = "CurrentDataState: \n" +
-//                    "Bz Value:\t ${currentLiveData.value?.get("bzVal")}\n" + // does not update!
-                    "Bz Value:\t ${currentLiveData.value?.weatherData?.get("bzVal")}\n" + // does not update!
-                    "Hemispheric Power: ${currentLiveData.value?.get("hpVal")} GW",
+            text = outputText,
             modifier = modifier,
+            color = outputTextColor
         )
     }
 }

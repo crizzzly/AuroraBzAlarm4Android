@@ -3,16 +3,19 @@ package com.crost.aurorabzalarm.ui
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.crost.aurorabzalarm.data.SpaceWeatherRepository
+import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+
+// TODO: database @ Some time: https://developer.android.com/reference/androidx/room/package-summary
 @Stable
 interface CurrentSpaceWeatherState {
     val weatherData: Map<String, Any>
@@ -43,6 +46,7 @@ data class SpaceWeatherState(
 ) : CurrentSpaceWeatherState
 
 
+// currentSpaceWeatherLiveData.value -> Object
 class DataViewModel : ViewModel() {
     private val _currentSpaceWeatherStateFlow = MutableStateFlow(MutableCurrentSpaceWeatherState())
 //    val currentSpaceWeatherState: StateFlow<CurrentSpaceWeatherState> = _currentSpaceWeatherStateFlow
@@ -52,14 +56,18 @@ class DataViewModel : ViewModel() {
 
     private val spaceWeatherRepository = SpaceWeatherRepository()
 
+    var outputText: String = ""
+    // TODO: Create Color-Set
+    var outputTextColor: Color = Color.LightGray
 
-    fun fetchData(){
+
+    fun fetchSpaceWeatherData(){
 //        Log.d("dvm fetchData viewModel", this.toString())
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val newData = spaceWeatherRepository.fetchData()
-                Log.e("DataViewModel fetchData key-val", "newData: ${newData.weatherData.keys}, ${newData.weatherData.values}")
-                updateData(newData)
+                val newDataTables = spaceWeatherRepository.fetchDataAndStoreInDatabase()
+//                Log.e("DataViewModel fetchData key-val", "newDataTables: ${newDataTables.weatherData.keys}, ${newDataTables.weatherData.values}")
+//                updateCurrentSpaceWeatherState(newDataTables)
 
             } catch (e: Exception){
                 Log.e("DataViewModel fetchData", e.stackTraceToString())
@@ -67,9 +75,27 @@ class DataViewModel : ViewModel() {
         }
     }
 
-    private fun updateData(newData: CurrentSpaceWeatherState){
-        Log.d("Dvm - updateData", newData.getAsPrintableString())
+
+    private fun updateCurrentSpaceWeatherState(newData: CurrentSpaceWeatherState){
+        Log.d("Dvm - updateCurrentSpaceWeatherState", "length: ${newData.weatherData.size} \n" +
+                newData.getAsPrintableString()
+        )
         _currentSpaceWeatherStateFlow.value.weatherData = newData.weatherData as MutableMap<String, Any>
+        
+        try {
+            outputText = "CurrentDataState: \n" +
+//                    "Bz Value:\t ${currentLiveData.value?.get("bzVal")}\n" + // does not update!
+                    "Bz Value:\t ${currentSpaceWeatherLiveData.value?.weatherData?.get("bzVal")}\n" + // does not update!
+                    "Hemispheric Power: ${currentSpaceWeatherLiveData.value?.get("hpVal")} GW"
+        } catch (e: NoSuchElementException){
+            outputText = "Error \nProbs with accessing WeatherDataState"
+            Log.e("MainComposables - Values", e.stackTraceToString())
+            outputTextColor = Color.Red
+        }
+
+
+
+                as MutableMap<String, Any>
 
         Log.d("Dvm - currentSpaceWeatherLiveData.value ", currentSpaceWeatherLiveData.value.toString())
     }

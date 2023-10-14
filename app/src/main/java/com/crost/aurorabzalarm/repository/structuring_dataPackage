@@ -1,0 +1,15 @@
+data Package:
+
+data.model: Contains your data model classes (e.g., YourDataModel) used by Room database.
+data.local: Contains Room database-related classes (e.g., Room database, DAO interfaces).
+network Package:
+
+network.download: Contains classes responsible for downloading data.
+network.parser: Contains classes for parsing downloaded data and extracting values from documents.
+util Package:
+
+util.conversion: Contains classes for converting values into the right data types.
+util.validation: Contains classes for validating and formatting data.
+repository Package:
+
+repository: Contains your repository classes that orchestrate the data flow between different components.

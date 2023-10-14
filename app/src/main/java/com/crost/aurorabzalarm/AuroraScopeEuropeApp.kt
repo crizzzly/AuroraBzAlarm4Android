@@ -11,8 +11,6 @@ import com.crost.aurorabzalarm.ui.ViewModelFactory
 import com.crost.aurorabzalarm.worker.MyWorkerFactory
 import com.crost.aurorabzalarm.worker.WebParsingWorker
 import java.util.concurrent.TimeUnit
-import androidx.activity.viewModels
-import androidx.fragment.app.activityViewModels
 
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
     private lateinit var permissionManager: PermissionManager
@@ -34,15 +32,18 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 
         permissionManager = PermissionManager()
 
-//        WorkManagerInitializer().
+//      Remove entry in manifest when deleting WorkManager.init
         WorkManager.initialize(this, workManagerConfiguration)
-        // TODO: Get It To Work!
         val workManager = WorkManager.getInstance(application)
         val parsingWorkRequest = PeriodicWorkRequestBuilder<WebParsingWorker>(60, TimeUnit.SECONDS)
             .addTag("WebParsingWorker")
             .setConstraints(Constraints(NetworkType.CONNECTED))
             .build()
         workManager.enqueue(parsingWorkRequest)
+
+        // create spaceweather database
+//        val database = Room.databaseBuilder(applicationContext, SpaceWeatherDataBase::class.java, "space_weather_database")
+//            .build()
 
 
     }

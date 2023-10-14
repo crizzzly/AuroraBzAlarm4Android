@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">AuroraBzAlarm</string>
-    <string name="aceValsUrl">https://services.swpc.noaa.gov/text/ace-magnetometer.txt</string>
-    <string name="hpValsUrl">https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt</string>
+
+    <string-array name="database_tables">
+        <item>ace_magnetometer</item>
+        <item>hemispheric_power</item>
+    </string-array>
+
+
+
 </resources>
