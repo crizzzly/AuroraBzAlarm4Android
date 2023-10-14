@@ -2,6 +2,7 @@ package com.crost.aurorabzalarm.network.download
 
 import android.util.Log
 import org.jsoup.Jsoup
+import java.net.UnknownHostException
 
 class DownloadManager() {
     fun loadSatelliteDatasheet(url: String): String {
@@ -16,7 +17,7 @@ class DownloadManager() {
             val html = aceDoc.select("body").toString()
 //            Log.d("readUrl - ACE", html)
             html
-        } catch (e: Exception) {
+        } catch (e: UnknownHostException) {
             // TODO: make it better somehow
             Log.e("getSatelliteData", "$url\n ${e.stackTraceToString()}")
             "Error"

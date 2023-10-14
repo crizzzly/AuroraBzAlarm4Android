@@ -1,5 +1,7 @@
 package com.crost.aurorabzalarm.network.parser
 
+import android.util.Log
+
 class DocumentParser{
     private lateinit var dataTableMapped: MutableList<Map<String, String>>
 
@@ -31,6 +33,7 @@ class DocumentParser{
 
         // calculate number of rows to get the table in the right shape
         val rowCount = splittedList.size % valuesCount
+        Log.i("DocumentParser", "Number of rows: $rowCount, number of vals $valuesCount", )
 
         for (i in 0..rowCount){
             val pos0 = i * valuesCount
@@ -38,9 +41,10 @@ class DocumentParser{
             val row = try {
                 splittedList.subList(pos0, pos1)
             } catch (e: IndexOutOfBoundsException){
+                Log.e("DocumentParser", "creating table\n ${e.printStackTrace()}")
                 splittedList.subList(pos0, pos1-1)
             }
-//            Log.d("Row$i", row.toString())
+            Log.d("Row$i", row.toString())
             table.add(row)
         }
         return table

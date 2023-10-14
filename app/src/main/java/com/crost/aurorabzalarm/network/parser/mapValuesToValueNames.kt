@@ -9,19 +9,20 @@ fun mapParsedValuesToValueNames(
 ): MutableList<Map<String, String>> {
 
     val mappedValueTable = mutableListOf<Map<String, String>>()
-    var index = 0
     for (row in dataTable) {
+        var index = 0
+
         val mappedValues = mutableMapOf<String, String>()
         for (value in row) {
             try {
                 if (value.isNotEmpty()) {
                     mappedValues[valueNames[index]] = value
-                    index += 1
                 }
             } catch (e: IndexOutOfBoundsException){
-                Log.e("mapParsedValuesToValueNames", "index: $index\n" +
+                Log.e("mapParsedValuesToValueNames", "index: $index, value: $value\n" +
                         e.printStackTrace())
             }
+            index += 1
         }
         mappedValueTable.add(mappedValues)
     }

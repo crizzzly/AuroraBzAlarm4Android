@@ -81,7 +81,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.mockito.kotlin)
     implementation(libs.kotlinx.coroutines.test)
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

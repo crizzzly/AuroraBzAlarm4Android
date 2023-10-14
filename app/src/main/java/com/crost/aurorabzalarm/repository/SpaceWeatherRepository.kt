@@ -26,9 +26,10 @@ class SpaceWeatherRepository {
             val convertedData = dataShaper.convertData(dsConfig, parsedData)
             convertedDataTables.add(convertedData)
         }
-        val latestMap = convertedDataTables[0][convertedDataTables[0].size-1]
-        Log.d("SpaceWeatherRepository", "download, latest Bz Val\n" +
-                "${latestMap["Bz"]}")
+        val latestAceMap = convertedDataTables[0][convertedDataTables[0].size-1]
+        val latestHpMap = convertedDataTables[1][convertedDataTables[1].size-1]
+        Log.d("SpaceWeatherRepository", "download, latest Bz & Hp Vals\n" +
+                "${latestAceMap["Bz"]}, ${latestHpMap["HpNorth"]}")
         return convertedDataTables
     }
 }
