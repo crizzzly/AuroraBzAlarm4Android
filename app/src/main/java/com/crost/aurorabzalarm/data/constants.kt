@@ -8,5 +8,5 @@ object constants {
 
     const val HP_TABLE_NAME = "hemispheric_power"
     const val HP_URL = "https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt"
-    const val HP_KEYS = "Observation Forecast HP-North HP-South"
+    const val HP_KEYS = "Observation Forecast HPNorth HPSouth"
 }

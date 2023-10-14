@@ -21,28 +21,34 @@ class DocumentParser{
         return dataTableMapped
     }
     private fun extractDataTable(valuesCount: Int, textDocument: String): List<List<String>>{
+        Log.d("DocumentParser", "document length start ${textDocument.length}")
         val table = mutableListOf<List<String>>()
 
         // cut off <body> tags by "\n" and split at "#". All data is behind last "#"
         val splitted = textDocument.split("\n")[1].split("#")
 //        Log.d("splitted", splitted.toString())
 
+//        Log.d("DocumentParser", "splitted: ${splitted[splitted.size-1]}")
         // take last element that only contains values and split at " " to get only string vals
-        var splittedList = splitted[splitted.size-1].split(" ")
-        splittedList = splittedList.subList(1, splittedList.size-1)
+        val splittedList = splitted[splitted.size-1].split(" ")
+        // cut out first line cause it only contains "------- .. "
+        val valuesOnly = splittedList.subList(1, splittedList.size-1)
 
         // calculate number of rows to get the table in the right shape
-        val rowCount = splittedList.size % valuesCount
+        val rowCount = valuesOnly.size / valuesCount
         Log.i("DocumentParser", "Number of rows: $rowCount, number of vals $valuesCount", )
-
+        val size = valuesOnly.size
         for (i in 0..rowCount){
             val pos0 = i * valuesCount
-            val pos1 = i * valuesCount + valuesCount
+            var pos1 = i * valuesCount + valuesCount
+            if (pos1 >= size) {
+                pos1 = size -1
+            }
             val row = try {
-                splittedList.subList(pos0, pos1)
+                valuesOnly.subList(pos0, pos1)
             } catch (e: IndexOutOfBoundsException){
                 Log.e("DocumentParser", "creating table\n ${e.printStackTrace()}")
-                splittedList.subList(pos0, pos1-1)
+                valuesOnly.subList(pos0, pos1-1)
             }
             Log.d("Row$i", row.toString())
             table.add(row)

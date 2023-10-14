@@ -13,10 +13,12 @@ class HpDataConverter {
 
         for (dataMap in dataTable){
             var row = mutableMapOf<String, Any>()
+            hpNorth = 0
+            hpSouth = 0
 
             try {
-                hpNorth = dataMap["HP-North"]?.toInt()!!
-                hpSouth = dataMap["HP-South"]?.toInt()!!
+                hpNorth = dataMap["HPNorth"]?.toInt()!!
+                hpSouth = dataMap["HPSouth"]?.toInt()!!
                 dateString = dataMap["Observation"]!!
             } catch (e: Exception){
                 Log.e("DS - convertHpData", e.stackTraceToString())

@@ -60,7 +60,7 @@ class AceDataConverter {
 
             converted.add(row)
 
-            Log.d("DataShaper ConvACE", "$date, $time, $bx, $by, $bz")
+//            Log.d("DataShaper ConvACE", "$date, $time, $bx, $by, $bz")
         }
         return converted
     }

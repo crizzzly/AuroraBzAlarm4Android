@@ -15,6 +15,7 @@ class DownloadManager() {
         return try {
             val aceDoc = Jsoup.connect(url).get()
             val html = aceDoc.select("body").toString()
+            Log.d("SatelliteDataDownloader", "length of doc${html.length}") // 7774 /2335
 //            Log.d("readUrl - ACE", html)
             html
         } catch (e: UnknownHostException) {
