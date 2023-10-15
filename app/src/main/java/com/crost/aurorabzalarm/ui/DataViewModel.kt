@@ -62,7 +62,8 @@ class DataViewModel : ViewModel() {
 
 
     fun fetchSpaceWeatherData(){
-//        Log.d("dvm fetchData viewModel", this.toString())
+        Log.i("DataViewModel", "fetchSpaceWeatherData")
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val newDataTables = spaceWeatherRepository.fetchDataAndStoreInDatabase()
