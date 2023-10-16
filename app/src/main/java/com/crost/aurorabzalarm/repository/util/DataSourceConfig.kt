@@ -1,10 +1,10 @@
 package com.crost.aurorabzalarm.repository.util
 
-import com.crost.aurorabzalarm.data.ParserConstants
-import com.crost.aurorabzalarm.data.ParserConstants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.data.ParserConstants.ACE_URL
-import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.data.ParserConstants.HP_URL
+import com.crost.aurorabzalarm.Constants
+import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.ACE_URL
+import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.HP_URL
 
 data class DataSourceConfig(
     val table_name: String,
@@ -15,8 +15,8 @@ data class DataSourceConfig(
 
 
 fun getDataSources(): List<DataSourceConfig> {
-    val aceKeys = ParserConstants.ACE_KEYS.split(" ")
-    val hpKeys = ParserConstants.HP_KEYS.split(" ")
+    val aceKeys = Constants.ACE_KEYS.split(" ")
+    val hpKeys = Constants.HP_KEYS.split(" ")
 
     val aceConfig = DataSourceConfig(
         table_name = ACE_TABLE_NAME,

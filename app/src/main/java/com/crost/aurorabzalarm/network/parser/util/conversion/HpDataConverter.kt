@@ -1,6 +1,9 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import android.util.Log
+import com.crost.aurorabzalarm.Constants.HP_COL_DT
+import com.crost.aurorabzalarm.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.Constants.HP_COL_HPS
 
 class HpDataConverter {
     fun convertHpData(dataTable: List<Map<String, String>>): MutableList<MutableMap<String, Any>> {
@@ -23,9 +26,9 @@ class HpDataConverter {
                 Log.e("DS - convertHpData", e.stackTraceToString())
             }
             val datetime = prepareDateTimeValues(datetimeString)
-            row["datetime_hp"] = datetime
-            row["hpNorth"] = hpNorth
-            row["hpSouth"] = hpSouth
+            row[HP_COL_DT] = datetime
+            row[HP_COL_HPN] = hpNorth
+            row[HP_COL_HPS] = hpSouth
             convertedDataTable.add(row)
 //            Log.d("HpDataConverter", "$date, $time, $hpNorth")
         }

@@ -1,7 +1,15 @@
 package com.crost.aurorabzalarm.repository.util
 
 import android.util.Log
-import com.crost.aurorabzalarm.data.ParserConstants
+import com.crost.aurorabzalarm.Constants
+import com.crost.aurorabzalarm.Constants.ACE_COL_BT
+import com.crost.aurorabzalarm.Constants.ACE_COL_BX
+import com.crost.aurorabzalarm.Constants.ACE_COL_BY
+import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.Constants.ACE_COL_DT
+import com.crost.aurorabzalarm.Constants.HP_COL_DT
+import com.crost.aurorabzalarm.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.Constants.HP_COL_HPS
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceMagnetometerDataModel
 import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
@@ -18,15 +26,17 @@ suspend fun addDataModelInstances(
 ) {
     Log.d("addingDataModelInstances", tableName)
     when (tableName) {
-        ParserConstants.ACE_TABLE_NAME -> {
+        Constants.ACE_TABLE_NAME -> {
             createAceModelInstance(db, dataTable)
         }
 
-        ParserConstants.HP_TABLE_NAME -> {
+        Constants.HP_TABLE_NAME -> {
             createHpModelInstance(db, dataTable)
         }
     }
 }
+
+
 suspend fun fetchLatestData(db: SpaceWeatherDataBase): MutableMap<String, Any> {
     val latestData = mutableMapOf<String, Any>()
 
@@ -34,23 +44,20 @@ suspend fun fetchLatestData(db: SpaceWeatherDataBase): MutableMap<String, Any> {
         val aceData = getLatestAceValuesFromDb(db).lastOrNull()
         val hpData = getLatestHpValuesFromDb(db).lastOrNull()
         aceData?.let {
-            latestData["datetime_ace"] = it.datetime
-            latestData["bz"] = it.bz
+            latestData[ACE_COL_DT] = it.datetime
+            latestData[ACE_COL_BZ] = it.bz
         }
 
         hpData?.let {
-            latestData["datetime_hp"] = it.datetime
-            latestData["HpVal"] = it.hpNorth
+            latestData[HP_COL_DT] = it.datetime
+            latestData[HP_COL_HPN] = it.hpNorth
         }
     } catch (e: NullPointerException) {
-        latestData["datetime_ace"] = LocalDateTime.now()
-        latestData["bz"] = -999.9
-        latestData["datetime_hp"] = LocalDateTime.now()
-        latestData["hpNorth"] = 0
+        latestData[ACE_COL_DT] = LocalDateTime.now()
+        latestData[ACE_COL_BZ] = -999.9
+        latestData[HP_COL_DT] = LocalDateTime.now()
+        latestData[HP_COL_HPN] = 0
     }
-
-
-
 
     return latestData
 }
@@ -64,14 +71,14 @@ suspend fun createAceModelInstance(
 
         // the loop gets executed exactly once until execution stops without error
         for (row in dataTable) {
-            val datetime = row["datetime_ace"] as Long
+            val datetime = row[ACE_COL_DT] as Long
 
             val aceDataModel = AceMagnetometerDataModel(
                 datetime = datetime,
-                bx = row["bx"] as Double,
-                by = row["by"] as Double,
-                bz = row["bz"] as Double,
-                bt = row["bt"] as Double
+                bx = row[ACE_COL_BX] as Double,
+                by = row[ACE_COL_BY] as Double,
+                bz = row[ACE_COL_BZ] as Double,
+                bt = row[ACE_COL_BT] as Double
             )
             instances.add(aceDataModel)
         }
@@ -91,12 +98,12 @@ suspend fun createHpModelInstance(db: SpaceWeatherDataBase, dataTable: MutableLi
     val instances = mutableListOf<HemisphericPowerDataModel>()
 
     for (row in dataTable) {
-        val datetime = row["datetime_hp"] as Long
+        val datetime = row[HP_COL_DT] as Long
 
         val hpDataModel = HemisphericPowerDataModel(
             datetime = datetime,
-            hpNorth = row["hpNorth"] as Int,
-            hpSouth = row["hpSouth"] as Int,
+            hpNorth = row[HP_COL_HPN] as Int,
+            hpSouth = row[HP_COL_HPS] as Int,
         )
         instances.add(hpDataModel)
     }
@@ -121,6 +128,7 @@ fun getLatestAceValuesFromDb(db: SpaceWeatherDataBase): Flow<AceMagnetometerData
         db.aceDao().getLastRow()
     }
 }
+
 
 suspend fun getLatestHpValuesFromDb(db: SpaceWeatherDataBase): Flow<HemisphericPowerDataModel> {
     return try {

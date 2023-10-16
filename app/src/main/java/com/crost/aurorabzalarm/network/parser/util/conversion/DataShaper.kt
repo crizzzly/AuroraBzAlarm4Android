@@ -1,7 +1,7 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
-import com.crost.aurorabzalarm.data.ParserConstants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.repository.util.DataSourceConfig
 
 

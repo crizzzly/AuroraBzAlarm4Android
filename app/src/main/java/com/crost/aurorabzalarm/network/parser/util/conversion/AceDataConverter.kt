@@ -1,6 +1,11 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import android.util.Log
+import com.crost.aurorabzalarm.Constants.ACE_COL_BT
+import com.crost.aurorabzalarm.Constants.ACE_COL_BX
+import com.crost.aurorabzalarm.Constants.ACE_COL_BY
+import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.Constants.ACE_COL_DT
 import java.sql.Date
 
 class AceDataConverter {
@@ -37,11 +42,11 @@ class AceDataConverter {
                         + e.stackTraceToString())
             }
 
-            row["datetime_ace"] = datetime
-            row["bx"] = bx
-            row["by"] = by
-            row["bz"] = bz
-            row["bt"] = bt
+            row[ACE_COL_DT] = datetime
+            row[ACE_COL_BX] = bx
+            row[ACE_COL_BY] = by
+            row[ACE_COL_BZ] = bz
+            row[ACE_COL_BT] = bt
 
             converted.add(row)
 //            Log.d("DataShaper ConvACE", "$date, $time, $bx, $by, $bz")

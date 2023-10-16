@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
 import kotlinx.coroutines.flow.Flow
 
