@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
-import kotlin.coroutines.Continuation
 
 //insertAll Method: In your AceMagnetometerDAO interface, you have defined the insertAll method,
 // but you left its implementation empty. If you intend to use this method, you should provide the
@@ -29,7 +28,7 @@ interface HemisphericPowerDAO {
     suspend fun insertDataRow(data: HemisphericPowerDataModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(data: List<HemisphericPowerDataModel>, continuation: Continuation<HemisphericPowerDataModel>)
+    suspend fun insertAll(data: List<HemisphericPowerDataModel>)
 //    {
 //        for (row in data){
 //            insertDataRow(row, continuation)
@@ -37,7 +36,7 @@ interface HemisphericPowerDAO {
 //    }
 
     @Query("SELECT * FROM $HP_TABLE_NAME ORDER BY datetime DESC LIMIT 1")
-    fun getLastRow(): HemisphericPowerDataModel?
+    fun getLastRow(): HemisphericPowerDataModel
 }
 
 //    @Query("SELECT * FROM $HEMISPHERIC_POWER_TABLE_NAME WHERE id IN (:)")

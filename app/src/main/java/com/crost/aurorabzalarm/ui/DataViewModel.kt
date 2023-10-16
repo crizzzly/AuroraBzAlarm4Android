@@ -8,10 +8,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 
 // TODO: database @ Some time: https://developer.android.com/reference/androidx/room/package-summary
@@ -68,13 +70,13 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchSpaceWeatherData(){
         Log.i("DataViewModel", "fetchSpaceWeatherData")
 
-//        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                  spaceWeatherRepository.fetchDataAndStoreInDatabase()
             } catch (e: Exception){
                 Log.e("DataViewModel fetchData", e.stackTraceToString())
             }
-//        }
+        }
     }
 
 

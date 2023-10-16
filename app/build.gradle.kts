@@ -5,6 +5,8 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// TODO: check deprecations for gradle8 upgrade
+// TODO: https://docs.gradle.org/8.4-rc-2/userguide/upgrading_version_8.html#deprecated_access_to_conventions
 android {
     namespace = "com.crost.aurorabzalarm"
     compileSdk = 34
@@ -33,13 +35,13 @@ android {
     }
     android{
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = JavaVersion.VERSION_17//.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_17//.VERSION_1_8
         }
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"//"1.8"
     }
     buildFeatures {
         compose = true
@@ -54,7 +56,7 @@ android {
     }
     ksp {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "17"//"1.8"
         }
     }
 
