@@ -23,7 +23,7 @@ class HpDataConverter {
                 Log.e("DS - convertHpData", e.stackTraceToString())
             }
             val datetime = prepareDateTimeValues(datetimeString)
-            row["datetime"] = datetime
+            row["datetime_hp"] = datetime
             row["hpNorth"] = hpNorth
             row["hpSouth"] = hpSouth
             convertedDataTable.add(row)

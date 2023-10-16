@@ -6,16 +6,17 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.crost.aurorabzalarm.data.ParserConstants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.AceMagnetometerDataModel
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface AceMagnetometerDAO {
     @Query("SELECT * FROM $ACE_TABLE_NAME")
-    fun getAllData(): List<AceMagnetometerDataModel>
+    fun getAllData(): Flow<List<AceMagnetometerDataModel>>
 
 
     @Query("SELECT * FROM $ACE_TABLE_NAME ORDER BY datetime DESC LIMIT 1")
-    fun getLastRow(): AceMagnetometerDataModel
+    fun getLastRow(): Flow<AceMagnetometerDataModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDataRow(data: AceMagnetometerDataModel): Long

@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.repository
+package com.crost.aurorabzalarm.repository.util
 
 import com.crost.aurorabzalarm.data.ParserConstants
 import com.crost.aurorabzalarm.data.ParserConstants.ACE_TABLE_NAME
@@ -14,8 +14,7 @@ data class DataSourceConfig(
 )
 
 
-fun getDataSources(): Set<DataSourceConfig> {
-    lateinit var dataSourceConfig: DataSourceConfig
+fun getDataSources(): List<DataSourceConfig> {
     val aceKeys = ParserConstants.ACE_KEYS.split(" ")
     val hpKeys = ParserConstants.HP_KEYS.split(" ")
 
@@ -31,6 +30,6 @@ fun getDataSources(): Set<DataSourceConfig> {
         keys = hpKeys,
         unit = "GW"
     )
-    return setOf(aceConfig, hpConfig)
+    return setOf(aceConfig, hpConfig).toList()
 }
 

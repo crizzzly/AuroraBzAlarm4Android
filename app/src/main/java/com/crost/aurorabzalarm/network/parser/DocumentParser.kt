@@ -42,7 +42,7 @@ class DocumentParser{
         // take last element that only contains values and split at " " to get only string vals
         val splittedList = splitted[splitted.size-1].split(" ")
 
-        Log.i("DocumentParser splittedList", "size: ${splittedList.size}")
+//        Log.i("DocumentParser splittedList", "size: ${splittedList.size}")
 
         if(DEBUG_DOCUMENT_SPLITTING){
             var i = 0
@@ -53,9 +53,8 @@ class DocumentParser{
         }
         // cut out first line cause it only contains "------- .. "
         val valuesOnly = splittedList.subList(1, splittedList.size)
-        Log.i("DocumentParser valuesOnly", "size: ${valuesOnly.size}")
 
-        if(DEBUG_DOCUMENT_SPLITTING){
+        if(DEBUG_TABLE_SPLITTING){
             var i = 0
             for (value in valuesOnly){
                 Log.d("DocumentParser valuesOnly", "Nr $i: $value")

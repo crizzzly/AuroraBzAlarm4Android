@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.crost.aurorabzalarm.ui.DataViewModel
 
 class WebParsingWorker(
-    ctx: Context,
+    var ctx: Context,
     var viewModel: DataViewModel,
     params: WorkerParameters,
 ): CoroutineWorker(ctx,params) {
@@ -17,16 +17,19 @@ class WebParsingWorker(
         // TODO: Test if this also works. if so get rid of factory if
 //        var viewModel = ViewModelFactory.getDataViewModel()
         Log.d("WebParsingWorker viewModel", viewModel.toString())
-        return try {
-            viewModel.fetchSpaceWeatherData()
-            Result.success()
-        } catch (throwable: Throwable) {
-            Log.e("WebParsingWorker", throwable.stackTraceToString())
-            Result.failure()
-        } catch (e: IllegalStateException){
-            Log.e("WebParsingWorker", e.stackTraceToString())
-            Result.failure()
-        }
+//        return withContext(Dispatchers.IO){
+            return try {
+                viewModel.fetchSpaceWeatherData()
+                Result.success()
+            } catch (throwable: Throwable) {
+                Log.e("WebParsingWorker", throwable.stackTraceToString())
+                Result.failure()
+            } catch (e: IllegalStateException){
+                Log.e("WebParsingWorker", e.stackTraceToString())
+                Result.failure()
+            }
+//        }
+
     }
 }
 

@@ -2,7 +2,7 @@ package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import com.crost.aurorabzalarm.data.ParserConstants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.repository.DataSourceConfig
+import com.crost.aurorabzalarm.repository.util.DataSourceConfig
 
 
 class DataShaper {

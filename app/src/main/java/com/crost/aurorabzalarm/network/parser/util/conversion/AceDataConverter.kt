@@ -27,7 +27,6 @@ class AceDataConverter {
                 Date(convertToLocalEpochMillis(1970, 1, 1, 0))
             }
 
-
             try {
                 bx = map["Bx"]?.toDouble()!!
                 by = map["By"]?.toDouble()!!
@@ -38,14 +37,13 @@ class AceDataConverter {
                         + e.stackTraceToString())
             }
 
-            row["datetime"] = datetime
+            row["datetime_ace"] = datetime
             row["bx"] = bx
             row["by"] = by
             row["bz"] = bz
             row["bt"] = bt
 
             converted.add(row)
-
 //            Log.d("DataShaper ConvACE", "$date, $time, $bx, $by, $bz")
         }
         return converted
