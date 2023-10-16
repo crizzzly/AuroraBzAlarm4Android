@@ -8,8 +8,7 @@ class HpDataConverter {
 
         var hpNorth = 0
         var hpSouth = 0
-        var dateString = ""
-        var timeString = ""
+        var datetimeString = ""
 
         for (dataMap in dataTable){
             var row = mutableMapOf<String, Any>()
@@ -19,17 +18,14 @@ class HpDataConverter {
             try {
                 hpNorth = dataMap["HPNorth"]?.toInt()!!
                 hpSouth = dataMap["HPSouth"]?.toInt()!!
-                dateString = dataMap["Observation"]!!
+                datetimeString = dataMap["Observation"]!!
             } catch (e: Exception){
                 Log.e("DS - convertHpData", e.stackTraceToString())
             }
-            val dateTimeList = prepareDateTimeValues(dateString)
-            val date = dateTimeList[0]
-            val time = dateTimeList[1]
-            row["Date"] = date
-            row["Time"] = time
-            row["HpNorth"] = hpNorth
-            row["HpSouth"] = hpSouth
+            val datetime = prepareDateTimeValues(datetimeString)
+            row["datetime"] = datetime
+            row["hpNorth"] = hpNorth
+            row["hpSouth"] = hpSouth
             convertedDataTable.add(row)
 //            Log.d("HpDataConverter", "$date, $time, $hpNorth")
         }
@@ -37,25 +33,19 @@ class HpDataConverter {
 
     }
 
-    private fun prepareDateTimeValues(datetime: String): List<Any> {
+    private fun prepareDateTimeValues(datetime: String): Long {
         val dateTimeList = datetime.split("_")
 //        Log.d("HpCOnverter prepare time", "dateTimeList: ${dateTimeList[0]}, ${dateTimeList[1]}")
-        val dateString = dateTimeList[0]
+        val datetimeString = dateTimeList[0]
         val timeString = dateTimeList[1]
-        val dateAsList = dateString.split("-")
+        val dateAsList = datetimeString.split("-")
         val timeAsList = timeString.split(":")
-        val time = convertToLocalDateTime(
+
+        return convertToLocalEpochMillis(
             dateAsList[0].toInt(),
             dateAsList[1].toInt(),
             dateAsList[2].toInt(),
-            getSecOfDayFromTime(timeAsList[0].toInt(), timeAsList[1].toInt()),
-            )
-        val date = convertToDate(
-            dateAsList[2].toInt(),
-            dateAsList[1].toInt(),
-            dateAsList[0].toInt(),
             getSecOfDayFromTime(timeAsList[0].toInt(), timeAsList[1].toInt()),
         )
-        return listOf(date, time)
     }
 }

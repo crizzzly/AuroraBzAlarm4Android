@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -30,10 +31,13 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    android{
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -48,6 +52,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    ksp {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+
 }
 
 dependencies {
@@ -72,13 +83,13 @@ dependencies {
     implementation(libs.androidx.work.testing)
     implementation(libs.androidx.work.multiprocess)
     implementation(libs.ui)
-    implementation(libs.androidx.material)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.symbol.processing)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.mockito.kotlin)
     implementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit.jupiter)
@@ -88,3 +99,8 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
 }
+
+
+// //    implementation(libs.com.google.devtools.ksp.gradle.plugin)
+////    implementation(libs.symbol.processing)
+//    implementation(libs.kotlin.ksp)

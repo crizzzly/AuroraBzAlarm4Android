@@ -4,15 +4,14 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 
 // TODO: database @ Some time: https://developer.android.com/reference/androidx/room/package-summary
@@ -47,14 +46,19 @@ data class SpaceWeatherState(
 
 
 // currentSpaceWeatherLiveData.value -> Object
-class DataViewModel : ViewModel() {
+class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentSpaceWeatherStateFlow = MutableStateFlow(MutableCurrentSpaceWeatherState())
 //    val currentSpaceWeatherState: StateFlow<CurrentSpaceWeatherState> = _currentSpaceWeatherStateFlow
 
     val currentSpaceWeatherLiveData: LiveData<CurrentSpaceWeatherState>  =
         _currentSpaceWeatherStateFlow.asLiveData(Dispatchers.IO)
 
-    private val spaceWeatherRepository = SpaceWeatherRepository()
+    private var  spaceWeatherRepository: SpaceWeatherRepository
+    private lateinit var db: SpaceWeatherDataBase
+
+    init {
+        spaceWeatherRepository = SpaceWeatherRepository(application)
+    }
 
     var outputText: String = ""
     // TODO: Create Color-Set
@@ -64,16 +68,13 @@ class DataViewModel : ViewModel() {
     fun fetchSpaceWeatherData(){
         Log.i("DataViewModel", "fetchSpaceWeatherData")
 
-        viewModelScope.launch(Dispatchers.IO) {
+//        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val newDataTables = spaceWeatherRepository.fetchDataAndStoreInDatabase()
-//                Log.e("DataViewModel fetchData key-val", "newDataTables: ${newDataTables.weatherData.keys}, ${newDataTables.weatherData.values}")
-//                updateCurrentSpaceWeatherState(newDataTables)
-
+                 spaceWeatherRepository.fetchDataAndStoreInDatabase()
             } catch (e: Exception){
                 Log.e("DataViewModel fetchData", e.stackTraceToString())
             }
-        }
+//        }
     }
 
 
@@ -106,8 +107,8 @@ object ViewModelFactory {
     private lateinit var dataViewModel: DataViewModel
 
     fun init(application: Application) {
+        Log.i("ViewModelFactory", "init")
         dataViewModel = ViewModelProvider.AndroidViewModelFactory(application).create(DataViewModel::class.java)
-        Log.e("ViewModelFactory", "init")
     }
 
     fun getDataViewModel(): DataViewModel {

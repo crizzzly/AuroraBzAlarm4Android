@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
     private lateinit var permissionManager: PermissionManager
     private lateinit var viewModel: DataViewModel
+//    private lateinit var database: SpaceWeatherDataBase
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()
@@ -25,26 +26,22 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        val application = applicationContext
         ViewModelFactory.init(this)
+//        val application = applicationContext
         viewModel = ViewModelFactory.getDataViewModel()
-
+//        database = Room
+//            .databaseBuilder(this, SpaceWeatherDataBase::class.java, "database-name")
+//            .build()
 
         permissionManager = PermissionManager()
 
 //      Remove entry in manifest when deleting WorkManager.init
         WorkManager.initialize(this, workManagerConfiguration)
-        val workManager = WorkManager.getInstance(application)
+        val workManager = WorkManager.getInstance(this)
         val parsingWorkRequest = PeriodicWorkRequestBuilder<WebParsingWorker>(60, TimeUnit.SECONDS)
             .addTag("WebParsingWorker")
             .setConstraints(Constraints(NetworkType.CONNECTED))
             .build()
         workManager.enqueue(parsingWorkRequest)
-
-        // create spaceweather database
-//        val database = Room.databaseBuilder(applicationContext, SpaceWeatherDataBase::class.java, "space_weather_database")
-//            .build()
-
-
-    }
+  }
 }

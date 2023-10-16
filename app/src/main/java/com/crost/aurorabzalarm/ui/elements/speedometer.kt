@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.ui
+package com.crost.aurorabzalarm.ui.elements
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
@@ -30,12 +30,13 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crost.aurorabzalarm.ui.DataViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SpeedometerScreen( ) {
-    val viewModel:DataViewModel = viewModel()
+    val viewModel: DataViewModel = viewModel()
 //    var targetValue = viewModel.currentSpaceWeatherLiveData.observeAsState().value?.bzVal!!
     var targetValue by remember {
         mutableStateOf(0f)

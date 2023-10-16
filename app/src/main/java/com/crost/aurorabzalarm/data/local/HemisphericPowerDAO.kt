@@ -4,9 +4,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.crost.aurorabzalarm.data.constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.data.ParserConstants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
+import kotlin.coroutines.Continuation
 
+//insertAll Method: In your AceMagnetometerDAO interface, you have defined the insertAll method,
+// but you left its implementation empty. If you intend to use this method, you should provide the
+// implementation logic to insert multiple instances into the database.
+//
+//Conflict Strategy: You're using OnConflictStrategy.REPLACE for your insert operations, which
+// means if there is a conflict (i.e., if a row with the same primary key already exists),
+// it will be replaced. Ensure this behavior aligns with your requirements.
+//
+//Query Methods: You have defined query methods to fetch all data and retrieve the
+// last row from the database. Make sure these queries return the data you expect and handle
+// edge cases appropriately.
 
 @Dao
 interface HemisphericPowerDAO {
@@ -16,9 +28,17 @@ interface HemisphericPowerDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDataRow(data: HemisphericPowerDataModel)
 
-    @Insert
-    fun insertAll(vararg hpData: HemisphericPowerDataModel?)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(data: List<HemisphericPowerDataModel>, continuation: Continuation<HemisphericPowerDataModel>)
+//    {
+//        for (row in data){
+//            insertDataRow(row, continuation)
+//        }
+//    }
 
+    @Query("SELECT * FROM $HP_TABLE_NAME ORDER BY datetime DESC LIMIT 1")
+    fun getLastRow(): HemisphericPowerDataModel?
+}
 
 //    @Query("SELECT * FROM $HEMISPHERIC_POWER_TABLE_NAME WHERE id IN (:)")
 //    fun loadAllBySongId(vararg songIds: Int): List<Song?>?
@@ -34,4 +54,3 @@ interface HemisphericPowerDAO {
 //
 //    @Delete
 //    fun delete(song: Song?)
-}

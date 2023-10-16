@@ -1,7 +1,8 @@
 package com.crost.aurorabzalarm.data
 
 
-object constants {
+object ParserConstants {
+    const val DB_NAME = "SpaceWeatherDb"
     const val ACE_TABLE_NAME = "ace_magnetometer"
     const val ACE_URL = "https://services.swpc.noaa.gov/text/ace-magnetometer.txt"
     const val ACE_KEYS = "YR MO DA Time JulianDay SecOfDay S Bx By Bz Bt Lat Long"

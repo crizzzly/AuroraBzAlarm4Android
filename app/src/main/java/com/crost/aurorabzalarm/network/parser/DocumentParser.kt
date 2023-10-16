@@ -4,7 +4,7 @@ import android.util.Log
 
 
 const val DEBUG_DOCUMENT_SPLITTING = false
-const val DEBUG_TABLE_SPLITTING = true
+const val DEBUG_TABLE_SPLITTING = false
 
 
 class DocumentParser{
