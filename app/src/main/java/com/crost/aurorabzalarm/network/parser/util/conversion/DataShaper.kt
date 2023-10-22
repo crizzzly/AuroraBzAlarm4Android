@@ -7,7 +7,7 @@ import com.crost.aurorabzalarm.repository.util.DataSourceConfig
 
 class DataShaper {
     fun convertData(dsConfig: DataSourceConfig, dataTable: List<Map<String, String>>): MutableList<MutableMap<String, Any>> {
-        return when (dsConfig.table_name) {
+        return when (dsConfig.tableName) {
             ACE_TABLE_NAME -> AceDataConverter().convertAceData(dataTable)
             HP_TABLE_NAME -> HpDataConverter().convertHpData(dataTable)
             else -> mutableListOf()

@@ -34,7 +34,7 @@ class SpaceWeatherRepository(application: Application) {
     private val dataSourceConfigs = getDataSources()
     private val dataShaper = DataShaper()
     private val scope = CoroutineScope(Dispatchers.IO)
-    private lateinit var returnValues: MutableMap<String, Any>
+    private lateinit var latestValues: MutableMap<String, Any>
 
     init { // db init
         try {
@@ -62,37 +62,43 @@ class SpaceWeatherRepository(application: Application) {
         }
 
     }
-
-
-//    suspend fun fetchDataAndStore(){ //: SpaceWeatherState {
-//        try {
-//            // Fetch data and update database
-//            val data = fetchDataAndStore()
-////            SpaceWeatherState.Success(data)
-//        } catch (e: Exception) {
-//            Log.e("fetchDataAndStoreInDatabase", e.stackTraceToString())
-////            SpaceWeatherState.Error(e.message ?: "Unknown error")
-//        }
-//    }
+    
 
     suspend fun getLatestData(): MutableMap<String, Any> {
         return fetchLatestDataRow(this.db)
     }
+    
+    
+    suspend fun fetchDataAndStore(){
+        fetchData()
+        delay(100)
+        storeDataInDb()
+    }
 
-    suspend fun fetchDataAndStore(): MutableMap<String, Any> {
+    private fun fetchData() {
         for (dsConfig in dataSourceConfigs) {
-            Log.i("fetchDataAndStore",
-                "dsconfig url: \n${dsConfig.url}")
+            Log.i("fetchData", dsConfig.url)
 
-            try{
+            try {
                 val convertedDataTable = downloadDataFromNetwork(
                     dsConfig, downloadManager, parser, dataShaper
                 )
+                dsConfig.latestData = convertedDataTable
+            } catch (e: Exception) {
+                Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
+                throw e
+            }
+        }
+    }
 
-                delay(100)
-                addDataModelInstances(db, convertedDataTable, dsConfig.table_name)
 
-                when (dsConfig.table_name) {
+    private suspend fun storeDataInDb(){
+    for (dsConfig in dataSourceConfigs) {
+        Log.d("storeDataInDb", dsConfig.tableName)
+            try {
+                addDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
+
+                when (dsConfig.tableName) {
                     ACE_TABLE_NAME ->  setLatestAceVals(dsConfig)
                     HP_TABLE_NAME ->  setLatestHpVals(dsConfig)
                 }
@@ -101,26 +107,25 @@ class SpaceWeatherRepository(application: Application) {
                 throw e
             }
         }
-        return returnValues
     }
 
     private suspend fun setLatestHpVals(dsConfig: DataSourceConfig){
         val latestVals = getLatestHpValuesFromDb(db).last()
         Log.d(
             "Repo: stored val",
-            "${dsConfig.table_name} hpVal: ${latestVals.hpNorth}"
+            "${dsConfig.tableName} hpVal: ${latestVals.hpNorth}"
         )
-        returnValues[HP_COL_DT] = latestVals.datetime
-        returnValues[HP_COL_HPN] = latestVals.hpNorth
+        latestValues[HP_COL_DT] = latestVals.datetime
+        latestValues[HP_COL_HPN] = latestVals.hpNorth
 
     }
 
     private suspend fun setLatestAceVals(dsConfig: DataSourceConfig){
         val latestVals =
             getLatestAceValuesFromDb(db).last() // as AceMagnetometerDataModel
-        Log.d("Repo: stored val:", "${dsConfig.table_name} val ${latestVals.bz}")
-        returnValues[ACE_COL_DT] = latestVals.datetime
-        returnValues[ACE_COL_BZ] = latestVals.bz
+        Log.d("Repo: stored val:", "${dsConfig.tableName} val ${latestVals.bz}")
+        latestValues[ACE_COL_DT] = latestVals.datetime
+        latestValues[ACE_COL_BZ] = latestVals.bz
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.crost.aurorabzalarm.Constants.WORKER_REPEAT_INTERVALL
 import com.crost.aurorabzalarm.ui.DataViewModel
 import com.crost.aurorabzalarm.ui.ViewModelFactory
 import com.crost.aurorabzalarm.worker.MyWorkerFactory
@@ -26,18 +27,18 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         ViewModelFactory.init(this)
+
 //        val application = applicationContext
         viewModel = ViewModelFactory.getDataViewModel()
-//        database = Room
-//            .databaseBuilder(this, SpaceWeatherDataBase::class.java, "database-name")
-//            .build()
-
         permissionManager = PermissionManager()
 
 //      Remove entry in manifest when deleting WorkManager.init
         WorkManager.initialize(this, workManagerConfiguration)
         val workManager = WorkManager.getInstance(this)
-        val parsingWorkRequest = PeriodicWorkRequestBuilder<WebParsingWorker>(60, TimeUnit.SECONDS)
+        val parsingWorkRequest =
+            PeriodicWorkRequestBuilder<WebParsingWorker>(
+                WORKER_REPEAT_INTERVALL, TimeUnit.SECONDS
+            )
             .addTag("WebParsingWorker")
             .setConstraints(Constraints(NetworkType.CONNECTED))
             .build()

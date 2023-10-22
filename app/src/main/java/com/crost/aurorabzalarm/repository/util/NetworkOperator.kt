@@ -17,15 +17,15 @@ fun downloadDataFromNetwork(
         val parsedDataTable = parser.parseData(downloadedDataTable, dsConfig.keys, valuesCount)
         val convertedTable = dataShaper.convertData(dsConfig, parsedDataTable)
 
-        when (dsConfig.table_name) {
+        when (dsConfig.tableName) {
             Constants.ACE_TABLE_NAME -> Log.d(
                 "SpaceWeatherRepo - downloaded",
-                "${dsConfig.table_name}\n Bz: ${convertedTable[convertedTable.size - 1]["bz"]} "
+                "${dsConfig.tableName}\n Bz: ${convertedTable[convertedTable.size - 1]["bz"]} "
             )
 
             Constants.HP_TABLE_NAME -> Log.d(
                 "SpaceWeatherRepo - downloaded",
-                "${dsConfig.table_name}\n Hp: ${convertedTable[convertedTable.size - 1]["hpNorth"]} "
+                "${dsConfig.tableName}\n Hp: ${convertedTable[convertedTable.size - 1]["hpNorth"]} "
             )
         }
         return convertedTable

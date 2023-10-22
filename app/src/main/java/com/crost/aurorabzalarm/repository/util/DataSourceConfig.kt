@@ -7,10 +7,12 @@ import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.HP_URL
 
 data class DataSourceConfig(
-    val table_name: String,
+    val tableName: String,
     val url: String,
     val keys: List<String>,
-    val unit: String
+    val unit: String,
+    var latestData: MutableList<MutableMap<String, Any>> =
+        mutableListOf<MutableMap<String, Any>>()
 )
 
 
@@ -19,13 +21,13 @@ fun getDataSources(): List<DataSourceConfig> {
     val hpKeys = Constants.HP_KEYS.split(" ")
 
     val aceConfig = DataSourceConfig(
-        table_name = ACE_TABLE_NAME,
+        tableName = ACE_TABLE_NAME,
         url = ACE_URL,
         keys = aceKeys,
         unit = "Nt"
     )
     val hpConfig = DataSourceConfig(
-        table_name = HP_TABLE_NAME,
+        tableName = HP_TABLE_NAME,
         url = HP_URL,
         keys = hpKeys,
         unit = "GW"

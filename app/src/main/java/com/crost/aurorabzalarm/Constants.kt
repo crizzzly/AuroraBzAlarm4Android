@@ -11,6 +11,7 @@ object Constants {
     const val HP_URL = "https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt"
     const val HP_KEYS = "Observation Forecast HPNorth HPSouth"
 
+    // table columns
     const val ACE_COL_DT = "datetime_ace"
     const val ACE_COL_BX = "bx"
     const val ACE_COL_BY = "by"
@@ -20,4 +21,7 @@ object Constants {
     const val HP_COL_DT = "datetime_hp"
     const val HP_COL_HPN = "hpNorth"
     const val HP_COL_HPS = "hpSouth"
+
+    // download worker time in sec
+    const val WORKER_REPEAT_INTERVALL = 5*60L
 }
