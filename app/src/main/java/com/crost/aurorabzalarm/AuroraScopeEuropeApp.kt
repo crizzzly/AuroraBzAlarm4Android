@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
     private lateinit var permissionManager: PermissionManager
     private lateinit var viewModel: DataViewModel
-//    private lateinit var database: SpaceWeatherDataBase
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()

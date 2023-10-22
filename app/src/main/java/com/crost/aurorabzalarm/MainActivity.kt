@@ -14,13 +14,16 @@ import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.ViewModelFactory
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 
+
 class MainActivity : ComponentActivity() {
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 //    private var viewModel: DataViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val viewModel = ViewModelFactory.getDataViewModel()
         Log.d("MainActivity viewModel", viewModel.toString())
+
         permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->

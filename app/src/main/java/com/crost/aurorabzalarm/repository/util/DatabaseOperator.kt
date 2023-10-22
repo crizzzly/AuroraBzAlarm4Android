@@ -24,7 +24,7 @@ suspend fun addDataModelInstances(
     dataTable: MutableList<MutableMap<String, Any>>,
     tableName: String,
 ) {
-    Log.d("addingDataModelInstances", tableName)
+    Log.d("addingInstances", tableName)
     when (tableName) {
         Constants.ACE_TABLE_NAME -> {
             createAceModelInstance(db, dataTable)
@@ -37,7 +37,7 @@ suspend fun addDataModelInstances(
 }
 
 
-suspend fun fetchLatestData(db: SpaceWeatherDataBase): MutableMap<String, Any> {
+suspend fun fetchLatestDataRow(db: SpaceWeatherDataBase): MutableMap<String, Any> {
     val latestData = mutableMapOf<String, Any>()
 
     try {

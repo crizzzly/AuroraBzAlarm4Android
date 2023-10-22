@@ -3,8 +3,12 @@ package com.crost.aurorabzalarm.repository
 import android.app.Application
 import android.util.Log
 import androidx.room.Room
+import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.Constants.ACE_COL_DT
 import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.DB_NAME
+import com.crost.aurorabzalarm.Constants.HP_COL_DT
+import com.crost.aurorabzalarm.Constants.HP_COL_HPN
 import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.network.download.DownloadManager
@@ -13,7 +17,7 @@ import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
 import com.crost.aurorabzalarm.repository.util.DataSourceConfig
 import com.crost.aurorabzalarm.repository.util.addDataModelInstances
 import com.crost.aurorabzalarm.repository.util.downloadDataFromNetwork
-import com.crost.aurorabzalarm.repository.util.fetchLatestData
+import com.crost.aurorabzalarm.repository.util.fetchLatestDataRow
 import com.crost.aurorabzalarm.repository.util.getDataSources
 import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
@@ -60,25 +64,25 @@ class SpaceWeatherRepository(application: Application) {
     }
 
 
-    suspend fun fetchDataAndStoreInDatabase(){ //: SpaceWeatherState {
-        try {
-            // Fetch data and update database
-            val data = fetchDataAndStore()
-//            SpaceWeatherState.Success(data)
-        } catch (e: Exception) {
-            Log.e("fetchDataAndStoreInDatabase", e.stackTraceToString())
-//            SpaceWeatherState.Error(e.message ?: "Unknown error")
-        }
-    }
+//    suspend fun fetchDataAndStore(){ //: SpaceWeatherState {
+//        try {
+//            // Fetch data and update database
+//            val data = fetchDataAndStore()
+////            SpaceWeatherState.Success(data)
+//        } catch (e: Exception) {
+//            Log.e("fetchDataAndStoreInDatabase", e.stackTraceToString())
+////            SpaceWeatherState.Error(e.message ?: "Unknown error")
+//        }
+//    }
 
     suspend fun getLatestData(): MutableMap<String, Any> {
-        return fetchLatestData(this.db)
+        return fetchLatestDataRow(this.db)
     }
 
-    private suspend fun fetchDataAndStore(): MutableMap<String, Any> {
+    suspend fun fetchDataAndStore(): MutableMap<String, Any> {
         for (dsConfig in dataSourceConfigs) {
-        Log.i("fetchDataAndStore",
-            "dsconfig url: \n${dsConfig.url}")
+            Log.i("fetchDataAndStore",
+                "dsconfig url: \n${dsConfig.url}")
 
             try{
                 val convertedDataTable = downloadDataFromNetwork(
@@ -106,8 +110,8 @@ class SpaceWeatherRepository(application: Application) {
             "Repo: stored val",
             "${dsConfig.table_name} hpVal: ${latestVals.hpNorth}"
         )
-        returnValues["datetime"] = latestVals.datetime
-        returnValues["HpVal"] = latestVals.hpNorth
+        returnValues[HP_COL_DT] = latestVals.datetime
+        returnValues[HP_COL_HPN] = latestVals.hpNorth
 
     }
 
@@ -115,8 +119,8 @@ class SpaceWeatherRepository(application: Application) {
         val latestVals =
             getLatestAceValuesFromDb(db).last() // as AceMagnetometerDataModel
         Log.d("Repo: stored val:", "${dsConfig.table_name} val ${latestVals.bz}")
-        returnValues["datetime"] = latestVals.datetime
-        returnValues["bz"] = latestVals.bz
+        returnValues[ACE_COL_DT] = latestVals.datetime
+        returnValues[ACE_COL_BZ] = latestVals.bz
     }
 
 }

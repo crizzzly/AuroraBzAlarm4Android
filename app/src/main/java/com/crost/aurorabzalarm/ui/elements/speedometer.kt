@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.rotate
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.ui.DataViewModel
@@ -64,14 +65,21 @@ fun SpeedometerScreen( ) {
     }
 }
 
+@Preview
+@Composable
+fun PreviewSpeedometer(){
+    Speedometer(50)
+}
+
+
 @Composable
 fun Speedometer(
     progress: Int,
 ) {
     val arcDegrees = 275
     val startArcAngle = 135f
-    val startStepAngle = -45
-    val numberOfMarkers = 55
+    val startStepAngle = -45 //
+    val numberOfMarkers = 98// 55
     val degreesMarkerStep = arcDegrees / numberOfMarkers
 
     Canvas(
@@ -126,7 +134,7 @@ fun Speedometer(
                 // Drawing Line Markers
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
                     val lineEndX = 80f
-                    paint.color = mainColor
+                    paint.color = Color.Blue
                     val lineStartX = if (counter % 5 == 0) {
                         paint.strokeWidth = 3f
                         0f
@@ -143,13 +151,13 @@ fun Speedometer(
                     )
                     // Drawing Pointer
                     if (counter == progress) {
-                        paint.color = Color.Black
+                        paint.color = Color.Red
                         canvas.drawPath(
                             Path().apply {
-                                moveTo(w / 2, (h / 2) - 5)
-                                lineTo(w / 2, (h / 2) + 5)
-                                lineTo(w / 4f, h / 2)
-                                lineTo(w / 2, (h / 2) - 5)
+                                moveTo(w / 2, (h / 2) - 10)
+                                lineTo(w / 2, (h / 2) + 10)
+                                lineTo(w / 15f, h / 2)
+                                lineTo(w / 2, (h / 2) - 10)
                                 close()
                             },
                             paint

@@ -44,7 +44,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                spaceWeatherRepository.fetchDataAndStoreInDatabase()
+                spaceWeatherRepository.fetchDataAndStore()
             } catch (e: Exception) {
                 Log.e("fetchSpaceWeatherData", e.stackTraceToString())
 //                SpaceWeatherState.Error(e.message ?: "Unknown error")
