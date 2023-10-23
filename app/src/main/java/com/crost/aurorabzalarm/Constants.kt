@@ -23,5 +23,13 @@ object Constants {
     const val HP_COL_HPS = "hpSouth"
 
     // download worker time in sec
-    const val WORKER_REPEAT_INTERVALL = 5*60L
+    const val WORKER_REPEAT_INTERVAL = 60L
+
+    // retries for time-consuming functions
+    const val MAX_RETRY_COUNT = 3
+    const val RETRY_DELAY_MS = 300
+
+    // SatelliteDataDownloader
+    const val FILEPATH_ACE_DATA = "spaceDataDocuments/ace.txt"
+    const val FILEPATH_HP_DATA = "spaceDataDocuments/hp.txt"
 }

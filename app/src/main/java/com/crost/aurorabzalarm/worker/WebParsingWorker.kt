@@ -14,12 +14,13 @@ class WebParsingWorker(
     params: WorkerParameters,
 ): CoroutineWorker(ctx,params) {
     override suspend fun doWork(): Result {
-        // TODO: Test if this also works. if so get rid of factory if
-//        var viewModel = ViewModelFactory.getDataViewModel()
-        Log.d("WebParsingWorker viewModel", viewModel.toString())
-//        return withContext(Dispatchers.IO){
+        Log.d("WebParsingWorker", "running")
             return try {
-                viewModel.fetchSpaceWeatherData()
+//                runBlocking {
+                    viewModel.fetchSpaceWeatherData()
+//                }
+
+//                viewModel.updateSpaceWeatherValues()
                 Result.success()
             } catch (throwable: Throwable) {
                 Log.e("WebParsingWorker", throwable.stackTraceToString())
@@ -28,13 +29,12 @@ class WebParsingWorker(
                 Log.e("WebParsingWorker", e.stackTraceToString())
                 Result.failure()
             }
-//        }
-
     }
 }
 
 
-class MyWorkerFactory(val viewModel: DataViewModel
+class MyWorkerFactory(
+    private val viewModel: DataViewModel
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,

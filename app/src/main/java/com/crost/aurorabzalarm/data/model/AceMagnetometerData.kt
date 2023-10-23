@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
 
 @Entity(tableName = ACE_TABLE_NAME)
-data class AceMagnetometerDataModel(
+data class AceMagnetometerData(
     @PrimaryKey(autoGenerate = false)
     var datetime: Long,
     var bx: Double,

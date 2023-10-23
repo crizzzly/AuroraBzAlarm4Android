@@ -23,7 +23,7 @@ class HpDataConverter {
                 hpSouth = dataMap["HPSouth"]?.toInt()!!
                 datetimeString = dataMap["Observation"]!!
             } catch (e: Exception){
-                Log.e("DS - convertHpData", e.stackTraceToString())
+                Log.e("HpDataConverter", e.stackTraceToString())
             }
             val datetime = prepareDateTimeValues(datetimeString)
             row[HP_COL_DT] = datetime
@@ -32,6 +32,11 @@ class HpDataConverter {
             convertedDataTable.add(row)
 //            Log.d("HpDataConverter", "$date, $time, $hpNorth")
         }
+        Log.d(
+
+            "HpDataConverter",
+            "${convertedDataTable.last()["datetime"]}, ${convertedDataTable.last()["hpNorth"]}"
+        )
         return convertedDataTable
 
     }

@@ -27,7 +27,7 @@ class AceDataConverter {
                     secOfDay = map["SecOfDay"]?.toInt()!!,
                 )
             } catch (e: NullPointerException) {
-                Log.e("DS - convertAceData", "date"
+                Log.e("ACEConverter", "date"
                         + e.stackTraceToString())
                 Date(convertToLocalEpochMillis(1970, 1, 1, 0))
             }
@@ -38,7 +38,7 @@ class AceDataConverter {
                 bz = map["Bz"]?.toDouble()!!
                 bt = map["Bt"]?.toDouble()!!
             } catch (e: Exception) {
-                Log.e("DS - convertAceData", "Bx, By, Bz"
+                Log.e("ACEConverter", "Bx, By, Bz"
                         + e.stackTraceToString())
             }
 
@@ -49,8 +49,8 @@ class AceDataConverter {
             row[ACE_COL_BT] = bt
 
             converted.add(row)
-//            Log.d("DataShaper ConvACE", "$date, $time, $bx, $by, $bz")
         }
+        Log.d("ACEConverter", "${converted.last()["datetime"]}, ${converted.last()["bz"]}")
         return converted
     }
 }

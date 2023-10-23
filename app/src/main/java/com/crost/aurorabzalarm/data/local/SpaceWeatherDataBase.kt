@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.crost.aurorabzalarm.data.model.AceMagnetometerDataModel
-import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
+import com.crost.aurorabzalarm.data.model.AceMagnetometerData
+import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 
-@Database(entities = [AceMagnetometerDataModel::class, HemisphericPowerDataModel::class], version = 1, exportSchema = false)
+@Database(entities = [AceMagnetometerData::class, HemisphericPowerData::class], version = 1, exportSchema = false)
 //@TypeConverters(Converters::class)
 abstract class SpaceWeatherDataBase: RoomDatabase() {
     abstract fun aceDao(): AceMagnetometerDAO

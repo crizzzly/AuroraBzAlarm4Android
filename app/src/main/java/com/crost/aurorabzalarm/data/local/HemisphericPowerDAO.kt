@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.data.model.HemisphericPowerDataModel
+import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import kotlinx.coroutines.flow.Flow
 
 
@@ -24,26 +24,26 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HemisphericPowerDAO {
     @Query("SELECT * FROM $HP_TABLE_NAME")
-    fun getAllData(): Flow<List<HemisphericPowerDataModel>>
+    fun getAllData(): Flow<List<HemisphericPowerData>>
 
 
     @Query("SELECT * FROM $HP_TABLE_NAME ORDER BY datetime DESC LIMIT 1")
-    fun getLastRow(): Flow<HemisphericPowerDataModel>
+    fun getLastRow(): Flow<HemisphericPowerData>
+
+
+    @Query("SELECT * FROM $HP_TABLE_NAME ORDER BY datetime LIMIT 1")
+    fun getFirstRow(): Flow<HemisphericPowerData>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDataRow(data: HemisphericPowerDataModel)
+    suspend fun insertDataRow(data: HemisphericPowerData)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(data: List<HemisphericPowerDataModel>)
-//    {
-//        for (row in data){
-//            insertDataRow(row, continuation)
-//        }
-//    }
-
+    suspend fun insertAll(data: List<HemisphericPowerData>)
 }
+
+
 
 //    @Query("SELECT * FROM $HEMISPHERIC_POWER_TABLE_NAME WHERE id IN (:)")
 //    fun loadAllBySongId(vararg songIds: Int): List<Song?>?

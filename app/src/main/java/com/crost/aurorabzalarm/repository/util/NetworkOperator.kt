@@ -6,7 +6,7 @@ import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
 import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
 
-fun downloadDataFromNetwork(
+suspend fun downloadDataFromNetwork(
     dsConfig: DataSourceConfig,
     downloadManager:DownloadManager,
     parser: DocumentParser,

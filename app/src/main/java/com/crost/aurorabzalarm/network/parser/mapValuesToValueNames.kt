@@ -26,6 +26,7 @@ fun mapParsedValuesToValueNames(
         }
         mappedValueTable.add(mappedValues)
     }
+    Log.d("MapValues", "value mapping of ${valueNames.size} Values completed")
     return mappedValueTable
 }
 

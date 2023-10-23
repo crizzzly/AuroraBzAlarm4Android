@@ -2,80 +2,117 @@ package com.crost.aurorabzalarm.repository
 
 import android.app.Application
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
-import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
-import com.crost.aurorabzalarm.Constants.ACE_COL_DT
-import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.DB_NAME
-import com.crost.aurorabzalarm.Constants.HP_COL_DT
-import com.crost.aurorabzalarm.Constants.HP_COL_HPN
-import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
+import com.crost.aurorabzalarm.data.model.AceMagnetometerData
+import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
 import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
-import com.crost.aurorabzalarm.repository.util.DataSourceConfig
-import com.crost.aurorabzalarm.repository.util.addDataModelInstances
 import com.crost.aurorabzalarm.repository.util.downloadDataFromNetwork
-import com.crost.aurorabzalarm.repository.util.fetchLatestDataRow
 import com.crost.aurorabzalarm.repository.util.getDataSources
 import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
+import com.crost.aurorabzalarm.repository.util.saveDataModelInstances
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 
-class SpaceWeatherRepository(application: Application) {
+class SpaceWeatherRepository(application: Application){
+
     private lateinit var db: SpaceWeatherDataBase
     private val downloadManager = DownloadManager()
     private val parser = DocumentParser()
     private val dataSourceConfigs = getDataSources()
     private val dataShaper = DataShaper()
     private val scope = CoroutineScope(Dispatchers.IO)
-    private lateinit var latestValues: MutableMap<String, Any>
 
-    init { // db init
-        try {
-            Log.i("SpaceWeatherRepository", "init db")
-            db =
-                Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME).build()
-        } catch (e: RuntimeException) {
-            Log.e(
-                "SpaceWeatherRepository",
-                "unable to instantiate database: \n${e.stackTraceToString()}"
-            )
 
-            // Handle the error, e.g., show an error message to the user
-            // You could use LiveData or callbacks to communicate this error to the UI layer
-            // or provide a fallback mechanism to use some default data temporarily
-            // Or attempt to recreate the database or perform some recovery actions
-            // TODO: skip db actions in fetching process and use returned values instead of db
-            Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME).build()
-        } catch (e: NullPointerException) {
-            Log.e(
-                "SpaceWeatherRepository",
-                "unable to instantiate database: \n${e.stackTraceToString()}"
-            )
-            Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME).build()
+    private var _latestHpValue = MutableLiveData(
+        HemisphericPowerData(0, 0, 0)
+    )
+    private var _latestAceValue = MutableLiveData(
+        AceMagnetometerData(0, -999.9, -999.9, -999.9, -999.9)
+    )
+
+    val latestHpValue get() = _latestHpValue
+    val latestAceValue get() = _latestAceValue
+
+    // Handle the error, e.g., show an error message to the user
+    // You could use LiveData or callbacks to communicate this error to the UI layer
+    // or provide a fallback mechanism to use some default data temporarily
+    // Or attempt to recreate the database or perform some recovery actions
+    // TODO: skip db actions in fetching process and use returned values instead of db
+
+
+    init {
+        var retryCount = 0
+
+        do {
+            try {  // db init
+                Log.i("SpaceWeatherRepository", "init db")
+                db =
+                    Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
+                        .build()
+                retryCount = 3
+            } catch (e: RuntimeException) {
+                Log.e(
+                    "SpaceWeatherRepository",
+                    "unable to instantiate database: \n${e.stackTraceToString()}"
+                )
+                retryCount ++
+//                delay()
+            } catch (e: NullPointerException) {
+                Log.e(
+                    "SpaceWeatherRepository",
+                    "unable to instantiate database: \n${e.stackTraceToString()}"
+                )
+                retryCount ++
+            }
+        } while (retryCount < MAX_RETRY_COUNT)
+        setAceDataCollector()
+        setHpDataCollector()
+    }
+
+    private fun setHpDataCollector(){
+        scope.launch {
+            try {
+                getLatestHpData().collect{latestHpData ->
+                    Log.d("setHpDataCollector", "Hp: ${latestHpData.hpNorth}")
+                    _latestHpValue.postValue(latestHpData)
+                }
+            } catch (e: Exception){
+                Log.e("setHpDataCollector", e.stackTraceToString())
+            }
         }
 
     }
-    
+    private fun setAceDataCollector(){
+        scope.launch {
+            try {
+                getLatestAceData().collect{ latestAceData ->
+                    Log.d("setAceDataCollector", "Bz: ${latestAceData.bz}")
+                    _latestAceValue.postValue(latestAceData)
+                }
+            } catch (e: Exception){
+                Log.e("setAceDataCollector", e.stackTraceToString())
+            }
+        }
 
-    suspend fun getLatestData(): MutableMap<String, Any> {
-        return fetchLatestDataRow(this.db)
     }
-    
-    
+
+
     suspend fun fetchDataAndStore(){
         fetchData()
-        delay(100)
         storeDataInDb()
     }
 
-    private fun fetchData() {
+    private suspend fun fetchData() {
         for (dsConfig in dataSourceConfigs) {
             Log.i("fetchData", dsConfig.url)
 
@@ -91,17 +128,12 @@ class SpaceWeatherRepository(application: Application) {
         }
     }
 
-
     private suspend fun storeDataInDb(){
-    for (dsConfig in dataSourceConfigs) {
-        Log.d("storeDataInDb", dsConfig.tableName)
+        for (dsConfig in dataSourceConfigs) {
+            Log.d("storingDataInDb", dsConfig.tableName)
             try {
-                addDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
+                saveDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
 
-                when (dsConfig.tableName) {
-                    ACE_TABLE_NAME ->  setLatestAceVals(dsConfig)
-                    HP_TABLE_NAME ->  setLatestHpVals(dsConfig)
-                }
             } catch (e: Exception){
                 Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
                 throw e
@@ -109,23 +141,14 @@ class SpaceWeatherRepository(application: Application) {
         }
     }
 
-    private suspend fun setLatestHpVals(dsConfig: DataSourceConfig){
-        val latestVals = getLatestHpValuesFromDb(db).last()
-        Log.d(
-            "Repo: stored val",
-            "${dsConfig.tableName} hpVal: ${latestVals.hpNorth}"
-        )
-        latestValues[HP_COL_DT] = latestVals.datetime
-        latestValues[HP_COL_HPN] = latestVals.hpNorth
-
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun getLatestAceData(): Flow<AceMagnetometerData>{
+        return getLatestAceValuesFromDb(db) as Flow<AceMagnetometerData>
     }
 
-    private suspend fun setLatestAceVals(dsConfig: DataSourceConfig){
-        val latestVals =
-            getLatestAceValuesFromDb(db).last() // as AceMagnetometerDataModel
-        Log.d("Repo: stored val:", "${dsConfig.tableName} val ${latestVals.bz}")
-        latestValues[ACE_COL_DT] = latestVals.datetime
-        latestValues[ACE_COL_BZ] = latestVals.bz
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun getLatestHpData(): Flow<HemisphericPowerData>{
+        return getLatestHpValuesFromDb(db) as Flow<HemisphericPowerData>
     }
 
 }
