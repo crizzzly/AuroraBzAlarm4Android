@@ -50,8 +50,8 @@ fun getDataSources(): List<DataSourceConfig> {
         keys = epamKeys,
         unit = "p/cc km/s K"
     )
+    dataSources.add(epamConfig)
 
-    // TODO: implement epam parser!
     return dataSources
 }
 

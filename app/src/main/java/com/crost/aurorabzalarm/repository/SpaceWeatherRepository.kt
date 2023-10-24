@@ -7,6 +7,8 @@ import androidx.room.Room
 import com.crost.aurorabzalarm.Constants.DB_NAME
 import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
+import com.crost.aurorabzalarm.data.local.migration1to2
+import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.network.download.DownloadManager
@@ -39,9 +41,14 @@ class SpaceWeatherRepository(application: Application){
     private var _latestAceValue = MutableLiveData(
         AceMagnetometerData(0, -999.9, -999.9, -999.9, -999.9)
     )
+    private var _latestEpamValue = MutableLiveData(
+            AceEpamData(0, -999, -999, -999)
+        )
 
     val latestHpValue get() = _latestHpValue
     val latestAceValue get() = _latestAceValue
+
+    val latestEpamValue get() = _latestEpamValue
 
     // Handle the error, e.g., show an error message to the user
     // You could use LiveData or callbacks to communicate this error to the UI layer
@@ -57,6 +64,7 @@ class SpaceWeatherRepository(application: Application){
                 Log.i("SpaceWeatherRepository", "init db")
                 db =
                     Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
+                        .addMigrations(migration1to2)
                         .build()
                 retryCount = 3
             } catch (e: RuntimeException) {

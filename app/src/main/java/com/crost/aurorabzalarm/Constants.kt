@@ -32,11 +32,8 @@ object Constants {
     // table
     const val EPAM_COL_DT = "datetime_epam"
     const val EPAM_COL_DENSITY = "protonDensity-p/cc"
-    const val EPAM_SPEED = "bulkSpeed-km/s"
+    const val EPAM_COL_SPEED = "bulkSpeed-km/s"
     const val EPAM_COL_TEMP = "ionTemperature-K"
-
-
-
 
 
     // download worker time in sec
@@ -49,4 +46,6 @@ object Constants {
     // SatelliteDataDownloader
     const val FILEPATH_ACE_DATA = "spaceDataDocuments/ace.txt"
     const val FILEPATH_HP_DATA = "spaceDataDocuments/hp.txt"
+
+    // PaddingValues
 }

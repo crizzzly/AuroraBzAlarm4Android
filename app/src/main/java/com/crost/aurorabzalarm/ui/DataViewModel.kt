@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
@@ -42,6 +43,26 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
             bz = -999.9
     ))
     val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
+
+    private val _latestEpamState = mutableStateOf<AceEpamData?>(
+        AceEpamData(
+            datetime = 0,
+            density = 0,
+            speed = 0,
+            temp = 0
+        )
+    )
+    val latestEpamState: State<AceEpamData?> get() = _latestEpamState
+
+    val currentDurationOfFlight: Double get() = getTimeOfDataFlight(latestEpamState.value?.speed)
+
+    private fun getTimeOfDataFlight(speed: Int?): Double {
+        val exampleSpeed = 377.2 // 1,357e+6 km/h
+        val distance = 1500000.0
+        val timeInS = distance/speed!!
+        return timeInS/60
+
+    }
 
     val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
 

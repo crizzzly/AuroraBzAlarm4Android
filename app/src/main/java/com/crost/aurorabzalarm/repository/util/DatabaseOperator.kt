@@ -7,12 +7,17 @@ import com.crost.aurorabzalarm.Constants.ACE_COL_BX
 import com.crost.aurorabzalarm.Constants.ACE_COL_BY
 import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
 import com.crost.aurorabzalarm.Constants.ACE_COL_DT
+import com.crost.aurorabzalarm.Constants.EPAM_COL_DENSITY
+import com.crost.aurorabzalarm.Constants.EPAM_COL_DT
+import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.Constants.EPAM_COL_TEMP
 import com.crost.aurorabzalarm.Constants.HP_COL_DT
 import com.crost.aurorabzalarm.Constants.HP_COL_HPN
 import com.crost.aurorabzalarm.Constants.HP_COL_HPS
 import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.Constants.RETRY_DELAY_MS
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
+import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import kotlinx.coroutines.delay
@@ -126,37 +131,31 @@ suspend fun saveHpModelInstance(
     }
 }
 
-//suspend fun fetchLatestDataRow(db: SpaceWeatherDataBase): MutableList<Flow<Any>> {
-//    val latestData = mutableListOf<Flow<Any>>()
-//
-//    try {
-//        val aceData = getLatestAceValuesFromDb(db)
-//
-//        val hpData = getLatestHpValuesFromDb(db)
-//
-//        aceData.let {it as Flow<*>
-//                latestData.add(it)
-//                val data = it.collect()
-//
-////            latestData[ACE_COL_DT] = it.datetime
-////            latestData[ACE_COL_BZ] = it.bz
-//            Log.d("fetchLatestDataRow", "ace: ${it.collectLatest {  }}")
-//        }
-//
-//        hpData.let {
-//            latestData.add(it)
-////            [HP_COL_DT] = it.datetime
-////            latestData[HP_COL_HPN] = it.hpNorth
-////            Log.d("fetchLatestDataRow", "hp: ${it.hpNorth}")
-//        }
-//    } catch (e: NullPointerException) {
-////        latestData[ACE_COL_DT] = LocalDateTime.now()
-////        latestData[ACE_COL_BZ] = -999.9
-////        latestData[HP_COL_DT] = LocalDateTime.now()
-////        latestData[HP_COL_HPN] = 0
-//        throw e
-//    }
-//
-//    return latestData
-//}
-//
+suspend fun saveEpamModelInstance(
+    db: SpaceWeatherDataBase,
+    dataTable: MutableList<MutableMap<String, Any>>
+) {
+//        Log.d("createHpModelInstance", "createHpModelInstance")
+    val instances = mutableListOf<AceEpamData>()
+
+    for (row in dataTable) {
+        val datetime = row[EPAM_COL_DT] as Long
+
+        val epamDataModel = AceEpamData(
+            datetime = datetime,
+            density = row[EPAM_COL_DENSITY] as Int,
+            speed = row[EPAM_COL_SPEED] as Int,
+            temp = row[EPAM_COL_TEMP] as Int,
+        )
+        instances.add(epamDataModel)
+    }
+
+    try {
+        // Add new rows to the db
+        db.epamDao().insertAll(instances)
+    } catch (e: Exception) {
+        Log.e("SpaceWeatherRepo createHpInstance", e.stackTraceToString())
+        delay(200)
+        db.epamDao().insertAll(instances)
+    }
+}
