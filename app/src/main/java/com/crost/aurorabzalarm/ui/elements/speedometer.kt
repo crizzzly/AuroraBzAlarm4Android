@@ -1,23 +1,9 @@
 package com.crost.aurorabzalarm.ui.elements
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -28,6 +14,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
@@ -38,48 +25,60 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.ui.DataViewModel
-import kotlinx.coroutines.launch
 
-fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Float, toMax: Float): Float {
+const val COMPONENT_COUNT = 3
+
+fun mapValueToRange(value: Double, fromMin: Double, fromMax: Double, toMin: Double, toMax: Double): Double {
     return ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin)
 }
-@SuppressLint("StateFlowValueCalledInComposition")
-@Composable
-fun SpeedometerScreen( ) {
-    val viewModel: DataViewModel = viewModel()
-//    var targetValue = viewModel.currentSpaceWeatherLiveData.observeAsState().value?.bzVal!!
-    var targetValue by remember {
-        mutableStateOf(0f)
-    }
-    val progress = remember(targetValue) { Animatable(initialValue = 0f) }
-    val scope = rememberCoroutineScope()
-    Column(Modifier.padding(16.dp)) {
-        Slider(value = targetValue, onValueChange = { targetValue = it })
-        val intValue = targetValue * 55
-        Text(text = "${intValue.toInt()}")
-        Button(onClick = {
-            scope.launch {
-                progress.animateTo(
-                    targetValue = intValue,
-                    animationSpec = tween(
-                        durationMillis = 1000,
-                        easing = FastOutLinearInEasing,
-                    )
-                )
-            }
-        }) {
-            Text(text = "Go")
-        }
-//        Speedometer(progress.value.toInt())
-    }
-}
+
+
 
 @Preview
 @Composable
-fun PreviewBz(){
-    val progress = -17f
+fun PreviewAllCharts(
+    bz: Double = -15.6,
+    hp: Double = 35.0,
+    speed: Double = 476.4,
+
+){
+    ShowAllCharts(
+        bz,
+        hp,
+        speed
+    )
+}
+
+
+@Composable
+fun ShowAllCharts(bz: Double, hp:Double, speed:Double){
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
+    val canvasWidth =( screenWidth / COMPONENT_COUNT) /4
+    Row {
+        PreviewBz(
+            progress = bz,
+            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+//                .align(BottomStart)
+        )
+        PreviewHemisphericPower(
+            progress = hp,
+            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+//                .align(BottomCenter)
+        )
+        PreviewSpeed(
+            progress = speed,
+            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+//                .align(BottomEnd)
+        )
+    }
+}
+
+@Composable
+fun PreviewBz(
+    progress: Double  = -17.0,
+    modifier:  Modifier
+){
+
     val valueRangeFrom= -100f
     val valueRangeTo = 100f
     val (mainColor, secondaryColor) = when {
@@ -97,19 +96,21 @@ fun PreviewBz(){
     val unit = "nT"
     Speedometer(
         progress = progress,
-        valueRangeFrom,
-        valueRangeTo,
+        valueRangeFrom.toDouble(),
+        valueRangeTo.toDouble(),
         mainColor,
         secondaryColor,
         drawProgressArcFromTop,
-        unit
+        unit,
+        modifier
     )
 }
 
-@Preview
 @Composable
-fun PreviewHemisphericPower(){
-    val progress = 25f
+fun PreviewHemisphericPower(
+    progress:Double = 25.0,
+    modifier:  Modifier
+){
     val valueRangeFrom= 0f
     val valueRangeTo = 100f
     val (mainColor, secondaryColor) = when {
@@ -125,22 +126,25 @@ fun PreviewHemisphericPower(){
     val unit = "GW"
     Speedometer(
         progress,
-        valueRangeFrom,
-        valueRangeTo,
+        valueRangeFrom.toDouble(),
+        valueRangeTo.toDouble(),
         mainColor,
         secondaryColor,
         drawProgressArcFromTop,
-        unit
+        unit,
+        modifier
         )
 }
 
 
-@Preview
 @Composable
-fun PreviewSpeed(){
-    val progress = 400f
-    val valueRangeFrom: Float = 0f
-    val valueRangeTo: Float = 999.9f
+fun PreviewSpeed(
+    progress: Double = 400.0,
+    modifier:  Modifier
+){
+
+    val valueRangeFrom: Double = 0.0
+    val valueRangeTo: Double = 999.9
     val (mainColor, secondaryColor) = when {
         progress < 50 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -159,20 +163,22 @@ fun PreviewSpeed(){
         mainColor,
         secondaryColor,
         drawProgressArcFromTop,
-        unit
+        unit,
+        modifier
     )
 }
 
 
 @Composable
 fun Speedometer(
-    progress: Float,
-    valueRangeFrom: Float = 0f,
-    valueRangeTo: Float = 100f,
+    progress: Double,
+    valueRangeFrom: Double = 0.0,
+    valueRangeTo: Double = 100.0,
     mainColor: Color,
     secondaryColor: Color,
     drawProgressArcFromTop: Boolean,
-    unit: String
+    unit: String,
+    modifier:  Modifier
 
 ) {
     val arcDegrees = 270
@@ -181,21 +187,18 @@ fun Speedometer(
     val numberOfMarkers = 68
     val degreesMarkerStep = arcDegrees / numberOfMarkers
 
-//    val startAngleDrawArc = 270f
-//    val EndAngleDrawArc = (degreesMarkerStep * mappedProgress-135).toFloat(),
-
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
+    val canvasWidth = screenWidth / COMPONENT_COUNT
 
     // valRanges: from 0 to 90 - -100 - 100
-    val mappedProgress = mapValueToRange(progress, valueRangeFrom, valueRangeTo, 0f, 90f)
+    val mappedProgress = mapValueToRange(progress, valueRangeFrom, valueRangeTo, 0.0, 90.0)
 
     val textMeasurer: TextMeasurer = rememberTextMeasurer()
     val string = "$progress $unit"
 
 
     Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f),
+        modifier = modifier.size(canvasWidth.dp, canvasWidth.dp),
         onDraw = {
             drawIntoCanvas { canvas ->
                 val w = drawContext.size.width
@@ -241,7 +244,7 @@ fun Speedometer(
                     mainColor,
                     angle1, //270f
                     angle2,
-//                    (degreesMarkerStep * mappedProgress -235).toFloat(),
+//                    (degreesMarkerStep * mappedProgress -235).toDouble(),
                     false,
                     topLeft = quarterOffset,
                     size = centerArcSize,
@@ -296,7 +299,7 @@ fun Speedometer(
                                 .fixed((size.width* 1f / 2.5f).toInt(), (size.height* 1f /6f).toInt()),
                         style = androidx.compose.ui.text.TextStyle(
                             color = mainColor, //Color.LightGray,
-                            fontSize = 50.sp,
+                            fontSize = 13.sp,
                             textAlign = TextAlign.Center,
                         )
                     )

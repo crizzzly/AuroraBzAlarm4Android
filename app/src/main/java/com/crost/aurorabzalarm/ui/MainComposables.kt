@@ -3,7 +3,6 @@ package com.crost.aurorabzalarm.ui
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.crost.aurorabzalarm.R
+import com.crost.aurorabzalarm.ui.elements.PreviewAllCharts
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -62,7 +62,7 @@ fun Values(
     currentSpeed: Double,
     currentDuration: Double
 //    viewModel: DataViewModel
-){
+) {
     val padding_s = dimensionResource(R.dimen.padding_small)
     val padding_m = dimensionResource(R.dimen.padding_middle)
     val padding_l = dimensionResource(R.dimen.padding_large)
@@ -73,11 +73,13 @@ fun Values(
 
 
     try {
-        Log.d("Composables value",
+        Log.d(
+            "Composables value",
             "HP: $currentTime - ${currentHpVal}\n" +
-                    "ACE: $currentTime - $currentAceVal"+
-                    "Epam: $currentTime - ${df.format(currentSpeed)}")
-    } catch (e: NullPointerException){
+                    "ACE: $currentTime - $currentAceVal" +
+                    "Epam: $currentTime - ${df.format(currentSpeed)}"
+        )
+    } catch (e: NullPointerException) {
         Log.e("Composables value", e.toString())
     }
 
@@ -87,33 +89,51 @@ fun Values(
             .fillMaxSize()
             .padding(padding_l)
     ) {
-         Column(
-            modifier = Modifier.padding(PaddingValues(padding_s)),
+        Column(
+//            modifier = Modifier.padding(PaddingValues(padding_s)),
             horizontalAlignment = Alignment.CenterHorizontally,
-             verticalArrangement =Arrangement.SpaceEvenly
+//             verticalArrangement =Arrangement.SpaceBetween
         ) {
-            Text(currentTime)
-
-            Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
-
-        }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(PaddingValues())
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    currentHpVal.toString(),
-                    modifier = Modifier
+                Text(currentTime)
+                Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
+            }
+            Row {
+                PreviewAllCharts(
+                    currentAceVal,
+                    currentHpVal.toDouble(),
+                    currentSpeed
                 )
-                Text(
-                    text = currentAceVal.toString(),
-                )
-                Text(currentSpeed.toString())
             }
         }
     }
+}
+//         Column(
+//            modifier = Modifier.padding(PaddingValues(padding_s)),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//             verticalArrangement =Arrangement.SpaceEvenly
+//        ) {
+//            Text(currentTime)
+//            Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
+//        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                modifier = Modifier.padding(PaddingValues())
+//        ) {
+//            Text(
+//                currentHpVal.toString(),
+//                modifier = Modifier
+//            )
+//            Text(
+//                text = currentAceVal.toString()
+//            )
+//            Text(currentSpeed.toString())
+//            }
+//        }
+//    }
     
 
 
