@@ -45,6 +45,10 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
 
+    // calculate time the storm needs to get from DISCOVR to earth
+//    val timeOfFlight -> first implement epam parsing logic!
+
+
 
     init {
         spaceWeatherRepository = SpaceWeatherRepository(application)

@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
+import androidx.compose.material.Button
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,12 +34,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.ui.DataViewModel
 import kotlinx.coroutines.launch
 
-fun mapValueToRange(value: Int, fromMin: Int, fromMax: Int, toMin: Int, toMax: Int): Int {
-    return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
-}
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SpeedometerScreen( ) {
+fun SpeedometerOriginalScreen( ) {
     val viewModel: DataViewModel = viewModel()
 //    var targetValue = viewModel.currentSpaceWeatherLiveData.observeAsState().value?.bzVal!!
     var targetValue by remember {
@@ -64,19 +61,19 @@ fun SpeedometerScreen( ) {
         }) {
             Text(text = "Go")
         }
-        Speedometer(progress.value.toInt())
+        SpeedometerOriginal(progress.value.toInt())
     }
 }
 
 @Preview
 @Composable
-fun PreviewSpeedometer(){
-    Speedometer(50)
+fun PreviewSpeedometerOriginal(){
+    SpeedometerOriginal(50)
 }
 
 
 @Composable
-fun Speedometer(
+fun SpeedometerOriginal(
     progress: Int,
 ) {
     val arcDegrees = 275

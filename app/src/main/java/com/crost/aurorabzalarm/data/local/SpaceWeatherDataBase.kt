@@ -13,6 +13,8 @@ abstract class SpaceWeatherDataBase: RoomDatabase() {
     abstract fun aceDao(): AceMagnetometerDAO
     abstract fun hpDao(): HemisphericPowerDAO
 
+    abstract fun epamDao(): AceEpamDAO
+
     companion object {
         @Volatile
         private var INSTANCE: SpaceWeatherDataBase? = null
