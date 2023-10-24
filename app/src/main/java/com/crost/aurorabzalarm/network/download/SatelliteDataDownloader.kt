@@ -27,7 +27,6 @@ class DownloadManager() {
                 saveDataSheetToFile(html, url)
                 return html
             } catch (e: Exception) {
-                // TODO: make it better somehow
                 Log.e("getSatelliteData", "$url\n ${e.stackTraceToString()}")
                 retryCount ++
                 delay(RETRY_DELAY_MS.toLong())

@@ -3,6 +3,9 @@ package com.crost.aurorabzalarm.repository.util
 import com.crost.aurorabzalarm.Constants
 import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.ACE_URL
+import com.crost.aurorabzalarm.Constants.EPAM_KEYS
+import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.EPAM_URL
 import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.HP_URL
 
@@ -19,6 +22,10 @@ data class DataSourceConfig(
 fun getDataSources(): List<DataSourceConfig> {
     val aceKeys = Constants.ACE_KEYS.split(" ")
     val hpKeys = Constants.HP_KEYS.split(" ")
+    val epamKeys = EPAM_KEYS.split(" ")
+
+    var dataSources = mutableListOf<DataSourceConfig>()
+
 
     val aceConfig = DataSourceConfig(
         tableName = ACE_TABLE_NAME,
@@ -26,12 +33,25 @@ fun getDataSources(): List<DataSourceConfig> {
         keys = aceKeys,
         unit = "Nt"
     )
+    dataSources.add(aceConfig)
+
+    
     val hpConfig = DataSourceConfig(
         tableName = HP_TABLE_NAME,
         url = HP_URL,
         keys = hpKeys,
         unit = "GW"
     )
-    return setOf(aceConfig, hpConfig).toList()
+    dataSources.add(hpConfig)
+
+    val epamConfig = DataSourceConfig(
+        tableName = EPAM_TABLE_NAME,
+        url = EPAM_URL,
+        keys = epamKeys,
+        unit = "p/cc km/s K"
+    )
+
+    // TODO: implement epam parser!
+    return dataSources
 }
 

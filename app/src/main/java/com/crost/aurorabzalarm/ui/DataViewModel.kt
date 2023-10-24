@@ -13,6 +13,9 @@ import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 class DataViewModel(application: Application) : AndroidViewModel(application) {
@@ -40,6 +43,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     ))
     val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
 
+    val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
 
 
     init {
@@ -81,6 +85,14 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    private fun formatTimestamp(timestamp: Long): String {
+        val instant = Instant.ofEpochMilli(timestamp)
+        val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // You can customize the format here
+        return formatter.format(localDateTime)
+    }
+
 }
 
 

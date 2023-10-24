@@ -47,7 +47,6 @@ class SpaceWeatherRepository(application: Application){
     // You could use LiveData or callbacks to communicate this error to the UI layer
     // or provide a fallback mechanism to use some default data temporarily
     // Or attempt to recreate the database or perform some recovery actions
-    // TODO: skip db actions in fetching process and use returned values instead of db
 
 
     init {
