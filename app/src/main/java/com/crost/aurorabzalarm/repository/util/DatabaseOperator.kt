@@ -143,9 +143,9 @@ suspend fun saveEpamModelInstance(
 
         val epamDataModel = AceEpamData(
             datetime = datetime,
-            density = row[EPAM_COL_DENSITY] as Int,
-            speed = row[EPAM_COL_SPEED] as Int,
-            temp = row[EPAM_COL_TEMP] as Int,
+            density = row[EPAM_COL_DENSITY] as Double,
+            speed = row[EPAM_COL_SPEED] as Double,
+            temp = row[EPAM_COL_TEMP] as Double,
         )
         instances.add(epamDataModel)
     }

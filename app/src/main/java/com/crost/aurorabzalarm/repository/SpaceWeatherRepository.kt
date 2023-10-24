@@ -7,7 +7,6 @@ import androidx.room.Room
 import com.crost.aurorabzalarm.Constants.DB_NAME
 import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
-import com.crost.aurorabzalarm.data.local.migration1to2
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
@@ -42,7 +41,7 @@ class SpaceWeatherRepository(application: Application){
         AceMagnetometerData(0, -999.9, -999.9, -999.9, -999.9)
     )
     private var _latestEpamValue = MutableLiveData(
-            AceEpamData(0, -999, -999, -999)
+            AceEpamData(0, -999.9, -999.9, -999.9)
         )
 
     val latestHpValue get() = _latestHpValue
@@ -64,7 +63,8 @@ class SpaceWeatherRepository(application: Application){
                 Log.i("SpaceWeatherRepository", "init db")
                 db =
                     Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
-                        .addMigrations(migration1to2)
+//                        .addMigrations(migration1to2)
+//                        .fallbackToDestructiveMigration() // This line ensures any existing database will be cleared
                         .build()
                 retryCount = 3
             } catch (e: RuntimeException) {

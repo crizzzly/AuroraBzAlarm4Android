@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.data.local
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -54,13 +55,18 @@ abstract class SpaceWeatherDataBase: RoomDatabase() {
 
 val migration1to2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        // Create the new table
-        database.execSQL(
-            "CREATE TABLE IF NOT EXISTS ${EPAM_TABLE_NAME} (" +
-                    "${EPAM_COL_DT} LONG PRIMARY KEY NOT NULL, " +
-                    "${EPAM_COL_DENSITY} DOUBLE, " +
-                    "${EPAM_COL_SPEED} DOUBLE, " +
-                    "${EPAM_COL_TEMP} INTEGER)"
-        )
+        try {
+            // Create the new table
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS ${EPAM_TABLE_NAME} (" +
+                        "${EPAM_COL_DT} LONG PRIMARY KEY NOT NULL, " +
+                        "${EPAM_COL_DENSITY} DOUBLE, " +
+                        "${EPAM_COL_SPEED} DOUBLE, " +
+                        "${EPAM_COL_TEMP} DOUBLE)"
+            )
+        } catch (e: Exception) {
+            Log.e("migration1to2", e.stackTraceToString())
+        }
+
     }
 }

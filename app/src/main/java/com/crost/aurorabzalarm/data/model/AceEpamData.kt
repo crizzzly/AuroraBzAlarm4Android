@@ -9,8 +9,8 @@ import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
 data class AceEpamData(
     @PrimaryKey(autoGenerate = false)
     var datetime: Long, //source format: YYYY-MM-DD_HH:MM
-    var density: Int,
-    var speed: Int,
-    var temp: Int,
+    var density: Double,
+    var speed: Double,
+    var temp: Double,
 
 )

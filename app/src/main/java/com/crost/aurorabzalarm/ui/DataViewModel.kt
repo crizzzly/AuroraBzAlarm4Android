@@ -47,16 +47,16 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val _latestEpamState = mutableStateOf<AceEpamData?>(
         AceEpamData(
             datetime = 0,
-            density = 0,
-            speed = 0,
-            temp = 0
+            density = 0.0,
+            speed = 0.0,
+            temp = 0.0
         )
     )
     val latestEpamState: State<AceEpamData?> get() = _latestEpamState
 
     val currentDurationOfFlight: Double get() = getTimeOfDataFlight(latestEpamState.value?.speed)
 
-    private fun getTimeOfDataFlight(speed: Int?): Double {
+    private fun getTimeOfDataFlight(speed: Double?): Double {
         val exampleSpeed = 377.2 // 1,357e+6 km/h
         val distance = 1500000.0
         val timeInS = distance/speed!!
