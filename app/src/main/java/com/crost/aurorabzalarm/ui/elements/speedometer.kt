@@ -1,9 +1,14 @@
 package com.crost.aurorabzalarm.ui.elements
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -15,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
@@ -25,6 +31,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import com.crost.aurorabzalarm.R
 
 const val COMPONENT_COUNT = 3
 
@@ -40,36 +47,67 @@ fun PreviewAllCharts(
     bz: Double = -15.6,
     hp: Double = 35.0,
     speed: Double = 476.4,
-
+    density: Double = 202.0,
+    temp: Double = 123.0
 ){
     ShowAllCharts(
         bz,
         hp,
-        speed
+        speed,
+        density,
+        temp,
     )
 }
 
 
 @Composable
-fun ShowAllCharts(bz: Double, hp:Double, speed:Double){
+fun ShowAllCharts(
+    bz: Double,
+    hp:Double,
+    speed:Double,
+    density: Double,
+    temp:Double
+){
+    val padding_s = dimensionResource(R.dimen.padding_small)
+    val padding_m = dimensionResource(R.dimen.padding_middle)
+    val padding_l = dimensionResource(R.dimen.padding_large)
+
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val canvasWidth =( screenWidth / COMPONENT_COUNT) /4
-    Row {
-        PreviewBz(
-            progress = bz,
-            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+    val canvasWidth =( screenWidth / COMPONENT_COUNT) /2.5
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            PreviewBz(
+                progress = bz,
+                modifier = Modifier
+                    .size(canvasWidth.dp, canvasWidth.dp)
+                    .padding(padding_s)
 //                .align(BottomStart)
-        )
-        PreviewHemisphericPower(
-            progress = hp,
-            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+            )
+
+            PreviewHemisphericPower(
+                progress = hp,
+                modifier = Modifier
+                    .size(canvasWidth.dp, canvasWidth.dp)
+                    .padding(padding_s)
 //                .align(BottomCenter)
-        )
-        PreviewSpeed(
-            progress = speed,
-            modifier = Modifier.size(canvasWidth.dp, canvasWidth.dp)
+            )
+        }
+        Row {
+            PreviewSpeed(
+                progress = speed,
+                modifier = Modifier
+                    .size(canvasWidth.dp, canvasWidth.dp)
+                    .padding(padding_s)
 //                .align(BottomEnd)
-        )
+            )
+        }
     }
 }
 
@@ -155,7 +193,7 @@ fun PreviewSpeed(
             Color(0xFFD32F2F) to Color(0xFFFFCDD2)
     }
     val drawProgressArcFromTop = false
-    val unit = "GW"
+    val unit = "km/s"
     Speedometer(
         progress,
         valueRangeFrom,
@@ -251,13 +289,13 @@ fun Speedometer(
                     style = centerArcStroke
                 )
                 // Drawing the pointer circle
-                drawCircle(mainColor, 50f, centerOffset)
-                drawCircle(Color.White, 25f, centerOffset)
-                drawCircle(Color.Black, 20f, centerOffset)
+                drawCircle(mainColor, 30f, centerOffset)
+                drawCircle(Color.White, 20f, centerOffset)
+                drawCircle(Color.Black, 15f, centerOffset)
 
                 // Drawing Line Markers
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
-                    val lineEndX = 80f
+                    val lineEndX = 35f
                     paint.color = Color.Cyan
                     val lineStartX = if (counter % 5 == 0) {
                         paint.strokeWidth = 3f
@@ -296,7 +334,7 @@ fun Speedometer(
                     textMeasurer.measure(
                         AnnotatedString(string),
                             constraints = Constraints
-                                .fixed((size.width* 1f / 2.5f).toInt(), (size.height* 1f /6f).toInt()),
+                                .fixed((size.width* 1f / 3f).toInt(), (size.height* 1f /4f).toInt()),
                         style = androidx.compose.ui.text.TextStyle(
                             color = mainColor, //Color.LightGray,
                             fontSize = 13.sp,
@@ -306,13 +344,6 @@ fun Speedometer(
                 val offsetT = Offset(w/2 - measuredText.size.width/2, h / 4f*3)
                 drawRect(Color.DarkGray, size = measuredText.size.toSize(),topLeft =offsetT)
                 drawText(measuredText, topLeft =offsetT)
-
-//                this.runCatching {
-//
-////                    onDrawBehind {
-//
-////                    }
-//                }
 
             }
         }
