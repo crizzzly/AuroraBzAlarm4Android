@@ -16,6 +16,7 @@ import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
 import com.crost.aurorabzalarm.repository.util.downloadDataFromNetwork
 import com.crost.aurorabzalarm.repository.util.getDataSources
 import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
+import com.crost.aurorabzalarm.repository.util.getLatestEpamValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
 import com.crost.aurorabzalarm.repository.util.saveDataModelInstances
 import kotlinx.coroutines.CoroutineScope
@@ -84,6 +85,7 @@ class SpaceWeatherRepository(application: Application){
         } while (retryCount < MAX_RETRY_COUNT)
         setAceDataCollector()
         setHpDataCollector()
+        setEpamDataCollector()
     }
 
     private fun setHpDataCollector(){
@@ -110,9 +112,21 @@ class SpaceWeatherRepository(application: Application){
                 Log.e("setAceDataCollector", e.stackTraceToString())
             }
         }
-
     }
 
+
+    private fun setEpamDataCollector(){
+        scope.launch {
+            try {
+                getLatestEpamData().collect{ latestEpamData ->
+                    Log.d("setEpamDataCollector", "Bz: ${latestEpamData.speed}")
+                    _latestEpamValue.postValue(latestEpamData)
+                }
+            } catch (e: Exception){
+                Log.e("setAceDataCollector", e.stackTraceToString())
+            }
+        }
+    }
 
     suspend fun fetchDataAndStore(){
         fetchData()
@@ -156,6 +170,11 @@ class SpaceWeatherRepository(application: Application){
     @Suppress("UNCHECKED_CAST")
     private suspend fun getLatestHpData(): Flow<HemisphericPowerData>{
         return getLatestHpValuesFromDb(db) as Flow<HemisphericPowerData>
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun getLatestEpamData(): Flow<AceEpamData>{
+        return  getLatestEpamValuesFromDb(db) as Flow<AceEpamData>
     }
 
 }

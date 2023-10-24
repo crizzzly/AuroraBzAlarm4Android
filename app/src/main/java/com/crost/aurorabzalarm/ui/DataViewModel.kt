@@ -60,7 +60,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         val exampleSpeed = 377.2 // 1,357e+6 km/h
         val distance = 1500000.0
         val timeInS = distance/speed!!
-        return timeInS/60
+        val timeInM = timeInS/60
+        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
+        return timeInM
 
     }
 
@@ -77,24 +79,48 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
 
         Log.d("DataViewModel Init", "Observing values")
-        spaceWeatherRepository.latestAceValue.observeForever {
-            try {
-                _latestAceState.value = it
-            } catch (e: Exception){
-                Log.e("DataViewModel init", "AceObserver: ${e.stackTraceToString()}")
-            }
-        }
+        initAceObserver()
+        initEpamObserver()
+        initHpObserver()
 
+
+
+
+        Log.d("DataViewModel Init", "Init completed. starting first fetching process ... ")
+        fetchSpaceWeatherData()
+    }
+
+    private fun initHpObserver() {
         spaceWeatherRepository.latestHpValue.observeForever {
             try {
                 _latestHpState.value = it
+                Log.d("initHpObserver", "initialized")
             } catch (e: Exception){
                 Log.e("DataViewModel init", "HpObserver: ${e.stackTraceToString()}")
             }
         }
+    }
 
-        Log.d("DataViewModel Init", "Init completed. starting first fetching process ... ")
-        fetchSpaceWeatherData()
+    private fun initEpamObserver() {
+        spaceWeatherRepository.latestEpamValue.observeForever {
+            try {
+                _latestEpamState.value = it
+                Log.d("initEpamObserver", "initialized")
+            } catch (e: Exception){
+                Log.e("DataViewModel init", "EpamObserver: ${e.stackTraceToString()}")
+            }
+        }
+    }
+
+    private fun initAceObserver(){
+        spaceWeatherRepository.latestAceValue.observeForever {
+            try {
+                _latestAceState.value = it
+                Log.d("InitAceObserver", "initialized")
+            } catch (e: Exception){
+                Log.e("DataViewModel init", "AceObserver: ${e.stackTraceToString()}")
+            }
+        }
     }
 
 

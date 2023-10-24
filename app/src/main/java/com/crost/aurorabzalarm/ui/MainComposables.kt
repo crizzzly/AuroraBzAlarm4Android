@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.crost.aurorabzalarm.R
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 // TODO: read about state hoisting: https://developer.android.com/codelabs/jetpack-compose-state#8
@@ -38,7 +40,7 @@ fun MainComposable(viewModel: DataViewModel) {
             currentTime,
             currentAceVal!!.bz,
             currentHpVal!!.hpNorth,
-            currentSpeed!!.speed.toDouble(),
+            currentSpeed!!.speed,
             currentDuration
         )
 
@@ -65,11 +67,16 @@ fun Values(
     val padding_m = dimensionResource(R.dimen.padding_middle)
     val padding_l = dimensionResource(R.dimen.padding_large)
 
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.CEILING
+
+
 
     try {
         Log.d("Composables value",
             "HP: $currentTime - ${currentHpVal}\n" +
-                    "ACE: $currentTime - $currentAceVal")
+                    "ACE: $currentTime - $currentAceVal"+
+                    "Epam: $currentTime - ${df.format(currentSpeed)}")
     } catch (e: NullPointerException){
         Log.e("Composables value", e.toString())
     }
@@ -77,7 +84,8 @@ fun Values(
 
     Surface(
         modifier = Modifier
-            .fillMaxSize().padding(padding_l)
+            .fillMaxSize()
+            .padding(padding_l)
     ) {
          Column(
             modifier = Modifier.padding(PaddingValues(padding_s)),
@@ -86,7 +94,7 @@ fun Values(
         ) {
             Text(currentTime)
 
-            Text("Currently $currentDuration Minutes from DISCOVR to earth")
+            Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
 
         }
 

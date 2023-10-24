@@ -43,7 +43,6 @@ suspend fun saveDataModelInstances(
 
 
 suspend fun getLatestAceValuesFromDb(db: SpaceWeatherDataBase): Any {
-    val errorVal = -999.9
     Log.d("DatabaseOperator", "getLatestAceValuesFromDb")
     try {
         return db.aceDao().getLastRow()
@@ -69,9 +68,22 @@ suspend fun getLatestHpValuesFromDb(db: SpaceWeatherDataBase): Any {
         }
     } while (retryCount < MAX_RETRY_COUNT)
     return "Error"
-
 }
 
+suspend fun getLatestEpamValuesFromDb(db: SpaceWeatherDataBase): Any {
+    Log.d("DatabaseOperator", "getLatestEpamValuesFromDb")
+    var retryCount = 0
+    do {
+        try {
+            return db.epamDao().getLastRow()
+        } catch (e: Exception) {
+            Log.e("Repo getLatestEpamValuesFromDb", e.stackTraceToString())
+            retryCount ++
+            delay(RETRY_DELAY_MS.toLong())
+        }
+    } while (retryCount < MAX_RETRY_COUNT)
+    return "Error"
+}
 
 suspend fun saveAceModelInstance(
     db: SpaceWeatherDataBase,

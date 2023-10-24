@@ -33,7 +33,7 @@ class EpamDataConverter {
                     secOfDay = dataMap["SecOfDay"]?.toInt()!!,
                 )
             } catch (e: NullPointerException) {
-                Log.e("ACEConverter", "date"
+                Log.e("EpamDataConverter", "date"
                         + e.stackTraceToString())
                 Date(convertToLocalEpochMillis(1970, 1, 1, 0))
             }
@@ -42,6 +42,8 @@ class EpamDataConverter {
                 protonDensity = dataMap["ProtonDensity"]?.toDouble()!!
                 bulkSpeed = dataMap["BulkSpeed"]?.toDouble()!!
                 ionTemperature = dataMap["IonTemperature"]?.toDouble()!!
+                Log.d("EpamDataConverter",
+                    "values: $protonDensity, $bulkSpeed, $ionTemperature")
             } catch (e: Exception){
                 Log.e("EpamDataConverter", e.stackTraceToString())
             }

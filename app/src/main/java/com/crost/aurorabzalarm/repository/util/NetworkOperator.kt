@@ -24,18 +24,18 @@ suspend fun downloadDataFromNetwork(
 
         when (dsConfig.tableName) {
             ACE_TABLE_NAME -> Log.d(
-                "SpaceWeatherRepo - downloaded",
-                "${dsConfig.tableName}\n Bz: ${convertedTable[convertedTable.size - 1][ACE_COL_BZ]} "
+                "downloadDataFromNetwork",
+                "${dsConfig.tableName} Bz: ${convertedTable[convertedTable.size - 1][ACE_COL_BZ]} "
             )
 
             HP_TABLE_NAME -> Log.d(
-                "SpaceWeatherRepo - downloaded",
-                "${dsConfig.tableName}\n Hp: ${convertedTable[convertedTable.size - 1][HP_COL_HPN]} "
+                "downloadDataFromNetwork",
+                "${dsConfig.tableName} Hp: ${convertedTable[convertedTable.size - 1][HP_COL_HPN]} "
             )
 
             EPAM_TABLE_NAME -> Log.d(
-                "SpaceWeatherRepo - downloaded",
-                "${dsConfig.tableName}\n Hp: ${convertedTable[convertedTable.size - 1][EPAM_COL_SPEED]} "
+                "downloadDataFromNetwork",
+                "${dsConfig.tableName} Hp: ${convertedTable[convertedTable.size - 1][EPAM_COL_SPEED]} "
             )
         }
         return convertedTable
