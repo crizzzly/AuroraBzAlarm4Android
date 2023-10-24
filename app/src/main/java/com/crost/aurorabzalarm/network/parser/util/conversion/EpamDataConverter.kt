@@ -42,8 +42,8 @@ class EpamDataConverter {
                 protonDensity = dataMap["ProtonDensity"]?.toDouble()!!
                 bulkSpeed = dataMap["BulkSpeed"]?.toDouble()!!
                 ionTemperature = dataMap["IonTemperature"]?.toDouble()!!
-                Log.d("EpamDataConverter",
-                    "values: $protonDensity, $bulkSpeed, $ionTemperature")
+//                Log.d("EpamDataConverter",
+//                    "values: $protonDensity, $bulkSpeed, $ionTemperature")
             } catch (e: Exception){
                 Log.e("EpamDataConverter", e.stackTraceToString())
             }

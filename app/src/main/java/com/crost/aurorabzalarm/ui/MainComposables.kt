@@ -67,7 +67,6 @@ fun Values(
     currentDensity: Double,
     currentTemp: Double,
     currentDuration: Double
-//    viewModel: DataViewModel
 ) {
     val padding_s = dimensionResource(R.dimen.padding_small)
     val padding_m = dimensionResource(R.dimen.padding_middle)

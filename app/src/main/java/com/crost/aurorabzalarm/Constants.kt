@@ -47,5 +47,6 @@ object Constants {
     const val FILEPATH_ACE_DATA = "spaceDataDocuments/ace.txt"
     const val FILEPATH_HP_DATA = "spaceDataDocuments/hp.txt"
 
-    // PaddingValues
+    // GaugeCard
+    const val ACE_BZ_TITLE = "ACE Magnetometer\nBz"
 }

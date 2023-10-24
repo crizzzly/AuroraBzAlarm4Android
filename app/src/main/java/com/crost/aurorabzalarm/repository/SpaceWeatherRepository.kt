@@ -4,7 +4,13 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
+import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.DB_NAME
+import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
@@ -151,7 +157,27 @@ class SpaceWeatherRepository(application: Application){
 
     private suspend fun storeDataInDb(){
         for (dsConfig in dataSourceConfigs) {
-            Log.d("storingDataInDb", dsConfig.tableName)
+            when (dsConfig.tableName) {
+                ACE_TABLE_NAME -> {
+                    Log.d(
+                        "storingDataInDb",
+                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[ACE_COL_BZ]}"
+                    )
+                }
+                HP_TABLE_NAME  -> {
+                    Log.d(
+                        "storingDataInDb",
+                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[HP_COL_HPN]}"
+                    )
+                }
+                EPAM_TABLE_NAME  -> {
+                    Log.d(
+                        "storingDataInDb",
+                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[EPAM_COL_SPEED]}"
+                    )
+                }
+            }
+
             try {
                 saveDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
 

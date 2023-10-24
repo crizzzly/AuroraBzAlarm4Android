@@ -75,16 +75,11 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         spaceWeatherRepository = SpaceWeatherRepository(application)
-
-
-
+        
         Log.d("DataViewModel Init", "Observing values")
         initAceObserver()
         initEpamObserver()
         initHpObserver()
-
-
-
 
         Log.d("DataViewModel Init", "Init completed. starting first fetching process ... ")
         fetchSpaceWeatherData()
