@@ -4,20 +4,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.crost.aurorabzalarm.Constants
+import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AceEpamDAO {
-    @Query("SELECT * FROM ${Constants.EPAM_TABLE_NAME}")
+    @Query("SELECT * FROM $EPAM_TABLE_NAME")
     fun getAllData(): Flow<List<AceEpamData>>
 
 
-    @Query("SELECT * FROM ${Constants.EPAM_TABLE_NAME} ORDER BY datetime DESC LIMIT 1")
+    @Query("SELECT * FROM $EPAM_TABLE_NAME ORDER BY datetime DESC LIMIT 1")
     fun getLastRow(): Flow<AceEpamData>
 
-    @Query("SELECT * FROM ${Constants.EPAM_TABLE_NAME} ORDER BY datetime LIMIT 1")
+    @Query("SELECT * FROM $EPAM_TABLE_NAME ORDER BY datetime LIMIT 1")
     fun getFirstRow(): Flow<AceEpamData>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -2,7 +2,7 @@ package com.crost.aurorabzalarm
 
 
 object Constants {
-    const val DB_NAME = "SpaceWeatherDb"
+    const val DB_NAME = "SpaceWeatherData"
     const val ACE_TABLE_NAME = "ace_magnetometer"
     const val ACE_URL = "https://services.swpc.noaa.gov/text/ace-magnetometer.txt"
     const val ACE_KEYS = "YR MO DA Time JulianDay SecOfDay S Bx By Bz Bt Lat Long"
@@ -25,7 +25,7 @@ object Constants {
     const val HP_COL_HPS = "hpSouth-GW"
 
     // Ace SWEPAM
-    const val EPAM_TABLE_NAME = "ace_swepam"
+    const val EPAM_TABLE_NAME = "ace_epam"
     const val EPAM_URL = "https://services.swpc.noaa.gov/text/ace-swepam.txt"
     const val EPAM_KEYS = "YR MO DA Time JulianDay SecOfDay S ProtonDensity BulkSpeed IonTemperature"
 
@@ -41,12 +41,17 @@ object Constants {
 
     // retries for time-consuming functions
     const val MAX_RETRY_COUNT = 3
-    const val RETRY_DELAY_MS = 300
+    const val RETRY_DELAY_MS = 200L
 
     // SatelliteDataDownloader
     const val FILEPATH_ACE_DATA = "spaceDataDocuments/ace.txt"
     const val FILEPATH_HP_DATA = "spaceDataDocuments/hp.txt"
+    const val FILEPATH_EPAM_DATA = "spaceDataDocuments/epam.txt"
 
-    // GaugeCard
+    // GaugeCardTitles
     const val ACE_BZ_TITLE = "ACE Magnetometer\nBz"
+    const val HP_TITLE = "Hemispheric Power"
+    const val EPAM_SPEED_TITLE = "ACE EPAM\nSpeed"
+    const val EPAM_DENS_TITLE = "ACE EPAM\nDensity"
+    const val EPAM_TEMP_TITLE = "ACE EPAM\nTemperature"
 }

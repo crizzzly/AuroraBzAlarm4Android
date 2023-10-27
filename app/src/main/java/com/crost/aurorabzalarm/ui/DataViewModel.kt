@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
+import com.crost.aurorabzalarm.network.parser.formatTimestamp
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,53 +30,40 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val _latestHpState = mutableStateOf<HemisphericPowerData?>(
         HemisphericPowerData(
             datetime = 0,
-            hpNorth = 0,
-            hpSouth = 0
+            hpNorth = -999,
+            hpSouth = -999
         ))
-    val latestHpState: State<HemisphericPowerData?> get() = _latestHpState
 
     private val _latestAceState = mutableStateOf<AceMagnetometerData?>(
         AceMagnetometerData(
             datetime = 0,
-            bx = -999.9,
-            by = -999.9,
-            bt = -999.9,
-            bz = -999.9
+            bx = -999.0,
+            by = -999.0,
+            bt = -999.0,
+            bz = -999.0
     ))
-    val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
 
     private val _latestEpamState = mutableStateOf<AceEpamData?>(
         AceEpamData(
             datetime = 0,
-            density = 0.0,
-            speed = 0.0,
-            temp = 0.0
+            density = -999.9,
+            speed = -999.9,
+            temp = -999.9
         )
     )
+
+    val latestHpState: State<HemisphericPowerData?> get() = _latestHpState
+    val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
     val latestEpamState: State<AceEpamData?> get() = _latestEpamState
 
     val currentDurationOfFlight: Double get() = getTimeOfDataFlight(latestEpamState.value?.speed)
 
-    private fun getTimeOfDataFlight(speed: Double?): Double {
-        val exampleSpeed = 377.2 // 1,357e+6 km/h
-        val distance = 1500000.0
-        val timeInS = distance/speed!!
-        val timeInM = timeInS/60
-        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
-        return timeInM
-
-    }
-
     val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
-
-    // calculate time the storm needs to get from DISCOVR to earth
-//    val timeOfFlight -> first implement epam parsing logic!
-
 
 
     init {
         spaceWeatherRepository = SpaceWeatherRepository(application)
-        
+
         Log.d("DataViewModel Init", "Observing values")
         initAceObserver()
         initEpamObserver()
@@ -85,35 +73,37 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         fetchSpaceWeatherData()
     }
 
+
+
     private fun initHpObserver() {
-        spaceWeatherRepository.latestHpValue.observeForever {
+        spaceWeatherRepository.latestHpData.observeForever {
             try {
                 _latestHpState.value = it
-                Log.d("initHpObserver", "initialized")
+                Log.d("HpObserver", "latest hp: ${it.hpNorth} GW")
             } catch (e: Exception){
-                Log.e("DataViewModel init", "HpObserver: ${e.stackTraceToString()}")
+                Log.e("HpObserver", "HpObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
     private fun initEpamObserver() {
-        spaceWeatherRepository.latestEpamValue.observeForever {
+        spaceWeatherRepository.latestEpamData.observeForever {
             try {
                 _latestEpamState.value = it
-                Log.d("initEpamObserver", "initialized")
+                Log.d("EpamObserver", "LatestSpeedVal: ${it.speed} km/s")
             } catch (e: Exception){
-                Log.e("DataViewModel init", "EpamObserver: ${e.stackTraceToString()}")
+                Log.e("EpamObserver", "EpamObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
     private fun initAceObserver(){
-        spaceWeatherRepository.latestAceValue.observeForever {
+        spaceWeatherRepository.latestAceData.observeForever {
             try {
                 _latestAceState.value = it
-                Log.d("InitAceObserver", "initialized")
+                Log.d("AceObserver", "initialized. latest: ${it.bz}")
             } catch (e: Exception){
-                Log.e("DataViewModel init", "AceObserver: ${e.stackTraceToString()}")
+                Log.e("AceObserver", "AceObserver: ${e.stackTraceToString()}")
             }
         }
     }
@@ -132,13 +122,24 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun formatTimestamp(timestamp: Long): String {
-        val instant = Instant.ofEpochMilli(timestamp)
-        val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // You can customize the format here
-        return formatter.format(localDateTime)
+
+    private fun getTimeOfDataFlight(speed: Double?): Double {
+        val exampleSpeed = 377.2 // 1,357e+6 km/h
+        val distance = 1500000.0
+        val timeInS = distance/speed!!
+        val timeInM = timeInS/60
+        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
+        return timeInM
+
     }
 
+
+    private fun formatTiimestamp(timestamp: Long): String {
+        val instant = Instant.ofEpochMilli(timestamp)
+        val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        return formatter.format(localDateTime)
+    }
 }
 
 

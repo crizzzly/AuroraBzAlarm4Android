@@ -55,6 +55,10 @@ class EpamDataConverter {
 
             convertedDataTable.add(row)
         }
+        Log.d(
+            "HpDataConverter",
+            "converted ${convertedDataTable.size} rows. last: ${convertedDataTable.last()[EPAM_COL_DT]}, ${convertedDataTable.last()[EPAM_COL_SPEED]}"
+        )
 
 
         return convertedDataTable

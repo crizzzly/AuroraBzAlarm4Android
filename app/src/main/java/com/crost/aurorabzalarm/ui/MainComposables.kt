@@ -1,21 +1,24 @@
 package com.crost.aurorabzalarm.ui
 
 import android.util.Log
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.crost.aurorabzalarm.R
 import com.crost.aurorabzalarm.ui.elements.PreviewAllCharts
 import java.math.RoundingMode
@@ -26,9 +29,9 @@ import java.text.DecimalFormat
 @Composable
 fun MainComposable(viewModel: DataViewModel) {
     Log.d("MainComposable VM", viewModel.toString())
-    val currentHpVals = viewModel.latestHpState.value
-    val currentAceVals = viewModel.latestAceState.value
-    val currentEpamVals = viewModel.latestEpamState.value
+    val currentHpVals by remember { viewModel.latestHpState }
+    val currentAceVals by remember { viewModel.latestAceState }
+    val currentEpamVals by remember { viewModel.latestEpamState }
     val currentTime = viewModel.dateTimeString
 
     val currentDuration = viewModel.currentDurationOfFlight
@@ -41,7 +44,7 @@ fun MainComposable(viewModel: DataViewModel) {
         Values(
             currentTime,
             currentAceVals!!.bz,
-            currentHpVals!!.hpNorth,
+            currentHpVals!!.hpNorth ,
             currentEpamVals!!.speed,
             currentEpamVals!!.density,
             currentEpamVals!!.temp,
@@ -75,13 +78,15 @@ fun Values(
     val df = DecimalFormat("#.##")
     df.roundingMode = RoundingMode.CEILING
 
+    val scrollState = rememberScrollState()
+
 
 
     try {
         Log.d(
             "Composables value",
             "HP: $currentTime - ${currentHpVal}\n" +
-                    "ACE: $currentTime - $currentAceVal" +
+                    "ACE: $currentTime - $currentAceVal\n" +
                     "Epam: $currentTime - ${df.format(currentSpeed)}"
         )
     } catch (e: NullPointerException) {
@@ -93,6 +98,7 @@ fun Values(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding_l)
+            .scrollable(scrollState, orientation = Orientation.Vertical)
     ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,48 +109,19 @@ fun Values(
                 Text(currentTime)
                 Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
 
-                Row(
-                    modifier = Modifier.padding(0.dp, padding_s)
-                ) {
-                    PreviewAllCharts(
-                        currentAceVal,
-                        currentHpVal.toDouble(),
-                        currentSpeed,
-                        currentDensity,
-                        currentTemp
-                    )
-                }
-            }
 
+                PreviewAllCharts(
+                    currentAceVal,
+                    currentHpVal.toDouble(),
+                    currentSpeed,
+                    currentDensity,
+                    currentTemp
+                )
+            }
     }
 }
-//         Column(
-//            modifier = Modifier.padding(PaddingValues(padding_s)),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//             verticalArrangement =Arrangement.SpaceEvenly
-//        ) {
-//            Text(currentTime)
-//            Text("Currently ${df.format(currentDuration)} Minutes from DISCOVR to earth")
-//        }
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                modifier = Modifier.padding(PaddingValues())
-//        ) {
-//            Text(
-//                currentHpVal.toString(),
-//                modifier = Modifier
-//            )
-//            Text(
-//                text = currentAceVal.toString()
-//            )
-//            Text(currentSpeed.toString())
-//            }
-//        }
-//    }
+
     
-
-
 
 
 

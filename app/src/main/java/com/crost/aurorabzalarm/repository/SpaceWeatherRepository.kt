@@ -16,45 +16,38 @@ import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
-import com.crost.aurorabzalarm.network.download.DownloadManager
-import com.crost.aurorabzalarm.network.parser.DocumentParser
-import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
-import com.crost.aurorabzalarm.repository.util.downloadDataFromNetwork
-import com.crost.aurorabzalarm.repository.util.getDataSources
+import com.crost.aurorabzalarm.network.parser.formatTimestamp
+import com.crost.aurorabzalarm.repository.util.NetworkOperator
 import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestEpamValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
 import com.crost.aurorabzalarm.repository.util.saveDataModelInstances
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
-class SpaceWeatherRepository(application: Application){
-
+class SpaceWeatherRepository(application: Application) {
+    private val networkOperator = NetworkOperator()
     private lateinit var db: SpaceWeatherDataBase
-    private val downloadManager = DownloadManager()
-    private val parser = DocumentParser()
-    private val dataSourceConfigs = getDataSources()
-    private val dataShaper = DataShaper()
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
-    private var _latestHpValue = MutableLiveData(
-        HemisphericPowerData(0, 0, 0)
+    private var _latestHpData = MutableLiveData(
+        HemisphericPowerData(0, -999, -999)
     )
-    private var _latestAceValue = MutableLiveData(
+    private var _latestAceData = MutableLiveData(
         AceMagnetometerData(0, -999.9, -999.9, -999.9, -999.9)
     )
-    private var _latestEpamValue = MutableLiveData(
-            AceEpamData(0, -999.9, -999.9, -999.9)
-        )
+    private var _latestEpamData = MutableLiveData(
+        AceEpamData(0, -9999.9, -9999.9, -9999.9)
+    )
 
-    val latestHpValue get() = _latestHpValue
-    val latestAceValue get() = _latestAceValue
-
-    val latestEpamValue get() = _latestEpamValue
+    val latestHpData get() = _latestHpData
+    val latestAceData get() = _latestAceData
+    val latestEpamData get() = _latestEpamData
 
     // Handle the error, e.g., show an error message to the user
     // You could use LiveData or callbacks to communicate this error to the UI layer
@@ -70,7 +63,7 @@ class SpaceWeatherRepository(application: Application){
                 Log.i("SpaceWeatherRepository", "init db")
                 db =
                     Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
-//                        .addMigrations(migration1to2)
+//                        .addMigrations(migration1to2, migration1to3, migration2to3, )
 //                        .fallbackToDestructiveMigration() // This line ensures any existing database will be cleared
                         .build()
                 retryCount = 3
@@ -79,130 +72,165 @@ class SpaceWeatherRepository(application: Application){
                     "SpaceWeatherRepository",
                     "unable to instantiate database: \n${e.stackTraceToString()}"
                 )
-                retryCount ++
+                retryCount++
 //                delay()
             } catch (e: NullPointerException) {
                 Log.e(
                     "SpaceWeatherRepository",
                     "unable to instantiate database: \n${e.stackTraceToString()}"
                 )
-                retryCount ++
+                retryCount++
             }
         } while (retryCount < MAX_RETRY_COUNT)
+
         setAceDataCollector()
         setHpDataCollector()
         setEpamDataCollector()
-    }
 
-    private fun setHpDataCollector(){
         scope.launch {
-            try {
-                getLatestHpData().collect{latestHpData ->
-                    Log.d("setHpDataCollector", "Hp: ${latestHpData.hpNorth}")
-                    _latestHpValue.postValue(latestHpData)
-                }
-            } catch (e: Exception){
-                Log.e("setHpDataCollector", e.stackTraceToString())
-            }
-        }
-
-    }
-    private fun setAceDataCollector(){
-        scope.launch {
-            try {
-                getLatestAceData().collect{ latestAceData ->
-                    Log.d("setAceDataCollector", "Bz: ${latestAceData.bz}")
-                    _latestAceValue.postValue(latestAceData)
-                }
-            } catch (e: Exception){
-                Log.e("setAceDataCollector", e.stackTraceToString())
-            }
+            fetchDataAndStore()
         }
     }
 
-
-    private fun setEpamDataCollector(){
+    @Suppress("UNCHECKED_CAST")
+    private fun setHpDataCollector() {
+        Log.d("setHpDataCollector", "setHpDataCollector")
         scope.launch {
             try {
-                getLatestEpamData().collect{ latestEpamData ->
-                    Log.d("setEpamDataCollector", "Bz: ${latestEpamData.speed}")
-                    _latestEpamValue.postValue(latestEpamData)
+                val latestData =  getLatestHpValuesFromDb(db) as Flow<HemisphericPowerData>
+                latestData.collect{hpData ->
+                    Log.d("HpDataCollector", hpData.hpNorth.toString())
+                    _latestHpData.postValue(hpData)
                 }
-            } catch (e: Exception){
-                Log.e("setAceDataCollector", e.stackTraceToString())
-            }
-        }
-    }
-
-    suspend fun fetchDataAndStore(){
-        fetchData()
-        storeDataInDb()
-    }
-
-    private suspend fun fetchData() {
-        for (dsConfig in dataSourceConfigs) {
-            Log.i("fetchData", dsConfig.url)
-
-            try {
-                val convertedDataTable = downloadDataFromNetwork(
-                    dsConfig, downloadManager, parser, dataShaper
-                )
-                dsConfig.latestData = convertedDataTable
             } catch (e: Exception) {
-                Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
-                throw e
+                Log.e("HpDataCollector", e.stackTraceToString())
             }
         }
     }
 
-    private suspend fun storeDataInDb(){
-        for (dsConfig in dataSourceConfigs) {
-            when (dsConfig.tableName) {
+
+    @Suppress("UNCHECKED_CAST")
+    private fun setAceDataCollector() {
+        Log.d("setAceDataCollector", "setAceDataCollector")
+        scope.launch {
+            try {
+                val latestData = getLatestAceValuesFromDb(db) as Flow<AceMagnetometerData>
+
+                latestData.collect{aceData ->
+                    Log.d(
+                        "getLatestAceData",
+                        "${formatTimestamp(aceData.datetime)}: Bz ${aceData.bz} nT"
+                    )
+                    _latestAceData.postValue(aceData)
+                }
+
+            } catch (e: Exception) {
+                Log.e("AceDataCollector", e.stackTraceToString())
+            }
+        }
+    }
+
+
+    @Suppress("UNCHECKED_CAST")
+    private fun setEpamDataCollector() {
+        Log.d("setEpamDataCollector", "setEpamDataCollector")
+        scope.launch {
+            try {
+                val latestData =  getLatestEpamValuesFromDb(db) as Flow<AceEpamData>
+                latestData.collect{epamData ->
+                    Log.d(
+                        "getLatestEpamData",
+                        "${formatTimestamp(epamData.datetime)}: Speed ${epamData.speed} km/s"
+                    )
+                    _latestEpamData.postValue(epamData)
+                }
+            } catch (e: Exception) {
+                Log.e("EpamDataCollector", e.stackTraceToString())
+            }
+        }
+    }
+
+    suspend fun fetchDataAndStore() {
+        var data: MutableMap<String, MutableList<MutableMap<String, Any>>>
+        do {
+            data = networkOperator.fetchData()
+            delay(500)
+        } while (data.isEmpty())
+
+        storeDataInDb(data)
+    }
+
+    private suspend fun storeDataInDb(allDataLists: MutableMap<String, MutableList<MutableMap<String, Any>>>) {
+        for (table in allDataLists.keys) {
+            when (table) {
                 ACE_TABLE_NAME -> {
                     Log.d(
                         "storingDataInDb",
-                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[ACE_COL_BZ]}"
+                        "$table val: ${allDataLists[table]!!.last()[ACE_COL_BZ]}"
                     )
                 }
-                HP_TABLE_NAME  -> {
+
+                EPAM_TABLE_NAME -> {
                     Log.d(
                         "storingDataInDb",
-                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[HP_COL_HPN]}"
+                        "$table val: ${allDataLists[table]!!.last()[EPAM_COL_SPEED]}"
                     )
                 }
-                EPAM_TABLE_NAME  -> {
+
+                HP_TABLE_NAME -> {
                     Log.d(
                         "storingDataInDb",
-                        "${dsConfig.tableName} val: ${dsConfig.latestData.last()[EPAM_COL_SPEED]}"
+                        "$table val: ${allDataLists[table]!!.last()[HP_COL_HPN]}"
                     )
                 }
             }
-
             try {
-                saveDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
-
-            } catch (e: Exception){
-                Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
+                saveDataModelInstances(db, allDataLists[table]!!, table)
+            } catch (e: Exception) {
+                Log.e("storeDataInDb", "Error processing data: ${e.message}")
                 throw e
             }
         }
     }
-
-    @Suppress("UNCHECKED_CAST")
-    private suspend fun getLatestAceData(): Flow<AceMagnetometerData>{
-        return getLatestAceValuesFromDb(db) as Flow<AceMagnetometerData>
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private suspend fun getLatestHpData(): Flow<HemisphericPowerData>{
-        return getLatestHpValuesFromDb(db) as Flow<HemisphericPowerData>
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private suspend fun getLatestEpamData(): Flow<AceEpamData>{
-        return  getLatestEpamValuesFromDb(db) as Flow<AceEpamData>
-    }
-
 }
+
+
+
+//        for (dsConfig in dataSourceConfigs) {
+//            if(dsConfig.latestData.isNotEmpty()){
+//                when (dsConfig.tableName) {
+//                    ACE_TABLE_NAME -> {
+//                        Log.d(
+//                            "storingDataInDb",
+//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[ACE_COL_BZ]}"
+//                        )
+//                    }
+//                    HP_TABLE_NAME  -> {
+//                        Log.d(
+//                            "storingDataInDb",
+//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[HP_COL_HPN]}"
+//                        )
+//                    }
+//                    EPAM_TABLE_NAME  -> {
+//                        Log.d(
+//                            "storingDataInDb",
+//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[EPAM_COL_SPEED]}"
+//                        )
+//                    }
+//                }
+//                try {
+//                    saveDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
+//
+//                } catch (e: Exception){
+//                    Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
+//                    throw e
+//                }
+//            } else { // dsconfig.latestData is empty:
+//                Log.e("storeDataInDb", "No Data for ${dsConfig.tableName}, skip storing process")
+//            }
+//        }
+
+
+
 
 

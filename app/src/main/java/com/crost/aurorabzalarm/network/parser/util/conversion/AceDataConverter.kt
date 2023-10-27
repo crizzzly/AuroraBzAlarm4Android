@@ -50,7 +50,7 @@ class AceDataConverter {
 
             converted.add(row)
         }
-        Log.d("ACEConverter", "${converted.last()["datetime"]}, ${converted.last()["bz"]}")
+        Log.d("ACEConverter", "${converted.last()[ACE_COL_DT]}, ${converted.last()[ACE_COL_BZ]}")
         return converted
     }
 }

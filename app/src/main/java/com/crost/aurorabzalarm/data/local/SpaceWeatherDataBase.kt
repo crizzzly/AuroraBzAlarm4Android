@@ -16,12 +16,13 @@ import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 
+
 @Database(
     entities = [
     AceMagnetometerData::class,
     HemisphericPowerData::class,
     AceEpamData::class
-], version = 2, exportSchema = false
+], version = 1, exportSchema = false
 )
 
 
@@ -30,6 +31,8 @@ abstract class SpaceWeatherDataBase: RoomDatabase() {
     abstract fun aceDao(): AceMagnetometerDAO
     abstract fun hpDao(): HemisphericPowerDAO
     abstract fun epamDao(): AceEpamDAO
+
+
 
     companion object {
         @Volatile
@@ -51,6 +54,44 @@ abstract class SpaceWeatherDataBase: RoomDatabase() {
     }
 }
 
+val migration2to3: Migration = object : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Create a temporary table to store existing data
+        database.execSQL("CREATE TABLE IF NOT EXISTS temp_table (" +
+                "$EPAM_COL_DT LONG PRIMARY KEY NOT NULL, " +
+                "$EPAM_COL_DENSITY DOUBLE, " +
+                "$EPAM_COL_SPEED DOUBLE, " +
+                "$EPAM_COL_TEMP DOUBLE)"
+        )
+
+        // Copy data from the old table to the temporary table
+        database.execSQL("INSERT INTO temp_table SELECT * FROM ace_swepam")
+
+        // Drop the old table
+        database.execSQL("DROP TABLE IF EXISTS ace_swepam")
+
+        // Create the new table (with the modified schema)
+        database.execSQL("CREATE TABLE IF NOT EXISTS $EPAM_TABLE_NAME (" +
+                "$EPAM_COL_DT LONG PRIMARY KEY NOT NULL, " +
+                "$EPAM_COL_DENSITY DOUBLE, " +
+                "$EPAM_COL_SPEED DOUBLE, " +
+                "$EPAM_COL_TEMP DOUBLE)")
+
+        // Copy data from the temporary table to the new table
+        database.execSQL("INSERT INTO $EPAM_TABLE_NAME SELECT * FROM temp_table")
+
+        // Drop the temporary table
+        database.execSQL("DROP TABLE IF EXISTS temp_table")
+
+        // Perform any additional operations, such as adding indexes or triggers
+        // For example, if you need to execute SQL statements, you can use database.execSQL("YOUR_SQL_STATEMENT_HERE");
+
+        // Perform the necessary database migration operations here
+        // For example, if you need to execute SQL statements, you can use database.execSQL("YOUR_SQL_STATEMENT_HERE");
+    }
+}
+
+
 
 
 val migration1to2 = object : Migration(1, 2) {
@@ -58,11 +99,30 @@ val migration1to2 = object : Migration(1, 2) {
         try {
             // Create the new table
             database.execSQL(
-                "CREATE TABLE IF NOT EXISTS ${EPAM_TABLE_NAME} (" +
-                        "${EPAM_COL_DT} LONG PRIMARY KEY NOT NULL, " +
-                        "${EPAM_COL_DENSITY} DOUBLE, " +
-                        "${EPAM_COL_SPEED} DOUBLE, " +
-                        "${EPAM_COL_TEMP} DOUBLE)"
+                "CREATE TABLE IF NOT EXISTS $EPAM_TABLE_NAME (" +
+                        "$EPAM_COL_DT LONG PRIMARY KEY NOT NULL, " +
+                        "$EPAM_COL_DENSITY DOUBLE, " +
+                        "$EPAM_COL_SPEED DOUBLE, " +
+                        "$EPAM_COL_TEMP DOUBLE)"
+            )
+        } catch (e: Exception) {
+            Log.e("migration1to2", e.stackTraceToString())
+        }
+
+    }
+}
+
+
+val migration1to3 = object : Migration(1, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        try {
+            // Create the new table
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS $EPAM_TABLE_NAME (" +
+                        "$EPAM_COL_DT LONG PRIMARY KEY NOT NULL, " +
+                        "$EPAM_COL_DENSITY DOUBLE, " +
+                        "$EPAM_COL_SPEED DOUBLE, " +
+                        "$EPAM_COL_TEMP DOUBLE)"
             )
         } catch (e: Exception) {
             Log.e("migration1to2", e.stackTraceToString())

@@ -30,12 +30,11 @@ class HpDataConverter {
             row[HP_COL_HPN] = hpNorth
             row[HP_COL_HPS] = hpSouth
             convertedDataTable.add(row)
-//            Log.d("HpDataConverter", "$date, $time, $hpNorth")
+//            Log.d("HpDataConverter", "$datetime, $hpNorth")
         }
         Log.d(
-
             "HpDataConverter",
-            "${convertedDataTable.last()["datetime"]}, ${convertedDataTable.last()["hpNorth"]}"
+            "converted ${convertedDataTable.size} rows. last: ${convertedDataTable.last()[HP_COL_DT]}, ${convertedDataTable.last()[HP_COL_HPN]}"
         )
         return convertedDataTable
 

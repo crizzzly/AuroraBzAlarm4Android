@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,11 +46,16 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.crost.aurorabzalarm.Constants.ACE_BZ_TITLE
+import com.crost.aurorabzalarm.Constants.EPAM_DENS_TITLE
+import com.crost.aurorabzalarm.Constants.EPAM_SPEED_TITLE
+import com.crost.aurorabzalarm.Constants.EPAM_TEMP_TITLE
+import com.crost.aurorabzalarm.Constants.HP_TITLE
 import com.crost.aurorabzalarm.R
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
 const val COMPONENT_COUNT = 3
+const val PADDING_XS = 4
 const val PADDING_S = 8
 const val PADDING_M = 16
 const val PADDING_L = 24
@@ -59,7 +66,7 @@ fun mapValueToRange(value: Double, fromMin: Double, fromMax: Double, toMin: Doub
 
 
 
-//@Preview
+@Preview
 @Composable
 fun PreviewAllCharts(
     bz: Double = -15.6,
@@ -77,19 +84,25 @@ fun PreviewAllCharts(
     )
 }
 
-
 @Preview
 @Composable
-fun GaugeCard(text: String = ACE_BZ_TITLE, value: Double = -15.7){
+fun PreviewCard(){
+    GaugeCard(EPAM_SPEED_TITLE, 600.0)
+}
+@Composable
+fun GaugeCard(text: String, value: Double){
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
     val canvasWidth =( screenWidth / COMPONENT_COUNT) /3
+
+
 
     Card(
         colors = CardColors(Color.DarkGray, Color.LightGray, Color.DarkGray, Color.LightGray),
         modifier = Modifier
-            .padding(PADDING_S.dp)
+            .defaultMinSize((145).dp, 200.dp)
+//            .align(Alignment.Center))
             .border(BorderStroke(
-                1.dp,
+                0.dp,
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Cyan, Color.DarkGray, Color.Red))),
@@ -97,28 +110,40 @@ fun GaugeCard(text: String = ACE_BZ_TITLE, value: Double = -15.7){
             )
 
     ) {
+
+        val previewModifier = Modifier
+            .size(canvasWidth.dp, canvasWidth.dp)
+            .padding(PADDING_S.dp, PADDING_S.dp)
+            .aspectRatio(1f)
+            .align(Alignment.CenterHorizontally)
+
         Text(
             text,
             textAlign = TextAlign.Center,
             lineHeight = 1.5.em,
             modifier = Modifier
-                .padding( PADDING_S.dp).width(IntrinsicSize.Max)
+                .padding( PADDING_S.dp)
+                .width(IntrinsicSize.Max)
+                .align(Alignment.CenterHorizontally)
         )
-        HorizontalDivider(
+        HorizontalDivider( // -> where r u?
             thickness = 3.dp,
             color = Color.Black,
-            modifier = Modifier.width(IntrinsicSize.Max)
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .height(3.dp)
+                .border(2.dp, Color.Black)
+
         )
 
-        PreviewBz(
-            progress = value,
-            modifier = Modifier
-                .size(canvasWidth.dp, canvasWidth.dp)
-                .padding(PADDING_S.dp, PADDING_S.dp)
-                .aspectRatio(1f)
-                .align(Alignment.CenterHorizontally)
-//                .align(BottomStart)
-        )
+        when (text){
+            ACE_BZ_TITLE -> PreviewBz(value, modifier = previewModifier)
+            HP_TITLE -> PreviewHp(value, modifier = previewModifier)
+            EPAM_SPEED_TITLE -> PreviewSpeed(value, modifier = previewModifier)
+            EPAM_DENS_TITLE -> PreviewDensity(value, modifier = previewModifier)
+            EPAM_TEMP_TITLE -> PreviewTemp(value, modifier = previewModifier)
+
+        }
     }
 }
 
@@ -172,74 +197,37 @@ fun ShowAllCharts(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(0.dp, padding_m),
+            .padding(padding_s, padding_l),
         horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        val chartModifier = Modifier
-//            .size(canvasWidth.dp, canvasWidth.dp)
-            .padding(padding_s, padding_l)
-            .aspectRatio(1f)
+
+        Row(
+            modifier = Modifier
+                .padding(padding_l),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            GaugeCard(ACE_BZ_TITLE, bz)
+            GaugeCard(HP_TITLE, hp)
+
+        }
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+//            verticalAlignment = Alignment.
         ) {
-
-            Card(
-                modifier = Modifier.padding(padding_s)
-            ) {
-                Text(
-                    "Bz Value",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-//                        .padding(padding_s)
-                )
-
-                PreviewBz(
-                    progress = bz,
-                    modifier = chartModifier
-//                .align(BottomStart)
-                )
-            }
-        Card {
-            Text(
-                "Hemispheric Power Value",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-//                        .padding(padding_s)
-            )
-            PreviewHemisphericPower(
-                progress = hp,
-                modifier = chartModifier.align(Alignment.CenterHorizontally)
-            )
-        }
-
-
-
-        }
-        Row {
-            PreviewSpeed(
-                progress = speed,
-                modifier = chartModifier
-            )
-
-            PreviewDensity(
-                density,
-                modifier = chartModifier
-            )
-
-            PreviewTemp(
-                temp,
-                modifier = chartModifier
-            )
+            GaugeCard(EPAM_SPEED_TITLE, speed)
+            GaugeCard(EPAM_DENS_TITLE, density)
+            GaugeCard(EPAM_TEMP_TITLE, temp)
         }
     }
-}
+    }
+
 
 
 
 @Composable
-fun PreviewHemisphericPower(
+fun PreviewHp(
     progress:Double = 25.0,
     modifier:  Modifier
 ){
@@ -431,7 +419,7 @@ fun Speedometer(
                 val angle1: Float
                 if (drawProgressArcFromTop){
                         angle1 = 270f
-                        angle2 = (degreesMarkerStep * mappedProgress -137f).toFloat()
+                        angle2 = (degreesMarkerStep * mappedProgress -136.5f).toFloat()
                 } else {
                         angle1 = startArcAngle
                         angle2 = (degreesMarkerStep * mappedProgress).toFloat()
@@ -476,7 +464,7 @@ fun Speedometer(
                             Path().apply {
                                 moveTo(w / 2, (h / 2) - 5)
                                 lineTo(w / 2, (h / 2) + 5)
-                                lineTo(w / 15f, h / 2)
+                                lineTo(w / 10f, h / 2)
                                 lineTo(w / 2, (h / 2) - 5)
                                 close()
                             },
