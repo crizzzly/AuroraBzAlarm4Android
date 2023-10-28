@@ -91,7 +91,7 @@ fun PreviewCard(){
 @Composable
 fun GaugeCard(text: String, value: Double){
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val cardWidth =( screenWidth / COMPONENT_COUNT) /3.5
+    val cardWidth =( screenWidth / COMPONENT_COUNT) /3
     val cardHeight = cardWidth * 1.7
 
     // TODO: variable sizes depending on screenSize

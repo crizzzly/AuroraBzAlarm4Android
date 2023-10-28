@@ -56,7 +56,7 @@ android {
     }
     ksp {
         kotlinOptions {
-            jvmTarget = "17" //"1.8"
+            jvmTarget = "17" //"17" //"1.8"
         }
     }
 

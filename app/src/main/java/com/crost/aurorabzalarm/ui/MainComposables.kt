@@ -82,7 +82,7 @@ fun MainComposable(viewModel: DataViewModel) {
         currentEpamVals!!.speed,
         currentEpamVals!!.density,
         currentEpamVals!!.temp,
-        currentDuration,
+        df.format(currentDuration) ,
         alarmSettingsVisible
     )
 }
@@ -97,7 +97,7 @@ fun MainScreen(
     speed: Double,
     density: Double,
     temp: Double,
-    currentDuration: Double,
+    currentDuration: String,
     showAlarmSettings: Boolean
 ) {
     val scrollState = rememberScrollState()
@@ -176,7 +176,7 @@ fun MainScreenPreview() {
         358.6,
         56.2,
         123.4,
-        54.2,
+        "54.2",
         false
     )
 }
