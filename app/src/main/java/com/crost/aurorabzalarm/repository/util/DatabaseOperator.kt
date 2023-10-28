@@ -92,7 +92,7 @@ suspend fun getLatestEpamValuesFromDb(db: SpaceWeatherDataBase): Any {
     do {
         try {
             val data = db.epamDao().getLastRow()
-            Log.d("getLatestEpamValuesFromDb", "successfully loaded latest data row")
+//            Log.d("getLatestEpamValuesFromDb", "successfully loaded latest data row")
 
             return data
         } catch (e: Exception) {

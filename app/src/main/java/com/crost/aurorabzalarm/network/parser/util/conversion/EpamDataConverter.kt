@@ -14,7 +14,6 @@ class EpamDataConverter {
     {
         val convertedDataTable = mutableListOf<MutableMap<String, Any>>()
 
-//        var dateTimeString = ""
         var protonDensity: Double
         var bulkSpeed: Double
         var ionTemperature: Double
@@ -23,7 +22,7 @@ class EpamDataConverter {
             val row = mutableMapOf<String, Any>()
             protonDensity = -9999.9
             bulkSpeed = -9999.9
-            ionTemperature = -1.00e+05.toDouble()
+            ionTemperature = -1.00e+05
 
             val datetime = try {
                 convertToLocalEpochMillis(
@@ -55,11 +54,10 @@ class EpamDataConverter {
 
             convertedDataTable.add(row)
         }
-        Log.d(
-            "HpDataConverter",
-            "converted ${convertedDataTable.size} rows. last: ${convertedDataTable.last()[EPAM_COL_DT]}, ${convertedDataTable.last()[EPAM_COL_SPEED]}"
-        )
-
+//        Log.d(
+//            "HpDataConverter",
+//            "converted ${convertedDataTable.size} rows. last: ${convertedDataTable.last()[EPAM_COL_DT]}, ${convertedDataTable.last()[EPAM_COL_SPEED]}"
+//        )
 
         return convertedDataTable
     }

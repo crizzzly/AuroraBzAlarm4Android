@@ -1,9 +1,11 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import java.sql.Date
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 
 private val localZoneId = ZoneId.systemDefault()
@@ -57,3 +59,18 @@ fun getSecOfDayFromTime(h: Int,m: Int): Int {
     val hourInSec = h * 60 * 60
     return minInSec + hourInSec
 }
+
+
+//fun getCurrentDateTimeAsString(){
+//    val now : LocalDateTime = LocalDateTime.now()
+//}
+
+
+fun formatTimestamp(timestamp: Long): String {
+    val instant = Instant.ofEpochMilli(timestamp)
+    val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    return formatter.format(localDateTime)
+}
+
+

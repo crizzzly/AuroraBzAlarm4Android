@@ -16,7 +16,6 @@ import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
-import com.crost.aurorabzalarm.network.parser.formatTimestamp
 import com.crost.aurorabzalarm.repository.util.NetworkOperator
 import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestEpamValuesFromDb
@@ -117,13 +116,12 @@ class SpaceWeatherRepository(application: Application) {
                 val latestData = getLatestAceValuesFromDb(db) as Flow<AceMagnetometerData>
 
                 latestData.collect{aceData ->
-                    Log.d(
-                        "getLatestAceData",
-                        "${formatTimestamp(aceData.datetime)}: Bz ${aceData.bz} nT"
-                    )
+//                    Log.d(
+//                        "getLatestAceData",
+//                        "${formatTimestamp(aceData.datetime)}: Bz ${aceData.bz} nT"
+//                    )
                     _latestAceData.postValue(aceData)
                 }
-
             } catch (e: Exception) {
                 Log.e("AceDataCollector", e.stackTraceToString())
             }
@@ -138,10 +136,10 @@ class SpaceWeatherRepository(application: Application) {
             try {
                 val latestData =  getLatestEpamValuesFromDb(db) as Flow<AceEpamData>
                 latestData.collect{epamData ->
-                    Log.d(
-                        "getLatestEpamData",
-                        "${formatTimestamp(epamData.datetime)}: Speed ${epamData.speed} km/s"
-                    )
+//                    Log.d(
+//                        "getLatestEpamData",
+//                        "${formatTimestamp(epamData.datetime)}: Speed ${epamData.speed} km/s"
+//                    )
                     _latestEpamData.postValue(epamData)
                 }
             } catch (e: Exception) {

@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
@@ -50,15 +49,13 @@ import com.crost.aurorabzalarm.Constants.EPAM_DENS_TITLE
 import com.crost.aurorabzalarm.Constants.EPAM_SPEED_TITLE
 import com.crost.aurorabzalarm.Constants.EPAM_TEMP_TITLE
 import com.crost.aurorabzalarm.Constants.HP_TITLE
-import com.crost.aurorabzalarm.R
+import com.crost.aurorabzalarm.Constants.PADDING_L
+import com.crost.aurorabzalarm.Constants.PADDING_S
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
 const val COMPONENT_COUNT = 3
-const val PADDING_XS = 4
-const val PADDING_S = 8
-const val PADDING_M = 16
-const val PADDING_L = 24
+
 
 fun mapValueToRange(value: Double, fromMin: Double, fromMax: Double, toMin: Double, toMax: Double): Double {
     return ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin)
@@ -89,17 +86,19 @@ fun PreviewAllCharts(
 fun PreviewCard(){
     GaugeCard(EPAM_SPEED_TITLE, 600.0)
 }
+
+
 @Composable
 fun GaugeCard(text: String, value: Double){
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val canvasWidth =( screenWidth / COMPONENT_COUNT) /3
+    val cardWidth =( screenWidth / COMPONENT_COUNT) /3.5
+    val cardHeight = cardWidth * 1.7
 
-
-
+    // TODO: variable sizes depending on screenSize
     Card(
         colors = CardColors(Color.DarkGray, Color.LightGray, Color.DarkGray, Color.LightGray),
         modifier = Modifier
-            .defaultMinSize((145).dp, 200.dp)
+            .size(cardWidth.dp, cardHeight.dp)
 //            .align(Alignment.Center))
             .border(BorderStroke(
                 0.dp,
@@ -112,7 +111,7 @@ fun GaugeCard(text: String, value: Double){
     ) {
 
         val previewModifier = Modifier
-            .size(canvasWidth.dp, canvasWidth.dp)
+            .size(cardWidth.dp, cardWidth.dp)
             .padding(PADDING_S.dp, PADDING_S.dp)
             .aspectRatio(1f)
             .align(Alignment.CenterHorizontally)
@@ -189,30 +188,32 @@ fun ShowAllCharts(
     density: Double,
     temp:Double
 ){
-    val padding_s = dimensionResource(R.dimen.padding_small)
-    val padding_m = dimensionResource(R.dimen.padding_middle)
-    val padding_l = dimensionResource(R.dimen.padding_large)
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding_s, padding_l),
+            .padding(PADDING_S.dp, PADDING_L.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+//        verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
-        Row(
+        Row( // 1st Row
             modifier = Modifier
-                .padding(padding_l),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
+                .padding(PADDING_S.dp)
+                .fillMaxWidth(),
+//            verticalAlignment = Alignment,
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             GaugeCard(ACE_BZ_TITLE, bz)
+
+
+
             GaugeCard(HP_TITLE, hp)
 
         }
         Row(
+            modifier = Modifier
+                .padding(PADDING_S.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
 //            verticalAlignment = Alignment.
         ) {
@@ -221,7 +222,7 @@ fun ShowAllCharts(
             GaugeCard(EPAM_TEMP_TITLE, temp)
         }
     }
-    }
+}
 
 
 
@@ -263,13 +264,13 @@ fun PreviewSpeed(
     modifier:  Modifier
 ){
 
-    val valueRangeFrom: Double = 0.0
-    val valueRangeTo: Double = 999.9
+    val valueRangeFrom = 0.0
+    val valueRangeTo = 999.9
     val (mainColor, secondaryColor) = when {
-        progress < 50 -> // Red
+        progress < 400 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
 //                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 50f..70f -> // Orange
+        progress in 400f..600f -> // Orange
             Color(0xFFF57C00) to Color(0xFFFFE0B2)
         else -> // Green
             Color(0xFFD32F2F) to Color(0xFFFFCDD2)
@@ -295,8 +296,8 @@ fun PreviewDensity(
     modifier:  Modifier
 ){
 
-    val valueRangeFrom: Double = 0.0
-    val valueRangeTo: Double = 800.0
+    val valueRangeFrom = 0.0
+    val valueRangeTo = 800.0
     val (mainColor, secondaryColor) = when {
         progress < 80 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -328,8 +329,8 @@ fun PreviewTemp(
     modifier:  Modifier
 ){
 
-    val valueRangeFrom: Double = 0.0
-    val valueRangeTo: Double = 1.5e+06
+    val valueRangeFrom = 0.0
+    val valueRangeTo = 1.5e+06
     val (mainColor, secondaryColor) = when {
         progress < 5.0e+05 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -353,7 +354,10 @@ fun PreviewTemp(
     )
 }
 
+
+
 // TODO: Handle DisplayRotation
+// TODO: set markers for values
 @Composable
 fun Speedometer(
     progress: Double,
@@ -368,13 +372,13 @@ fun Speedometer(
 ) {
     val arcDegrees = 270
     val startArcAngle = 135f
-    val startStepAngle = -45 //
+    val startStepAngle = -45
     val numberOfMarkers = 68
     val degreesMarkerStep = arcDegrees / numberOfMarkers
 
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val canvasWidth = screenWidth / COMPONENT_COUNT
-
+    val cardWidth = screenWidth / COMPONENT_COUNT - (2 * PADDING_L)
+//    val cardHeight = cardWidth * 1.7
     // valRanges: from 0 to 90 - -100 - 100
     val mappedProgress = mapValueToRange(progress, valueRangeFrom, valueRangeTo, 0.0, 90.0)
 
@@ -390,8 +394,8 @@ fun Speedometer(
 
 
     Canvas(
-        modifier = modifier,
-//            .size(canvasWidth.dp, canvasWidth.dp),
+        modifier = modifier
+            .size(cardWidth.dp, cardWidth.dp),
         onDraw = {
             drawIntoCanvas { canvas ->
                 val w = drawContext.size.width
@@ -478,14 +482,14 @@ fun Speedometer(
                     textMeasurer.measure(
                         AnnotatedString(string),
                             constraints = Constraints
-                                .fixed((size.width* 1f / 3f).toInt(), (size.height* 1f /4.5f).toInt()),
+                                .fixed((size.width* 1f / 3f).toInt(), (size.height* 1f /4f).toInt()),
                         style = androidx.compose.ui.text.TextStyle(
                             color = mainColor, //Color.LightGray,
                             fontSize = 9.sp,
                             textAlign = TextAlign.Center,
                         )
                     )
-                val offsetT = Offset(w/2 - measuredText.size.width/2, h / 4f*3)
+                val offsetT = Offset(w/2 - measuredText.size.width/2, (h / 4f*2.7).toFloat())
                 drawRect(Color.DarkGray, size = measuredText.size.toSize(),topLeft =offsetT)
                 drawText(measuredText, topLeft =offsetT)
 

@@ -7,7 +7,7 @@ import com.crost.aurorabzalarm.network.parser.DocumentParser
 import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
 
 
-class NetworkOperator(){
+class NetworkOperator{
     private val downloadManager = DownloadManager()
     private val parser = DocumentParser()
     private val dataSourceConfigs = getDataSources()
@@ -15,16 +15,16 @@ class NetworkOperator(){
 
 
     suspend fun fetchData(): MutableMap<String, MutableList<MutableMap<String, Any>>> {
-        var allTables = mutableMapOf<String, MutableList<MutableMap<String, Any>>>()
+        val allTables = mutableMapOf<String, MutableList<MutableMap<String, Any>>>()
         for (dsConfig in dataSourceConfigs) {
-            Log.i("fetchData", dsConfig.url)
+//            Log.i("fetchData", dsConfig.url)
 
             try {
                 val convertedDataTable = downloadDataFromNetwork(
                     dsConfig, downloadManager, parser, dataShaper
                 )
                 dsConfig.latestData = convertedDataTable
-                allTables.put(dsConfig.tableName, convertedDataTable)
+                allTables[dsConfig.tableName] = convertedDataTable
 //                return convertedDataTable
             } catch (e: Exception) {
                 Log.e("fetchDataAndStore", "Error processing data: ${e.message}")

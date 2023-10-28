@@ -11,11 +11,11 @@ import androidx.lifecycle.viewModelScope
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
-import com.crost.aurorabzalarm.network.parser.formatTimestamp
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -24,7 +24,13 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private var spaceWeatherRepository: SpaceWeatherRepository
 
     // TODO: Create Color-Set
-    var outputTextColor: Color = Color.LightGray
+    var colorOnSatDataError: Color = Color.LightGray
+
+    private val _alarmIsEnabled = mutableStateOf(false)
+    val alarmIsEnabled = _alarmIsEnabled
+
+    private val _alarmSettingsVisible = mutableStateOf(false)
+    val alarmSettingsVisible = _alarmSettingsVisible
 
 
     private val _latestHpState = mutableStateOf<HemisphericPowerData?>(
@@ -59,6 +65,8 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     val currentDurationOfFlight: Double get() = getTimeOfDataFlight(latestEpamState.value?.speed)
 
     val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
+    
+    val datetime: LocalDateTime = LocalDateTime.now()
 
 
     init {
@@ -124,7 +132,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
 
     private fun getTimeOfDataFlight(speed: Double?): Double {
-        val exampleSpeed = 377.2 // 1,357e+6 km/h
+        // 1,357e+6 km/h
         val distance = 1500000.0
         val timeInS = distance/speed!!
         val timeInM = timeInS/60
@@ -133,12 +141,24 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-
-    private fun formatTiimestamp(timestamp: Long): String {
+    private fun formatTimestamp(timestamp: Long): String {
         val instant = Instant.ofEpochMilli(timestamp)
         val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         return formatter.format(localDateTime)
+    }
+
+
+    fun setAlarmSettingsVisible(){
+        _alarmSettingsVisible.value = true
+    }
+    fun setAlarmSettingsInvisible(){
+        _alarmSettingsVisible.value = false
+    }
+
+    fun setAuroraAlarm(alarmEnabled: Boolean){
+        _alarmIsEnabled.value = alarmEnabled
+        Log.d("setAuroraAlarm", "alarm enabled: $alarmEnabled")
     }
 }
 
