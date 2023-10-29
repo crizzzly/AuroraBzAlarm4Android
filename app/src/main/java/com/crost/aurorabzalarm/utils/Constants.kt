@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm
+package com.crost.aurorabzalarm.utils
 
 
 object Constants {
@@ -38,6 +38,9 @@ object Constants {
 
     // worker repeat interval in sec
     const val WORKER_REPEAT_INTERVAL = 60L
+
+    // Notification Service
+    const val CHANNEL_ID = "aurora_notification"
 
     // retries for time-consuming functions
     const val MAX_RETRY_COUNT = 3

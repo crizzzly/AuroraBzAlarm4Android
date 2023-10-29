@@ -1,27 +1,27 @@
 package com.crost.aurorabzalarm.repository.util
 
 import android.util.Log
-import com.crost.aurorabzalarm.Constants.ACE_COL_BT
-import com.crost.aurorabzalarm.Constants.ACE_COL_BX
-import com.crost.aurorabzalarm.Constants.ACE_COL_BY
-import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
-import com.crost.aurorabzalarm.Constants.ACE_COL_DT
-import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DENSITY
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DT
-import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
-import com.crost.aurorabzalarm.Constants.EPAM_COL_TEMP
-import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.HP_COL_DT
-import com.crost.aurorabzalarm.Constants.HP_COL_HPN
-import com.crost.aurorabzalarm.Constants.HP_COL_HPS
-import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
-import com.crost.aurorabzalarm.Constants.RETRY_DELAY_MS
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BT
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BX
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BY
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DENSITY
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_TEMP
+import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPS
+import com.crost.aurorabzalarm.utils.Constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
+import com.crost.aurorabzalarm.utils.Constants.RETRY_DELAY_MS
 import kotlinx.coroutines.delay
 
 
@@ -30,16 +30,13 @@ suspend fun saveDataModelInstances(
     dataTable: MutableList<MutableMap<String, Any>>,
     tableName: String,
 ) {
-    Log.d("addingInstances", tableName)
     when (tableName) {
         ACE_TABLE_NAME -> {
             saveAceModelInstance(db, dataTable)
         }
-
         HP_TABLE_NAME -> {
             saveHpModelInstance(db, dataTable)
         }
-
         EPAM_TABLE_NAME -> {
             saveEpamModelInstance(db, dataTable)
         }
@@ -49,14 +46,12 @@ suspend fun saveDataModelInstances(
 
 
 suspend fun getLatestAceValuesFromDb(db: SpaceWeatherDataBase): Any {
-    Log.d("DatabaseOperator", "getLatestAceValuesFromDb")
+//    Log.d("DatabaseOperator", "getLatestAceValuesFromDb")
     var retryCount = 0
 
     do {
         try {
-            val data = db.aceDao().getLastRow()
-            Log.d("getLatestAceValuesFromDb", "successfully got latest datarow")
-            return data
+            return db.aceDao().getLastRow()
         } catch (e: Exception) {
             retryCount += 1
             Log.e("getLatestAceValuesFromDb", e.stackTraceToString())
@@ -69,17 +64,14 @@ suspend fun getLatestAceValuesFromDb(db: SpaceWeatherDataBase): Any {
 
 
 suspend fun getLatestHpValuesFromDb(db: SpaceWeatherDataBase): Any {
-    Log.d("DatabaseOperator", "getLatestHpValuesFromDb")
     var retryCount = 0
     do {
         try {
-            val data = db.hpDao().getLastRow()
-            Log.d("getLatestHpValuesFromDb", "successfully loaded latest data row")
-            return data
+            return db.hpDao().getLastRow()
 
         } catch (e: Exception) {
             Log.e("getLatestHpValuesFromDb", e.stackTraceToString())
-            retryCount ++
+            retryCount++
             delay(RETRY_DELAY_MS)
         }
     } while (retryCount < MAX_RETRY_COUNT)
@@ -87,20 +79,16 @@ suspend fun getLatestHpValuesFromDb(db: SpaceWeatherDataBase): Any {
 }
 
 suspend fun getLatestEpamValuesFromDb(db: SpaceWeatherDataBase): Any {
-    Log.d("DatabaseOperator", "getLatestEpamValuesFromDb")
     var retryCount = 0
     do {
         try {
-            val data = db.epamDao().getLastRow()
-//            Log.d("getLatestEpamValuesFromDb", "successfully loaded latest data row")
-
-            return data
+            return db.epamDao().getLastRow()
         } catch (e: Exception) {
             Log.e(
                 "getLatestEpamValuesFromDb",
                 "Retry No $retryCount ${e.stackTraceToString()}"
             )
-            retryCount ++
+            retryCount++
             delay(RETRY_DELAY_MS)
         }
     } while (retryCount < MAX_RETRY_COUNT)
@@ -141,7 +129,6 @@ suspend fun saveHpModelInstance(
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>
 ) {
-//        Log.d("createHpModelInstance", "createHpModelInstance")
     val instances = mutableListOf<HemisphericPowerData>()
 
     for (row in dataTable) {
@@ -169,7 +156,6 @@ suspend fun saveEpamModelInstance(
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>
 ) {
-//        Log.d("createHpModelInstance", "createHpModelInstance")
     val instances = mutableListOf<AceEpamData>()
 
     for (row in dataTable) {

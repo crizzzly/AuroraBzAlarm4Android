@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.ui.elements
+package com.crost.aurorabzalarm.ui.panels
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.ui.DataViewModel
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("StateFlowValueCalledInComposition")

@@ -2,11 +2,12 @@ package com.crost.aurorabzalarm.worker
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.crost.aurorabzalarm.ui.DataViewModel
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
 
 class WebParsingWorker(
     var ctx: Context,
@@ -24,9 +25,18 @@ class WebParsingWorker(
                 Result.success()
             } catch (throwable: Throwable) {
                 Log.e("WebParsingWorker", throwable.stackTraceToString())
+
+                val text = "WebParsingWorker\n${throwable.message}"
+                val toast = Toast.makeText(applicationContext, text, Toast.LENGTH_LONG)
+                toast.show()
                 Result.failure()
             } catch (e: IllegalStateException){
                 Log.e("WebParsingWorker", e.stackTraceToString())
+
+                val text = "WebParsingWorker\n${e.message}"
+                val toast = Toast.makeText(applicationContext, text, Toast.LENGTH_LONG)
+                toast.show()
+
                 Result.failure()
             }
     }

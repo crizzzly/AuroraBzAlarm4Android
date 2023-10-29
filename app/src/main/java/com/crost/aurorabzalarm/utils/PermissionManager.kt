@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm
+package com.crost.aurorabzalarm.utils
 
 import android.Manifest
 import android.content.Context
@@ -19,20 +19,28 @@ class PermissionManager {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     val permissions = arrayOf(
         Manifest.permission.INTERNET,
-        Manifest.permission.POST_NOTIFICATIONS
+        Manifest.permission.ACCESS_NOTIFICATION_POLICY,
+        Manifest.permission.POST_NOTIFICATIONS,
     )
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun hasPermission(context: Context): Boolean {
+        _permissionState.value = true
         for (permission in permissions) {
             val result = ContextCompat.checkSelfPermission(context, permission)
             Log.d("hasPermissionLegacy", "$permission hasPermission: $result")
-            if (result == PackageManager.PERMISSION_GRANTED) {
-                _permissionState.value = true
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                _permissionState.value = false
+                return _permissionState.value
             }
         }
+        Log.d("PermissionManager", "permissionState: ${_permissionState.value}")
         return _permissionState.value
     }
 
+    //TODO: Set MinSdk to Tiramisu
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun requestPermission(
         context: Context,
         permissionLauncher: ActivityResultLauncher<Array<String>>
@@ -59,5 +67,4 @@ class PermissionManager {
         Log.i("onPermissionGranted", "permissionState.value set to true")
         _permissionState.value = true
     }
-
 }

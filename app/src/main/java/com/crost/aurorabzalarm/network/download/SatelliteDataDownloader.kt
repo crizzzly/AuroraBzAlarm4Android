@@ -2,13 +2,13 @@ package com.crost.aurorabzalarm.network.download
 
 import android.os.Environment
 import android.util.Log
-import com.crost.aurorabzalarm.Constants.ACE_URL
-import com.crost.aurorabzalarm.Constants.FILEPATH_ACE_DATA
-import com.crost.aurorabzalarm.Constants.FILEPATH_EPAM_DATA
-import com.crost.aurorabzalarm.Constants.FILEPATH_HP_DATA
-import com.crost.aurorabzalarm.Constants.HP_URL
-import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
-import com.crost.aurorabzalarm.Constants.RETRY_DELAY_MS
+import com.crost.aurorabzalarm.utils.Constants.ACE_URL
+import com.crost.aurorabzalarm.utils.Constants.FILEPATH_ACE_DATA
+import com.crost.aurorabzalarm.utils.Constants.FILEPATH_EPAM_DATA
+import com.crost.aurorabzalarm.utils.Constants.FILEPATH_HP_DATA
+import com.crost.aurorabzalarm.utils.Constants.HP_URL
+import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
+import com.crost.aurorabzalarm.utils.Constants.RETRY_DELAY_MS
 import kotlinx.coroutines.delay
 import org.jsoup.Jsoup
 import java.io.BufferedReader
@@ -29,7 +29,7 @@ class DownloadManager() {
             try {
                 val aceDoc = Jsoup.connect(url).get()
                 val html = aceDoc.select("body").toString()
-                Log.d("SatelliteDataDownloader", "length of doc${html.length}") // 7774 /2335
+//                Log.d("SatelliteDataDownloader", "length of doc${html.length}") // 7774 /2335
 //                saveDataSheetToFile(html, url)
                 return html
             } catch (e: Exception) {

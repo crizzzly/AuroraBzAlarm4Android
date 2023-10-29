@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.crost.aurorabzalarm.Constants.PADDING_L
+import com.crost.aurorabzalarm.utils.Constants.PADDING_L
+import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
 
 //@Preview
 @Composable

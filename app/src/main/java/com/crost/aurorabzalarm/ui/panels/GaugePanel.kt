@@ -1,15 +1,10 @@
-package com.crost.aurorabzalarm.ui.elements
+package com.crost.aurorabzalarm.ui.panels
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +30,7 @@ import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -44,63 +40,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.crost.aurorabzalarm.Constants.ACE_BZ_TITLE
-import com.crost.aurorabzalarm.Constants.EPAM_DENS_TITLE
-import com.crost.aurorabzalarm.Constants.EPAM_SPEED_TITLE
-import com.crost.aurorabzalarm.Constants.EPAM_TEMP_TITLE
-import com.crost.aurorabzalarm.Constants.HP_TITLE
-import com.crost.aurorabzalarm.Constants.PADDING_L
-import com.crost.aurorabzalarm.Constants.PADDING_S
+import com.crost.aurorabzalarm.utils.Constants
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
-const val COMPONENT_COUNT = 3
-
-
-fun mapValueToRange(value: Double, fromMin: Double, fromMax: Double, toMin: Double, toMax: Double): Double {
-    return ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin)
-}
-
-
 
 @Preview
 @Composable
-fun PreviewAllCharts(
-    bz: Double = -15.6,
-    hp: Double = 35.0,
-    speed: Double = 476.4,
-    density: Double = 202.0,
-    temp: Double = 8.64e+05
-){
-    ShowAllCharts(
-        bz,
-        hp,
-        speed,
-        density,
-        temp,
-    )
-}
-
-@Preview
-@Composable
-fun PreviewCard(){
-    GaugeCard(EPAM_SPEED_TITLE, 600.0)
+fun PreviewPanel(){
+    GaugePanel(Constants.EPAM_SPEED_TITLE, 600.0)
 }
 
 
 @Composable
-fun GaugeCard(text: String, value: Double){
+fun GaugePanel(text: String, value: Double){
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val cardWidth =( screenWidth / COMPONENT_COUNT) /3
-    val cardHeight = cardWidth * 1.7
+    val panelWidth =( screenWidth / COMPONENT_COUNT) /3
+    val panelHeight = panelWidth * 1.7
 
     // TODO: variable sizes depending on screenSize
     Card(
         colors = CardColors(Color.DarkGray, Color.LightGray, Color.DarkGray, Color.LightGray),
         modifier = Modifier
-            .size(cardWidth.dp, cardHeight.dp)
+            .size(panelWidth.dp, panelHeight.dp)
 //            .align(Alignment.Center))
-            .border(BorderStroke(
+            .border(
+                BorderStroke(
                 0.dp,
                 brush = Brush.horizontalGradient(
                     colors = listOf(
@@ -111,8 +76,8 @@ fun GaugeCard(text: String, value: Double){
     ) {
 
         val previewModifier = Modifier
-            .size(cardWidth.dp, cardWidth.dp)
-            .padding(PADDING_S.dp, PADDING_S.dp)
+            .size(panelWidth.dp, panelWidth.dp)
+            .padding(Constants.PADDING_S.dp, Constants.PADDING_S.dp)
             .aspectRatio(1f)
             .align(Alignment.CenterHorizontally)
 
@@ -121,7 +86,7 @@ fun GaugeCard(text: String, value: Double){
             textAlign = TextAlign.Center,
             lineHeight = 1.5.em,
             modifier = Modifier
-                .padding( PADDING_S.dp)
+                .padding( Constants.PADDING_S.dp)
                 .width(IntrinsicSize.Max)
                 .align(Alignment.CenterHorizontally)
         )
@@ -136,230 +101,23 @@ fun GaugeCard(text: String, value: Double){
         )
 
         when (text){
-            ACE_BZ_TITLE -> PreviewBz(value, modifier = previewModifier)
-            HP_TITLE -> PreviewHp(value, modifier = previewModifier)
-            EPAM_SPEED_TITLE -> PreviewSpeed(value, modifier = previewModifier)
-            EPAM_DENS_TITLE -> PreviewDensity(value, modifier = previewModifier)
-            EPAM_TEMP_TITLE -> PreviewTemp(value, modifier = previewModifier)
+            Constants.ACE_BZ_TITLE -> BzChart(value, modifier = previewModifier)
+            Constants.HP_TITLE -> HpPanel(value, modifier = previewModifier)
+            Constants.EPAM_SPEED_TITLE -> SpeedPanel(value, modifier = previewModifier)
+            Constants.EPAM_DENS_TITLE -> DensityPanel(value, modifier = previewModifier)
+            Constants.EPAM_TEMP_TITLE -> TempPanel(value, modifier = previewModifier)
 
         }
     }
 }
 
-@Composable
-fun PreviewBz(
-    progress: Double  = -17.0,
-    modifier:  Modifier
-){
-
-    val valueRangeFrom= -100f
-    val valueRangeTo = 100f
-    val (mainColor, secondaryColor) = when {
-        progress < 0 -> // Red
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 0f..70f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
-        else -> // Green
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-    }
-
-//    val startAngleDrawArc = 270f
-//    val EndAngleDrawArc = (degreesMarkerStep * mappedProgress-135).toFloat(),
-    val drawProgressArcFromTop = true
-    val unit = "nT"
-    Speedometer(
-        progress = progress,
-        valueRangeFrom.toDouble(),
-        valueRangeTo.toDouble(),
-        mainColor,
-        secondaryColor,
-        drawProgressArcFromTop,
-        unit,
-        modifier
-    )
-}
-
-
-@Composable
-fun ShowAllCharts(
-    bz: Double,
-    hp:Double,
-    speed:Double,
-    density: Double,
-    temp:Double
-){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(PADDING_S.dp, PADDING_L.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-
-        Row( // 1st Row
-            modifier = Modifier
-                .padding(PADDING_S.dp)
-                .fillMaxWidth(),
-//            verticalAlignment = Alignment,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            GaugeCard(ACE_BZ_TITLE, bz)
-
-
-
-            GaugeCard(HP_TITLE, hp)
-
-        }
-        Row(
-            modifier = Modifier
-                .padding(PADDING_S.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-//            verticalAlignment = Alignment.
-        ) {
-            GaugeCard(EPAM_SPEED_TITLE, speed)
-            GaugeCard(EPAM_DENS_TITLE, density)
-            GaugeCard(EPAM_TEMP_TITLE, temp)
-        }
-    }
-}
-
-
-
-
-@Composable
-fun PreviewHp(
-    progress:Double = 25.0,
-    modifier:  Modifier
-){
-    val valueRangeFrom= 0f
-    val valueRangeTo = 100f
-    val (mainColor, secondaryColor) = when {
-        progress < 50 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 50f..70f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
-        else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-    }
-    val drawProgressArcFromTop = false
-    val unit = "GW"
-    Speedometer(
-        progress,
-        valueRangeFrom.toDouble(),
-        valueRangeTo.toDouble(),
-        mainColor,
-        secondaryColor,
-        drawProgressArcFromTop,
-        unit,
-        modifier
-        )
-}
-
-
-@Composable
-fun PreviewSpeed(
-    progress: Double = 400.0,
-    modifier:  Modifier
-){
-
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 999.9
-    val (mainColor, secondaryColor) = when {
-        progress < 400 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 400f..600f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
-        else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-    }
-    val drawProgressArcFromTop = false
-    val unit = "km/s"
-    Speedometer(
-        progress,
-        valueRangeFrom,
-        valueRangeTo,
-        mainColor,
-        secondaryColor,
-        drawProgressArcFromTop,
-        unit,
-        modifier
-    )
-}
-
-
-@Composable
-fun PreviewDensity(
-    progress: Double = 400.0,
-    modifier:  Modifier
-){
-
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 800.0
-    val (mainColor, secondaryColor) = when {
-        progress < 80 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 80f..130f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
-        else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-    }
-    val drawProgressArcFromTop = false
-    val unit = "p/cc"
-    Speedometer(
-        progress,
-        valueRangeFrom,
-        valueRangeTo,
-        mainColor,
-        secondaryColor,
-        drawProgressArcFromTop,
-        unit,
-        modifier
-    )
-}
-
-
-
-@Composable
-fun PreviewTemp(
-    progress: Double,
-    modifier:  Modifier
-){
-
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 1.5e+06
-    val (mainColor, secondaryColor) = when {
-        progress < 5.0e+05 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 5.0e+05..0.9e+06 -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
-        else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-    }
-    val drawProgressArcFromTop = false
-    val unit = "°K"
-    Speedometer(
-        progress = progress,
-        valueRangeFrom = valueRangeFrom,
-        valueRangeTo = valueRangeTo,
-        mainColor = mainColor,
-        secondaryColor = secondaryColor,
-        drawProgressArcFromTop = drawProgressArcFromTop,
-        unit = unit,
-        modifier = modifier
-    )
-}
 
 
 
 // TODO: Handle DisplayRotation
 // TODO: set markers for values
 @Composable
-fun Speedometer(
+fun Gauge(
     progress: Double,
     valueRangeFrom: Double,
     valueRangeTo: Double,
@@ -367,7 +125,7 @@ fun Speedometer(
     secondaryColor: Color,
     drawProgressArcFromTop: Boolean,
     unit: String,
-    modifier:  Modifier
+    modifier: Modifier
 
 ) {
     val arcDegrees = 270
@@ -377,7 +135,7 @@ fun Speedometer(
     val degreesMarkerStep = arcDegrees / numberOfMarkers
 
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val cardWidth = screenWidth / COMPONENT_COUNT - (2 * PADDING_L)
+    val cardWidth = screenWidth / COMPONENT_COUNT - (2 * Constants.PADDING_L)
 //    val cardHeight = cardWidth * 1.7
     // valRanges: from 0 to 90 - -100 - 100
     val mappedProgress = mapValueToRange(progress, valueRangeFrom, valueRangeTo, 0.0, 90.0)
@@ -422,11 +180,11 @@ fun Speedometer(
                 val angle2: Float
                 val angle1: Float
                 if (drawProgressArcFromTop){
-                        angle1 = 270f
-                        angle2 = (degreesMarkerStep * mappedProgress -136.5f).toFloat()
+                    angle1 = 270f
+                    angle2 = (degreesMarkerStep * mappedProgress -136.5f).toFloat()
                 } else {
-                        angle1 = startArcAngle
-                        angle2 = (degreesMarkerStep * mappedProgress).toFloat()
+                    angle1 = startArcAngle
+                    angle2 = (degreesMarkerStep * mappedProgress).toFloat()
                 }
                 drawArc(
                     mainColor,
@@ -481,9 +239,9 @@ fun Speedometer(
                 val measuredText =
                     textMeasurer.measure(
                         AnnotatedString(string),
-                            constraints = Constraints
-                                .fixed((size.width* 1f / 3f).toInt(), (size.height* 1f /4f).toInt()),
-                        style = androidx.compose.ui.text.TextStyle(
+                        constraints = Constraints
+                            .fixed((size.width* 1f / 3f).toInt(), (size.height* 1f /4f).toInt()),
+                        style = TextStyle(
                             color = mainColor, //Color.LightGray,
                             fontSize = 9.sp,
                             textAlign = TextAlign.Center,

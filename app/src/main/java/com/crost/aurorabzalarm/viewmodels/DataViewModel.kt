@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.ui
+package com.crost.aurorabzalarm.viewmodels
 
 import android.app.Application
 import android.util.Log
@@ -12,12 +12,11 @@ import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
+import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
+import com.crost.aurorabzalarm.utils.datetime_utils.getTimeOfDataFlight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 
 class DataViewModel(application: Application) : AndroidViewModel(application) {
@@ -72,22 +71,19 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     init {
         spaceWeatherRepository = SpaceWeatherRepository(application)
 
-        Log.d("DataViewModel Init", "Observing values")
+//        Log.d("DataViewModel Init", "Observing values")
         initAceObserver()
         initEpamObserver()
         initHpObserver()
 
-        Log.d("DataViewModel Init", "Init completed. starting first fetching process ... ")
         fetchSpaceWeatherData()
     }
-
-
 
     private fun initHpObserver() {
         spaceWeatherRepository.latestHpData.observeForever {
             try {
                 _latestHpState.value = it
-                Log.d("HpObserver", "latest hp: ${it.hpNorth} GW")
+//                Log.d("HpObserver", "latest hp: ${it.hpNorth} GW")
             } catch (e: Exception){
                 Log.e("HpObserver", "HpObserver: ${e.stackTraceToString()}")
             }
@@ -98,7 +94,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         spaceWeatherRepository.latestEpamData.observeForever {
             try {
                 _latestEpamState.value = it
-                Log.d("EpamObserver", "LatestSpeedVal: ${it.speed} km/s")
+//                Log.d("EpamObserver", "LatestSpeedVal: ${it.speed} km/s")
             } catch (e: Exception){
                 Log.e("EpamObserver", "EpamObserver: ${e.stackTraceToString()}")
             }
@@ -109,16 +105,15 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         spaceWeatherRepository.latestAceData.observeForever {
             try {
                 _latestAceState.value = it
-                Log.d("AceObserver", "initialized. latest: ${it.bz}")
+//                Log.d("AceObserver", "initialized. latest: ${it.bz}")
             } catch (e: Exception){
                 Log.e("AceObserver", "AceObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
-
     fun fetchSpaceWeatherData() {
-        Log.i("DataViewModel", "fetchSpaceWeatherData")
+//        Log.i("DataViewModel", "fetchSpaceWeatherData")
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -126,39 +121,26 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 //                async { spaceWeatherRepository.fetch/**/DataAndStore() }
             } catch (e: Exception) {/**/
                 Log.e("fetchSpaceWeatherData", e.stackTraceToString())
+
+                // TODO: user output
+
             }
         }
     }
 
 
-    private fun getTimeOfDataFlight(speed: Double?): Double {
-        // 1,357e+6 km/h
-        val distance = 1500000.0
-        val timeInS = distance/speed!!
-        val timeInM = timeInS/60
-        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
-        return timeInM
-
-    }
-
-    private fun formatTimestamp(timestamp: Long): String {
-        val instant = Instant.ofEpochMilli(timestamp)
-        val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        return formatter.format(localDateTime)
-    }
-
 
     fun setAlarmSettingsVisible(){
         _alarmSettingsVisible.value = true
     }
+
     fun setAlarmSettingsInvisible(){
         _alarmSettingsVisible.value = false
     }
 
     fun setAuroraAlarm(alarmEnabled: Boolean){
         _alarmIsEnabled.value = alarmEnabled
-        Log.d("setAuroraAlarm", "alarm enabled: $alarmEnabled")
+//        Log.d("setAuroraAlarm", "alarm enabled: $alarmEnabled")
     }
 }
 
@@ -167,7 +149,7 @@ object ViewModelFactory {
     private lateinit var dataViewModel: DataViewModel
 
     fun init(application: Application) {
-        Log.i("ViewModelFactory", "init")
+//        Log.i("ViewModelFactory", "init")
         dataViewModel =
             ViewModelProvider.AndroidViewModelFactory(application)
                 .create(DataViewModel::class.java)

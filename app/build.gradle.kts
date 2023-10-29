@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.symbol.processing)
+    implementation(libs.accompanist.permissions)
     ksp(libs.androidx.room.compiler)
     implementation(libs.mockito.kotlin)
     implementation(libs.kotlinx.coroutines.test)

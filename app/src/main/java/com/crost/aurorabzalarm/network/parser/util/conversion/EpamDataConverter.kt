@@ -1,10 +1,11 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import android.util.Log
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DENSITY
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DT
-import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
-import com.crost.aurorabzalarm.Constants.EPAM_COL_TEMP
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DENSITY
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_TEMP
+import com.crost.aurorabzalarm.utils.datetime_utils.convertToLocalEpochMillis
 import java.sql.Date
 
 class EpamDataConverter {

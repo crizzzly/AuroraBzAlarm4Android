@@ -26,7 +26,7 @@ class DocumentParser{
         return dataTableMapped
     }
     private fun extractDataTable(valuesCount: Int, textDocument: String): List<List<String>>{
-        Log.d("DocumentParser", "extracting DataTable  ${textDocument.length}")
+//        Log.d("DocumentParser", "extracting DataTable  ${textDocument.length}")
         val table = mutableListOf<List<String>>()
 
         // cut off <body> tags by "\n" and split at "#". All data is behind last "#"
@@ -65,7 +65,7 @@ class DocumentParser{
 
         // calculate number of rows to get the table in the right shape
         val rowCount = valuesOnly.size / valuesCount
-        Log.i("DocumentParser", "Number of rows: $rowCount, number of vals $valuesCount", )
+//        Log.i("DocumentParser", "Number of rows: $rowCount, number of vals $valuesCount", )
         val size = valuesOnly.size
         for (i in 0 until rowCount){
             val pos0 = i * valuesCount

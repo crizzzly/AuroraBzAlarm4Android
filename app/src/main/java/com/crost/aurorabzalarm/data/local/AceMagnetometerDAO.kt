@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import kotlinx.coroutines.flow.Flow
 

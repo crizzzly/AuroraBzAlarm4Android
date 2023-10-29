@@ -1,9 +1,11 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import android.util.Log
-import com.crost.aurorabzalarm.Constants.HP_COL_DT
-import com.crost.aurorabzalarm.Constants.HP_COL_HPN
-import com.crost.aurorabzalarm.Constants.HP_COL_HPS
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPS
+import com.crost.aurorabzalarm.utils.datetime_utils.convertToLocalEpochMillis
+import com.crost.aurorabzalarm.utils.datetime_utils.getSecOfDayFromTime
 
 class HpDataConverter {
     fun convertHpData(dataTable: List<Map<String, String>>): MutableList<MutableMap<String, Any>> {
@@ -32,10 +34,7 @@ class HpDataConverter {
             convertedDataTable.add(row)
 //            Log.d("HpDataConverter", "$datetime, $hpNorth")
         }
-        Log.d(
-            "HpDataConverter",
-            "converted ${convertedDataTable.size} rows. last: ${convertedDataTable.last()[HP_COL_DT]}, ${convertedDataTable.last()[HP_COL_HPN]}"
-        )
+       
         return convertedDataTable
 
     }

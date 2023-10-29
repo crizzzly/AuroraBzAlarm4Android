@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.network.parser.util.conversion
+package com.crost.aurorabzalarm.utils.datetime_utils
 
 import java.sql.Date
 import java.time.Instant
@@ -73,4 +73,14 @@ fun formatTimestamp(timestamp: Long): String {
     return formatter.format(localDateTime)
 }
 
+
+fun getTimeOfDataFlight(speed: Double?): Double {
+    // 1,357e+6 km/h
+    val distance = 1500000.0
+    val timeInS = distance/speed!!
+    val timeInM = timeInS/60
+//        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
+    return timeInM
+
+}
 

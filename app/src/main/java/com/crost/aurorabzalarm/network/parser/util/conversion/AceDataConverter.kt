@@ -1,11 +1,12 @@
 package com.crost.aurorabzalarm.network.parser.util.conversion
 
 import android.util.Log
-import com.crost.aurorabzalarm.Constants.ACE_COL_BT
-import com.crost.aurorabzalarm.Constants.ACE_COL_BX
-import com.crost.aurorabzalarm.Constants.ACE_COL_BY
-import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
-import com.crost.aurorabzalarm.Constants.ACE_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BT
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BX
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BY
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_DT
+import com.crost.aurorabzalarm.utils.datetime_utils.convertToLocalEpochMillis
 import java.sql.Date
 
 class AceDataConverter {

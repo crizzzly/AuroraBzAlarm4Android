@@ -4,14 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
-import com.crost.aurorabzalarm.Constants.ACE_COL_BZ
-import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.DB_NAME
-import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
-import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.HP_COL_HPN
-import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
@@ -21,12 +13,22 @@ import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestEpamValuesFromDb
 import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
 import com.crost.aurorabzalarm.repository.util.saveDataModelInstances
+import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BZ
+import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.DB_NAME
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPN
+import com.crost.aurorabzalarm.utils.Constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
+import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+const val DEBUG_REPOSITORY = false
 
 class SpaceWeatherRepository(application: Application) {
     private val networkOperator = NetworkOperator()
@@ -59,7 +61,7 @@ class SpaceWeatherRepository(application: Application) {
 
         do {
             try {  // db init
-                Log.i("SpaceWeatherRepository", "init db")
+                if (DEBUG_REPOSITORY) Log.i("SpaceWeatherRepository", "init db")
                 db =
                     Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
 //                        .addMigrations(migration1to2, migration1to3, migration2to3, )
@@ -93,12 +95,13 @@ class SpaceWeatherRepository(application: Application) {
 
     @Suppress("UNCHECKED_CAST")
     private fun setHpDataCollector() {
-        Log.d("setHpDataCollector", "setHpDataCollector")
+        if (DEBUG_REPOSITORY) Log.d("setHpDataCollector", "setHpDat Collector")
+
         scope.launch {
             try {
                 val latestData =  getLatestHpValuesFromDb(db) as Flow<HemisphericPowerData>
                 latestData.collect{hpData ->
-                    Log.d("HpDataCollector", hpData.hpNorth.toString())
+                    if (DEBUG_REPOSITORY) Log.d("HpDataCollector", hpData.hpNorth.toString())
                     _latestHpData.postValue(hpData)
                 }
             } catch (e: Exception) {
@@ -110,16 +113,18 @@ class SpaceWeatherRepository(application: Application) {
 
     @Suppress("UNCHECKED_CAST")
     private fun setAceDataCollector() {
-        Log.d("setAceDataCollector", "setAceDataCollector")
+        if (DEBUG_REPOSITORY) Log.d("setAceDataCollector", "setAceDataCollector")
         scope.launch {
             try {
                 val latestData = getLatestAceValuesFromDb(db) as Flow<AceMagnetometerData>
 
                 latestData.collect{aceData ->
-//                    Log.d(
-//                        "getLatestAceData",
-//                        "${formatTimestamp(aceData.datetime)}: Bz ${aceData.bz} nT"
-//                    )
+                    if(DEBUG_REPOSITORY){
+                        Log.d(
+                            "getLatestAceData",
+                            "${formatTimestamp(aceData.datetime)}: Bz ${aceData.bz} nT"
+                        )
+                    }
                     _latestAceData.postValue(aceData)
                 }
             } catch (e: Exception) {
@@ -131,15 +136,18 @@ class SpaceWeatherRepository(application: Application) {
 
     @Suppress("UNCHECKED_CAST")
     private fun setEpamDataCollector() {
-        Log.d("setEpamDataCollector", "setEpamDataCollector")
+        if (DEBUG_REPOSITORY) Log.d("setEpamDataCollector", "setEpamDataCollector")
         scope.launch {
             try {
                 val latestData =  getLatestEpamValuesFromDb(db) as Flow<AceEpamData>
                 latestData.collect{epamData ->
-//                    Log.d(
-//                        "getLatestEpamData",
-//                        "${formatTimestamp(epamData.datetime)}: Speed ${epamData.speed} km/s"
-//                    )
+                    if (DEBUG_REPOSITORY) {
+                        Log.d(
+                            "getLatestEpamData",
+                            "${formatTimestamp(epamData.datetime)}: Speed ${epamData.speed} km/s"
+                        )
+
+                    }
                     _latestEpamData.postValue(epamData)
                 }
             } catch (e: Exception) {
@@ -160,75 +168,37 @@ class SpaceWeatherRepository(application: Application) {
 
     private suspend fun storeDataInDb(allDataLists: MutableMap<String, MutableList<MutableMap<String, Any>>>) {
         for (table in allDataLists.keys) {
-            when (table) {
-                ACE_TABLE_NAME -> {
-                    Log.d(
-                        "storingDataInDb",
-                        "$table val: ${allDataLists[table]!!.last()[ACE_COL_BZ]}"
-                    )
-                }
-
-                EPAM_TABLE_NAME -> {
-                    Log.d(
-                        "storingDataInDb",
-                        "$table val: ${allDataLists[table]!!.last()[EPAM_COL_SPEED]}"
-                    )
-                }
-
-                HP_TABLE_NAME -> {
-                    Log.d(
-                        "storingDataInDb",
-                        "$table val: ${allDataLists[table]!!.last()[HP_COL_HPN]}"
-                    )
-                }
-            }
             try {
                 saveDataModelInstances(db, allDataLists[table]!!, table)
             } catch (e: Exception) {
                 Log.e("storeDataInDb", "Error processing data: ${e.message}")
                 throw e
             }
+            if (DEBUG_REPOSITORY) {
+                when (table) {
+                    ACE_TABLE_NAME -> {
+                        Log.d(
+                            "storingDataInDb",
+                            "$table val: ${allDataLists[table]!!.last()[ACE_COL_BZ]}"
+                        )
+                    }
+
+                    EPAM_TABLE_NAME -> {
+                        Log.d(
+                            "storingDataInDb",
+                            "$table val: ${allDataLists[table]!!.last()[EPAM_COL_SPEED]}"
+                        )
+                    }
+
+                    HP_TABLE_NAME -> {
+                        Log.d(
+                            "storingDataInDb",
+                            "$table val: ${allDataLists[table]!!.last()[HP_COL_HPN]}"
+                        )
+                    }
+                }
+            }
         }
     }
 }
-
-
-
-//        for (dsConfig in dataSourceConfigs) {
-//            if(dsConfig.latestData.isNotEmpty()){
-//                when (dsConfig.tableName) {
-//                    ACE_TABLE_NAME -> {
-//                        Log.d(
-//                            "storingDataInDb",
-//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[ACE_COL_BZ]}"
-//                        )
-//                    }
-//                    HP_TABLE_NAME  -> {
-//                        Log.d(
-//                            "storingDataInDb",
-//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[HP_COL_HPN]}"
-//                        )
-//                    }
-//                    EPAM_TABLE_NAME  -> {
-//                        Log.d(
-//                            "storingDataInDb",
-//                            "${dsConfig.tableName} val: ${dsConfig.latestData.last()[EPAM_COL_SPEED]}"
-//                        )
-//                    }
-//                }
-//                try {
-//                    saveDataModelInstances(db, dsConfig.latestData, dsConfig.tableName)
-//
-//                } catch (e: Exception){
-//                    Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
-//                    throw e
-//                }
-//            } else { // dsconfig.latestData is empty:
-//                Log.e("storeDataInDb", "No Data for ${dsConfig.tableName}, skip storing process")
-//            }
-//        }
-
-
-
-
 

@@ -7,11 +7,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DENSITY
-import com.crost.aurorabzalarm.Constants.EPAM_COL_DT
-import com.crost.aurorabzalarm.Constants.EPAM_COL_SPEED
-import com.crost.aurorabzalarm.Constants.EPAM_COL_TEMP
-import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DENSITY
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_DT
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_SPEED
+import com.crost.aurorabzalarm.utils.Constants.EPAM_COL_TEMP
+import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData

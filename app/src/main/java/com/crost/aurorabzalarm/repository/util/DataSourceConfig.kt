@@ -1,13 +1,13 @@
 package com.crost.aurorabzalarm.repository.util
 
-import com.crost.aurorabzalarm.Constants
-import com.crost.aurorabzalarm.Constants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.ACE_URL
-import com.crost.aurorabzalarm.Constants.EPAM_KEYS
-import com.crost.aurorabzalarm.Constants.EPAM_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.EPAM_URL
-import com.crost.aurorabzalarm.Constants.HP_TABLE_NAME
-import com.crost.aurorabzalarm.Constants.HP_URL
+import com.crost.aurorabzalarm.utils.Constants
+import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.ACE_URL
+import com.crost.aurorabzalarm.utils.Constants.EPAM_KEYS
+import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.EPAM_URL
+import com.crost.aurorabzalarm.utils.Constants.HP_TABLE_NAME
+import com.crost.aurorabzalarm.utils.Constants.HP_URL
 
 data class DataSourceConfig(
     val tableName: String,

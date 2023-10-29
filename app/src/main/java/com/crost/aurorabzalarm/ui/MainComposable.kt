@@ -1,7 +1,10 @@
 package com.crost.aurorabzalarm.ui
 
 import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
@@ -21,46 +24,60 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.crost.aurorabzalarm.Constants.PADDING_L
-import com.crost.aurorabzalarm.Constants.PADDING_S
 import com.crost.aurorabzalarm.R
-import com.crost.aurorabzalarm.ui.elements.PreviewAllCharts
+import com.crost.aurorabzalarm.ui.panels.PreviewAllPanels
+import com.crost.aurorabzalarm.utils.Constants.PADDING_L
+import com.crost.aurorabzalarm.utils.Constants.PADDING_S
+import com.crost.aurorabzalarm.utils.PermissionManager
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
+import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.time.format.DateTimeFormatter
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainComposable(viewModel: DataViewModel) {
+fun MainComposable(
+    viewModel: DataViewModel,
+    permissionManager: PermissionManager,
+    permissionLauncher: ActivityResultLauncher<Array<String>>,
+) {
+
+    val context = LocalContext.current
+
+    val permissionState by permissionManager.permissionState.collectAsState()
+
     Log.d("MainComposable VM", viewModel.toString())
     val currentHpVals by remember { viewModel.latestHpState }
     val currentAceVals by remember { viewModel.latestAceState }
     val currentEpamVals by remember { viewModel.latestEpamState }
     val currentTime = viewModel.datetime
+    val datetime = viewModel.dateTimeString
     val alarmSettingsVisible by remember {  viewModel.alarmSettingsVisible }
 
     val currentDuration = viewModel.currentDurationOfFlight
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-
-//    formatter.format(currentTime),
-//    currentAceVals!!.bz,
-//    currentHpVals!!.hpNorth ,
-//    currentEpamVals!!.speed,
-//    currentEpamVals!!.density,
-//    currentEpamVals!!.temp,
-//    currentDuration
     val df = DecimalFormat("#.##")
     df.roundingMode = RoundingMode.CEILING
+
+    if (! permissionState) {
+        if (permissionManager.hasPermission(context)) {
+            permissionManager.onPermissionGranted()
+        } else {
+            permissionManager.requestPermission(context, permissionLauncher)
+        }
+    }
 
 
 
@@ -76,7 +93,8 @@ fun MainComposable(viewModel: DataViewModel) {
     }
 
     MainScreen(
-        formatter.format(currentTime),
+//        formatter.format(currentTime),
+        datetime,
         currentAceVals!!.bz,
         currentHpVals!!.hpNorth ,
         currentEpamVals!!.speed,
@@ -145,7 +163,7 @@ fun MainScreen(
                 Text("$currentDuration Minutes from DISCOVR to Earth")
 
 
-                PreviewAllCharts(
+                PreviewAllPanels(
                     bz,
                     hpNorth.toDouble(),
                     speed,
