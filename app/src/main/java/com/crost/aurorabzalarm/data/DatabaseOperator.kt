@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.repository.util
+package com.crost.aurorabzalarm.data
 
 import android.util.Log
 import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase

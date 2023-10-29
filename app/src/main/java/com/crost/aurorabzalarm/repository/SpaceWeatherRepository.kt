@@ -8,11 +8,11 @@ import com.crost.aurorabzalarm.data.local.SpaceWeatherDataBase
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
-import com.crost.aurorabzalarm.repository.util.NetworkOperator
-import com.crost.aurorabzalarm.repository.util.getLatestAceValuesFromDb
-import com.crost.aurorabzalarm.repository.util.getLatestEpamValuesFromDb
-import com.crost.aurorabzalarm.repository.util.getLatestHpValuesFromDb
-import com.crost.aurorabzalarm.repository.util.saveDataModelInstances
+import com.crost.aurorabzalarm.network.NetworkOperator
+import com.crost.aurorabzalarm.data.getLatestAceValuesFromDb
+import com.crost.aurorabzalarm.data.getLatestEpamValuesFromDb
+import com.crost.aurorabzalarm.data.getLatestHpValuesFromDb
+import com.crost.aurorabzalarm.data.saveDataModelInstances
 import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BZ
 import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.utils.Constants.DB_NAME

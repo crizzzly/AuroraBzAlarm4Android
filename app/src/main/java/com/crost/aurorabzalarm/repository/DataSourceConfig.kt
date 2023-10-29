@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.repository.util
+package com.crost.aurorabzalarm.repository
 
 import com.crost.aurorabzalarm.utils.Constants
 import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME

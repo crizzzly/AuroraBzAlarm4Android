@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.network.parser.util.conversion
+package com.crost.aurorabzalarm.network.parser.converter
 
 import android.util.Log
 import com.crost.aurorabzalarm.utils.Constants.HP_COL_DT

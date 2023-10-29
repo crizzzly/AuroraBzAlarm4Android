@@ -29,7 +29,7 @@ class AuroraNotificationService(
             .setContentText("Bz is currently at ${viewModel.latestAceState.value!!.bz}\n" +
                     "Hemispheric Power at ${viewModel.latestHpState.value!!.hpNorth}")
             .setSmallIcon(androidx.core.R.drawable.notification_bg) //--> find icon!
-            .setPriority(NotificationManager.IMPORTANCE_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 //            .setVibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))

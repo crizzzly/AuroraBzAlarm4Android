@@ -1,9 +1,11 @@
-package com.crost.aurorabzalarm.repository.util
+package com.crost.aurorabzalarm.network
 
 import android.util.Log
 import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
-import com.crost.aurorabzalarm.network.parser.util.conversion.DataShaper
+import com.crost.aurorabzalarm.network.parser.converter.DataShaper
+import com.crost.aurorabzalarm.repository.DataSourceConfig
+import com.crost.aurorabzalarm.repository.getDataSources
 
 
 class NetworkOperator{
@@ -39,7 +41,7 @@ class NetworkOperator{
         dsConfig: DataSourceConfig,
         downloadManager:DownloadManager,
         parser: DocumentParser,
-        dataShaper:DataShaper
+        dataShaper: DataShaper
     ): MutableList<MutableMap<String, Any>> {
         val valuesCount = dsConfig.keys.size
         val downloadedDataTable = downloadManager.loadSatelliteDatasheet(dsConfig.url)

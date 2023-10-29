@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.network.parser.util.conversion
+package com.crost.aurorabzalarm.network.parser.converter
 
 import android.util.Log
 import com.crost.aurorabzalarm.utils.Constants.ACE_COL_BT
