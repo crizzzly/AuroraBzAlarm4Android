@@ -3,6 +3,7 @@ package com.crost.aurorabzalarm.viewmodels
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.crost.aurorabzalarm.settings.SettingsViewModel
 
 object AuroraViewModelFactory {
     private lateinit var dataViewModel: DataViewModel

@@ -1,7 +1,7 @@
-@file:Suppress("UNUSED_EXPRESSION")
 
-package com.crost.aurorabzalarm.ui
+package com.crost.aurorabzalarm.settings
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,69 +16,79 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.crost.aurorabzalarm.ui.appbars.SettingsAppBar
 import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 
 data class SettingsState(
-    var notificationsEnabled: Boolean,
-    var settingsVisible: Boolean,
+    var notificationEnabled: Boolean,
     var bzThreshold: Int,
     var hpThreshold: Int
 )
 
+@Composable
+fun SettingsScreenWrapper(settingsViewModel: SettingsViewModel){
+    val con = LocalContext.current
+    val settingsConfig = settingsViewModel.settingsConfig
+    val hp = settingsViewModel.hpSliderState.observeAsState(initial = settingsConfig.hpWarningLevel.currentValue)
+    val bz = settingsViewModel.bzSliderState.observeAsState(initial = settingsConfig.bzWarningLevel.currentValue)
+
+    val notification = settingsViewModel.notificationEnabled.observeAsState(initial = settingsConfig.notificationEnabled)
+
+    SettingsScreen(notification.value, hp.value, bz.value, settingsConfig)
+
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SettingsScreen(
-//    settingsState: SettingsState,
-//    onNotificationsEnabledChange: (Boolean) -> Unit,
-//    onBzThresholdChange: (Int) -> Unit,
-//    onHpThresholdChange: (Int) -> Unit
+    notificationEnabled: Boolean,
+    hpSliderVal: Float,
+    bzSliderVal: Float,
+    settingsConfig: Settings
 ) {
-    val settingsViewModel = AuroraViewModelFactory.getSettingsViewModel()
-    val settingsState = settingsViewModel.settingsState.observeAsState()
-    val hpSliderVal by settingsViewModel.hpSliderState.collectAsState()
-    val bzSliderVal by settingsViewModel.bzSliderState.collectAsState()
 
-    var hpSliderState: SliderState
-    hpSliderState = remember {
+    Log.d("SettingsScreen",
+        "settingsState, notification: ${notificationEnabled}\n" +
+            "hpSliderVal: $hpSliderVal, bzSliderVal: $bzSliderVal")
+
+    val hpSliderState = remember {
         SliderState(
             initialValue = hpSliderVal,
-            initialOnValueChange = {
-
-
-                                   onHpThresholdChange(it)
-            },
             valueRange = 0f..100f,
-            onValueChangeFinished = {
-
-                // launch some business logic update with the state you hold
+            steps = 5,
+            initialOnValueChange = {
+                onHpThresholdChange(it)
             },
-            steps = 5
+            onValueChangeFinished = {
+                settingsConfig.hpWarningLevel.currentValue = hpSliderVal
+                saveSettingsToFile(settingsConfig)
+            }
         )
     }
 
-    hpSliderState.value = hpSliderVal
 
-    val bzSliderState = SliderState(
-        initialValue = bzSliderVal,
-        valueRange = -30.0f..0.0f,
-        initialOnValueChange = {
-            onBzThresholdChange(it)
-        }
-    )
-
-    bzSliderState.value = bzSliderVal
+    val bzSliderState = remember {
+        SliderState(
+            initialValue = bzSliderVal,
+            valueRange = -30.0f..0.0f,
+            steps = 5,
+            initialOnValueChange = {
+                onBzThresholdChange(it)
+            },
+            onValueChangeFinished = {
+                settingsConfig.bzWarningLevel.currentValue = hpSliderVal
+                saveSettingsToFile(settingsConfig)
+            }
+        )
+    }
 
 
 
@@ -95,7 +105,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                ListItem(
+                ListItem( // Enable/Disable
                     headlineContent = {
                         Text(
                             "Enable Aurora Alarm",
@@ -104,16 +114,19 @@ fun SettingsScreen(
                     },
                     trailingContent = {
                         Switch(
-                            checked = settingsState.value!!.notificationsEnabled,
+                            checked = notificationEnabled,
                             onCheckedChange =
                             { checked ->
+                                Log.d("Settings creen", "alarm switch enabled : $checked")
                                 setNotificationState(checked)
+                                settingsConfig.notificationEnabled = checked
+                                saveSettingsToFile(settingsConfig)
                             }
                         )
                     },
                     modifier = Modifier.align(Alignment.End)
                 )
-                ListItem(
+                ListItem(  // Headline Warning Level
                     headlineContent = { Text("Warning Levels") },
                     colors = ListItemColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -125,28 +138,23 @@ fun SettingsScreen(
                         disabledLeadingIconColor = MaterialTheme.colorScheme.secondary,
                         disabledTrailingIconColor = MaterialTheme.colorScheme.secondary,
                         overlineColor = MaterialTheme.colorScheme.secondary,
-
-                    )
+                        )
                 )
 
-                ListItem(
+                ListItem(  // Slider Bz
                     headlineContent = { Text("Set Bz Warning Level") },
-                    trailingContent = { Text(bzSliderState.value.toString()) },
+                    trailingContent = { Text(bzSliderVal.toInt().toString()) },
                     supportingContent = {
-                        Column {
-
-                        }
+                        Slider(state = bzSliderState)
                     }
                 )
 
-                ListItem(
+                ListItem( // Slider HP
                     headlineContent = { Text("Set Hemispheric Power Warning Level") },
-                    trailingContent = { Text(hpSliderState.value.toString()) },
+                    trailingContent = { Text(hpSliderVal.toInt().toString()) },
                     supportingContent = {
-                        Slider(
-                            state = hpSliderState,
-
-                            )
+                        // Slider HP
+                        Slider(state = hpSliderState)
                     }
                 )
             }
@@ -155,10 +163,9 @@ fun SettingsScreen(
 }
 
 
-
 fun setNotificationState(checked: Boolean) {
     val viewModel = AuroraViewModelFactory.getSettingsViewModel()
-    viewModel.setNotificationsState(checked)
+    viewModel.setNotificationState(checked)
 }
 
 fun onBzThresholdChange( value: Float){
@@ -171,24 +178,24 @@ fun onHpThresholdChange( value: Float){
     viewModel.updateHpState(value)
 }
 
-@Preview(
-    showBackground = true,
-    )
-@Composable
-fun SettingsScreenPreview() {
-    val settingsState = rememberUpdatedState(
-        SettingsState(
-            true,
-            true,
-            -10,
-            50
-        )
-    )
 
-    SettingsScreen(
-//        settingsState = settingsState,
-//        onNotificationsEnabledChange = { /* Handle notifications enabled state */ },
-//        onBzThresholdChange = { /* Handle Bz threshold change */ },
-//        onHpThresholdChange = { /* Handle HP threshold change */ }
-    )
+fun saveSettingsToFile(settings: Settings){
+    val viewModel = AuroraViewModelFactory.getSettingsViewModel()
+    viewModel.saveConfigToFile(settings)
 }
+
+
+
+//@Preview(
+//    showBackground = true,
+//)
+//@Composable
+//fun SettingsScreenPreview() {
+//    val notificationEnabled = remember { mutableStateOf(false) }
+//    val hpSliderVal = remember { mutableStateOf(50f) }
+//    val bzSliderVal = remember { mutableStateOf(-15f) }
+//
+//    SettingsScreen(
+//        notificationEnabled.value, hpSliderVal.value, bzSliderVal.value, settingsConfig
+//    )
+//}

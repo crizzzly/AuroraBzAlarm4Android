@@ -1,0 +1,13 @@
+{
+  "hpWarningLevel": {
+    "minValue": 0,
+    "maxValue": 100,
+    "currentValue": 30
+  },
+  "bzWarningLevel": {
+    "minValue": -50,
+    "maxValue": 0,
+    "currentValue": -10
+  },
+  "notificationEnabled": true
+}

@@ -11,7 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import com.crost.aurorabzalarm.settings.getSettingsConfig
 import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 import com.crost.aurorabzalarm.utils.AuroraNotificationService
@@ -30,9 +32,7 @@ class MainActivity : ComponentActivity() {
         val settingsViewModel = AuroraViewModelFactory.getSettingsViewModel()
 //        Log.d("MainActivity viewModel", viewModel.toString())
 
-        val bzState = viewModel.latestAceState.value
-        val notificationEnabled = settingsViewModel.settingsState.value!!.notificationsEnabled
-        val settingsVisible = settingsViewModel.settingsState.value!!.settingsVisible
+
 
         permissionManager = PermissionManager()
         permissionLauncher = registerForActivityResult(
@@ -58,7 +58,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (notificationEnabled && bzState!!.bz < 1.0){// && bzState.bz > -900){
+                    val settingsConfig = getSettingsConfig(this)
+                    val notificationEnabled = settingsViewModel.notificationEnabled
+                    val notification = notificationEnabled.observeAsState(initial = settingsConfig.notificationEnabled)
+                    val bzState = viewModel.latestAceState.value?.bz ?: -999.9
+                    if (notification.value && bzState < 1.0){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")
                         notificationService.showBasicNotification()
                     }
