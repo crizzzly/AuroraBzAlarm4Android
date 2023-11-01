@@ -12,8 +12,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import com.crost.aurorabzalarm.utils.Constants.WORKER_REPEAT_INTERVAL
+import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
-import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
 import com.crost.aurorabzalarm.worker.MyWorkerFactory
 import com.crost.aurorabzalarm.worker.WebParsingWorker
 import java.util.concurrent.TimeUnit
@@ -31,10 +31,10 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        ViewModelFactory.init(this)
+        AuroraViewModelFactory.init(this)
 
 //        val application = applicationContext
-        viewModel = ViewModelFactory.getDataViewModel()
+        viewModel = AuroraViewModelFactory.getDataViewModel()
 //        permissionManager = PermissionManager()
 
         Log.d("App", "initializing WorkManager")
@@ -48,6 +48,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
             .addTag("WebParsingWorker")
             .setConstraints(Constraints(NetworkType.CONNECTED))
             .build()
+
         workManager.enqueue(parsingWorkRequest)
         Log.d("App", "WorkManager enqueued")
 

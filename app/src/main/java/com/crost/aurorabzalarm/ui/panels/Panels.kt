@@ -194,12 +194,12 @@ fun SpeedPanel(
 
 @Composable
 fun DensityPanel(
-    progress: Double = 400.0,
+    progress: Double = 4.0,
     modifier:  Modifier
 ){
 
     val valueRangeFrom = 0.0
-    val valueRangeTo = 800.0
+    val valueRangeTo = 100.0
     val (mainColor, secondaryColor) = when {
         progress < 80 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -232,7 +232,7 @@ fun TempPanel(
 ){
 
     val valueRangeFrom = 0.0
-    val valueRangeTo = 1.5e+06
+    val valueRangeTo = 1e+06
     val (mainColor, secondaryColor) = when {
         progress < 5.0e+05 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)

@@ -21,6 +21,7 @@ class PermissionManager {
         Manifest.permission.INTERNET,
         Manifest.permission.ACCESS_NOTIFICATION_POLICY,
         Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.FOREGROUND_SERVICE,
     )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

@@ -6,13 +6,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
-import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
+import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AuroraNotificationService(
     private val context: Context
 ) {
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
-    private val viewModel = ViewModelFactory.getDataViewModel()
+    private val viewModel = AuroraViewModelFactory.getDataViewModel()
     private val notificationId = 17
 
 
@@ -22,11 +24,12 @@ class AuroraNotificationService(
 //            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
 //            putExtra(Settings.EXTRA_CHANNEL_ID, myNotificationChannel.getId())
 //        }
-
+        val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        
         Log.d("AuroraNotificationService", "Showing Notification")
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("Aurora Probability: Bz has fallen!")
-            .setContentText("Bz is currently at ${viewModel.latestAceState.value!!.bz}\n" +
+            .setContentText("$time: Bz is currently at ${viewModel.latestAceState.value!!.bz}\n" +
                     "Hemispheric Power at ${viewModel.latestHpState.value!!.hpNorth}")
             .setSmallIcon(androidx.core.R.drawable.notification_bg) //--> find icon!
             .setPriority(NotificationCompat.PRIORITY_HIGH)

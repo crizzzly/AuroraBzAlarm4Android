@@ -16,7 +16,7 @@ import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 import com.crost.aurorabzalarm.utils.AuroraNotificationService
 import com.crost.aurorabzalarm.utils.PermissionManager
-import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
+import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -26,10 +26,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = ViewModelFactory.getDataViewModel()
+        val viewModel = AuroraViewModelFactory.getDataViewModel()
+        val settingsViewModel = AuroraViewModelFactory.getSettingsViewModel()
 //        Log.d("MainActivity viewModel", viewModel.toString())
 
         val bzState = viewModel.latestAceState.value
+        val notificationEnabled = settingsViewModel.settingsState.value!!.notificationsEnabled
+        val settingsVisible = settingsViewModel.settingsState.value!!.settingsVisible
 
         permissionManager = PermissionManager()
         permissionLauncher = registerForActivityResult(
@@ -55,12 +58,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (bzState!!.bz < 1.0){// && bzState.bz > -900){
+                    if (notificationEnabled && bzState!!.bz < 1.0){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")
                         notificationService.showBasicNotification()
                     }
+
                     MainComposable(
                         viewModel,
+                        settingsViewModel,
                         permissionManager,
                         permissionLauncher
                     )

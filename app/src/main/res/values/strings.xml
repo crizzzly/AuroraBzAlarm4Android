@@ -8,7 +8,8 @@
 
     <string name="aurora_icon_source">https://www.flaticon.com/de/kostenlose-icons/nordlichter</string>
     <string name="aurora2_icon_source">https://www.flaticon.com/de/kostenlose-icons/aurora</string>
-
+    <string name="notification_channel_id">aurora_notification</string>
+    <string name="notification_title">Aurora Probability!</string>
 
 
 </resources>

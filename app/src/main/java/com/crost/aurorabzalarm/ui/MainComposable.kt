@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
@@ -12,35 +13,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.crost.aurorabzalarm.R
+import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.PreviewAllPanels
 import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 import com.crost.aurorabzalarm.utils.PermissionManager
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
-import com.crost.aurorabzalarm.viewmodels.ViewModelFactory
+import com.crost.aurorabzalarm.viewmodels.SettingsViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -50,6 +44,7 @@ import java.text.DecimalFormat
 @Composable
 fun MainComposable(
     viewModel: DataViewModel,
+    settingsViewModel: SettingsViewModel,
     permissionManager: PermissionManager,
     permissionLauncher: ActivityResultLauncher<Array<String>>,
 ) {
@@ -64,7 +59,7 @@ fun MainComposable(
     val currentEpamVals by remember { viewModel.latestEpamState }
     val currentTime = viewModel.datetime
     val datetime = viewModel.dateTimeString
-    val alarmSettingsVisible by remember {  viewModel.alarmSettingsVisible }
+    val settingsVisible by settingsViewModel.visibilityState.collectAsState()
 
     val currentDuration = viewModel.currentDurationOfFlight
 
@@ -79,8 +74,6 @@ fun MainComposable(
         }
     }
 
-
-
     try {
         Log.d(
             "Composable value",
@@ -92,17 +85,22 @@ fun MainComposable(
         Log.e("Composable value", e.toString())
     }
 
-    MainScreen(
-//        formatter.format(currentTime),
-        datetime,
-        currentAceVals!!.bz,
-        currentHpVals!!.hpNorth ,
-        currentEpamVals!!.speed,
-        currentEpamVals!!.density,
-        currentEpamVals!!.temp,
-        df.format(currentDuration) ,
-        alarmSettingsVisible
-    )
+    if(settingsVisible){
+        SettingsScreen()
+    }
+    else{
+        MainScreen(
+    //        formatter.format(currentTime),
+            datetime,
+            currentAceVals!!.bz,
+            currentHpVals!!.hpNorth ,
+            currentEpamVals!!.speed,
+            currentEpamVals!!.density,
+            currentEpamVals!!.temp,
+            df.format(currentDuration) ,
+
+        )
+    }
 }
 
 
@@ -116,31 +114,12 @@ fun MainScreen(
     density: Double,
     temp: Double,
     currentDuration: String,
-    showAlarmSettings: Boolean
 ) {
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(stringResource(R.string.app_name))
-                },
-                actions = {
-                    IconButton(
-                        onClick = { setAlarmSettingsVisible() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Build, //Notifications
-                            contentDescription = "open alarm settings"
-                        )
-                    }
-                }
-            )
+            AuroraAppBar()
         }
     ) { paddingVals ->
         Surface(
@@ -148,6 +127,7 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingVals)
                 .scrollable(scrollState, orientation = Orientation.Vertical)
+                .background(Color(0xFF303030))
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -172,9 +152,6 @@ fun MainScreen(
                 )
             }
         }
-        if (showAlarmSettings) {
-            AlarmSettingsDialog( )
-        }
     }
 }
 
@@ -194,13 +171,8 @@ fun MainScreenPreview() {
         358.6,
         56.2,
         123.4,
-        "54.2",
-        false
+        "54.2"
     )
 }
 
 
-fun setAlarmSettingsVisible(){
-    val viewModel = ViewModelFactory.getDataViewModel()
-    viewModel.setAlarmSettingsVisible()
-}

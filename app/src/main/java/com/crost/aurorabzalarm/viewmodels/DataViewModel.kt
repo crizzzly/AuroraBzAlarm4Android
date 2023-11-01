@@ -6,7 +6,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
@@ -112,6 +111,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     fun fetchSpaceWeatherData() {
 //        Log.i("DataViewModel", "fetchSpaceWeatherData")
 
@@ -129,7 +129,6 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     fun setAlarmSettingsVisible(){
         _alarmSettingsVisible.value = true
     }
@@ -145,20 +144,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 
-object ViewModelFactory {
-    private lateinit var dataViewModel: DataViewModel
 
-    fun init(application: Application) {
-//        Log.i("ViewModelFactory", "init")
-        dataViewModel =
-            ViewModelProvider.AndroidViewModelFactory(application)
-                .create(DataViewModel::class.java)
-    }
-
-    fun getDataViewModel(): DataViewModel {
-        return dataViewModel
-    }
-}
 
 
 //

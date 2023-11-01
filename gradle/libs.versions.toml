@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0-alpha09"
+agp = "8.3.0-alpha11"
 #noinspection GradleDependency
 kotlin = "1.8.10" # 1.8.10
 #noinspection GradleDependency
@@ -13,7 +13,7 @@ fragment-ktx = "1.6.1"
 junit = "4.13.2"
 junit-jupiter = "5.10.0"
 jsoup = "1.16.2"
-ksp = "1.9.20-RC-1.0.13" # "1.8.0-1.0.9"
+ksp = "1.9.20-RC-1.0.13" # "1.8.0-1.0.9" 1.9.20-RC2-1.0.13
 kotlinx-coroutines = "1.7.3"
 lifecycle = "2.6.2"
 material = "1.5.4"
@@ -26,8 +26,8 @@ room = "2.5.2"
 ui = "1.5.4"
 work = "2.8.1"
 accompanist-permissions = "0.32.0"
+preference-ktx = "1.2.1"
 
-#ui-desktop = "1.6.0-alpha07"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -67,9 +67,9 @@ mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", versio
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "ui" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-ksp = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
-symbol-processing = { group = "com.google.devtools.ksp", name = "symbol-processing", version = "1.9.20-RC2-1.0.13" }
+symbol-processing = { group = "com.google.devtools.ksp", name = "symbol-processing", version.ref = "ksp" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist-permissions" }
+androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference-ktx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

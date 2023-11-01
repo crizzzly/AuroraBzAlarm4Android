@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.AuroraBzAlarm" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AuroraBzAlarm" parent="android:Theme.Material.NoActionBar" >
+        <item name="android:textColorHighlight">@color/red_ish</item>
+<!--        <item name="android:backdropColor">@color/background_grey</item>-->
+    </style>
+    
 </resources>

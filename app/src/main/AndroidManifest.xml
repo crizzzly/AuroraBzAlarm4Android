@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".AuroraScopeEuropeApp"
@@ -17,6 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AuroraBzAlarm"
         tools:targetApi="31">
+
+        <!--    Main Activity    -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,6 +30,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="shortService"
+            tools:node="merge" />
+
         <service
             android:name=".worker.WebParsingWorker"
             android:permission="android.permission.BIND_JOB_SERVICE"
