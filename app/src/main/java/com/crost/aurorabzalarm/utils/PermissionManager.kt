@@ -53,7 +53,7 @@ class PermissionManager {
             // Permission is not granted, request it
             Log.d(
                 "requestPermission",
-                "Requesting permission - permission is not granted"
+                "permission is not granted. Requesting permission"
             )
             permissionLauncher.launch(permissions)
         }

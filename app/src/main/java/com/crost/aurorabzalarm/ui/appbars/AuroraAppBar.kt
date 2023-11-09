@@ -1,7 +1,5 @@
 package com.crost.aurorabzalarm.ui.appbars
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Refresh
@@ -16,14 +14,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.R
-import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
+import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
+
+//import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 
 @Preview//(uiMode = Configuration.UI_MODE_NIGHT_MASK)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuroraAppBar(){
     val con = LocalContext.current
+    val dataViewModel: DataViewModel = viewModel()
+    val settingsViewModel: SettingsViewModel = viewModel()
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -35,7 +39,9 @@ fun AuroraAppBar(){
         },
         actions = {
             IconButton(
-                onClick = { setAlarmSettingsVisible() },
+                onClick = {
+                    settingsViewModel.setSettingsVisible(true)
+                          },
             ) {
                 Icon(
                     imageVector = Icons.Default.Build, //Notifications
@@ -43,7 +49,10 @@ fun AuroraAppBar(){
                 )
             }
             IconButton(
-                onClick = { loadNewestData(con) })
+                onClick = {
+//                    loadNewestData(con)
+                    dataViewModel.fetchSpaceWeatherData()
+                })
             {
                 Icon(
                     imageVector = Icons.Default.Refresh,
@@ -54,13 +63,13 @@ fun AuroraAppBar(){
     )
 }
 
-fun loadNewestData(context: Context) {
-    val viewModel = AuroraViewModelFactory.getDataViewModel()
-    viewModel.fetchSpaceWeatherData()
-    Toast.makeText(context, "New SpaceWeatherData", Toast.LENGTH_LONG).show()
-}
-
-fun setAlarmSettingsVisible(){
-    val viewModel = AuroraViewModelFactory.getSettingsViewModel()
-    viewModel.setSettingsVisible(true)
-}
+//fun loadNewestData(context: Context) {
+//    val viewModel = AuroraViewModelFactory.getDataViewModel()
+//    viewModel.fetchSpaceWeatherData()
+//    Toast.makeText(context, "New SpaceWeatherData", Toast.LENGTH_LONG).show()
+//}
+//
+//fun setAlarmSettingsVisible(){
+//    val viewModel = AuroraViewModelFactory.getSettingsViewModel()
+//    viewModel.setSettingsVisible(true)
+//}

@@ -1,5 +1,6 @@
 package com.crost.aurorabzalarm
 
+//import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import com.crost.aurorabzalarm.settings.getSettingsConfig
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 import com.crost.aurorabzalarm.utils.AuroraNotificationService
 import com.crost.aurorabzalarm.utils.PermissionManager
-import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -28,11 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = AuroraViewModelFactory.getDataViewModel()
-        val settingsViewModel = AuroraViewModelFactory.getSettingsViewModel()
-//        Log.d("MainActivity viewModel", viewModel.toString())
-
-
+        Log.d("MainActivity", "onCreate")
 
         permissionManager = PermissionManager()
         permissionLauncher = registerForActivityResult(
@@ -58,17 +56,32 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val settingsConfig = getSettingsConfig(this)
+                    val dataViewModel: DataViewModel = viewModel()// AuroraViewModelFactory.getDataViewModel()
+                    val settingsViewModel: SettingsViewModel = viewModel()// AuroraViewModelFactory.getSettingsViewModel()
+        Log.d("MainActivity viewModel", "data: $dataViewModel, settings: $settingsViewModel")
+
+                    val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
+//                    val settingsState = settingsViewModel.settingsState.observeAsState(
+//                        initial = SettingsState(
+//                            settingsConfig.notificationEnabled,
+//                            settingsConfig.bzWarningLevel.currentValue,
+//                            settingsConfig.hpWarningLevel.currentValue
+//                        )
+//                    )
+//                    val notification = remember {
+//                        settingsState.value.notificationEnabled
+//                    }
+//                    val bzState = remember { settingsState.value.bzThreshold }
                     val notificationEnabled = settingsViewModel.notificationEnabled
                     val notification = notificationEnabled.observeAsState(initial = settingsConfig.notificationEnabled)
-                    val bzState = viewModel.latestAceState.value?.bz ?: -999.9
+                    val bzState = dataViewModel.latestAceState.value?.bz ?: -999.9
                     if (notification.value && bzState < 1.0){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")
-                        notificationService.showBasicNotification()
+                        notificationService.showBasicNotification(dataViewModel)
                     }
 
                     MainComposable(
-                        viewModel,
+                        dataViewModel,
                         settingsViewModel,
                         permissionManager,
                         permissionLauncher

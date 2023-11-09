@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.crost.aurorabzalarm.settings.SettingsScreenWrapper
 import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.PreviewAllPanels
@@ -37,6 +36,7 @@ import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 import com.crost.aurorabzalarm.utils.PermissionManager
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
+import com.crost.settingsscreen.settings.uielements.SettingsScreen
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -88,7 +88,7 @@ fun MainComposable(
     }
 
     if(settingsVisible!!){
-        SettingsScreenWrapper(settingsViewModel)
+        SettingsScreen()
     }
     else{
         MainScreen(

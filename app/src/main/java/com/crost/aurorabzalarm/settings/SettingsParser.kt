@@ -8,18 +8,8 @@ import java.io.OutputStreamWriter
 
 const val FILE_NAME = "settingsConfig.json" // root/settings/
 
-const val JSON_SETTINGS_STRING = "{" +
-    "'hpWarningLevel': {" +
-    "'minValue': 0," +
-   "'maxValue': 100," +
-    "'currentValue': 30,"+
-"},"+
-    "'bzWarningLevel': {"+
-    "'minValue': -50," +
-    "'maxValue': 0," +
-    "'currentValue': -10"  +
-"}" +
-"}"
+const val JSON_SETTINGS_STRING =
+    "{ \"hpWarningLevel\": { \"minValue\": 0,\"maxValue\": 100,\"currentValue\": 30 },\"bzWarningLevel\": { \"minValue\": -50,\"maxValue\": 0,\"currentValue\": -10 },\"notificationEnabled\": true }"
 
 
 data class WarningLevel(
@@ -40,9 +30,12 @@ fun saveSettingsConfig(context: Context, settings: Settings){
     val jsonString = gson.toJson(settings)
     writeSettingsToInternalStorage(context, jsonString)
 }
-fun getSettingsConfig(context: Context): Settings {
+
+
+fun loadSettingsConfig(context: Context): Settings {
     val gson = Gson()
     val jsonString = readSettingsFromInternalStorage(context)
+//    val jsonString = readSettingsFromAssets(context)
     return try {
         gson.fromJson(jsonString, Settings::class.java)
     } catch (e: NullPointerException) {
@@ -71,8 +64,12 @@ private fun writeSettingsToInternalStorage(context: Context, jsonString: String)
 
 
 private fun readSettingsFromInternalStorage(context: Context): String {
-    return context.openFileInput(FILE_NAME).bufferedReader().use {
-        it.readText()
+    return try {
+        context.openFileInput("settingsConfig.json").bufferedReader().use {
+            it.readText()
+        }
+    } catch (e: RuntimeException) {
+        return JSON_SETTINGS_STRING
     }
 }
 

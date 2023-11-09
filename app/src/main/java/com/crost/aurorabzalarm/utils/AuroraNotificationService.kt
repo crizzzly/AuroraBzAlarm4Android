@@ -6,7 +6,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
-import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
+//import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -14,11 +15,11 @@ class AuroraNotificationService(
     private val context: Context
 ) {
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
-    private val viewModel = AuroraViewModelFactory.getDataViewModel()
+//    private val viewModel = AuroraViewModelFactory.getDataViewModel()
     private val notificationId = 17
 
 
-    fun showBasicNotification( ){
+    fun showBasicNotification(viewModel: DataViewModel ){
 
 //        val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
 //            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

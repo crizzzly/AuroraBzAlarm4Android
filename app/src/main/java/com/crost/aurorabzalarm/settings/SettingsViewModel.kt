@@ -1,17 +1,17 @@
 package com.crost.aurorabzalarm.settings
 
-import android.app.Application
+import android.content.Context
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
-class SettingsViewModel(application: Application): AndroidViewModel(application) {
-    // TODO: Move all the file access stuff to FileManager (or sth)
-    private val con = application.applicationContext
+class SettingsViewModel(): ViewModel() {
 
     private val _showSettings = MutableLiveData(true)
     val showSettings: LiveData<Boolean> get() = _showSettings
+
+
 
     private var _notificationEnabled = MutableLiveData(false)
     val notificationEnabled get(): LiveData<Boolean> = _notificationEnabled
@@ -22,13 +22,17 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
     private val _bzSliderState = MutableLiveData(0f)
     val bzSliderState get(): LiveData<Float> = _bzSliderState
 
-    var settingsConfig: Settings = getSettingsConfig(con)
+//    var settingsConfig: Settings = getSettingsConfig(context)
 
-    fun saveConfigToFile(settings: Settings){
-        saveSettingsConfig(con, settings)
+    fun saveConfig(context: Context, settings: Settings) {
+        saveSettingsConfig(context, settings)
     }
 
-    fun setSettingsVisible(value: Boolean){
+    fun loadAndReturnConfig(context: Context): Settings {
+        return loadSettingsConfig(context)
+    }
+
+    fun setSettingsVisible(value: Boolean) {
         _showSettings.value = value
         Log.d("notificationState", value.toString())
     }
@@ -36,6 +40,7 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
     fun updateBzState(value: Float) {
         _bzSliderState.value = value
         Log.d("BzState", value.toString())
+        Log.d("_bzSliderState", _bzSliderState.value.toString())
     }
 
     fun updateHpState(value: Float) {
@@ -44,8 +49,9 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
         Log.d("_hpSliderState", _hpSliderState.value.toString())
     }
 
-    fun setNotificationState(value: Boolean){
+    fun setNotificationState(value: Boolean) {
         _notificationEnabled.value = value
         Log.d("settings visible", value.toString())
     }
 }
+
