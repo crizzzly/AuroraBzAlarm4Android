@@ -79,9 +79,9 @@ class MainActivity : ComponentActivity() {
                     val notificationEnabled = settingsViewModel.notificationEnabled
                     val notification = notificationEnabled.observeAsState(initial = settingsConfig.notificationEnabled)
                     val bzState = dataViewModel.latestAceState.value?.bz ?: -999.9
-                    if (notification.value && bzState < 1.0){// && bzState.bz > -900){
+                    if (true){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")
-                        notificationService.showBasicNotification(dataViewModel)
+                        notificationService.showBasicNotification(this, dataViewModel)
                     }
 
                     MainComposable(

@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.settings
 
 import android.content.Context
+import android.util.Log
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.google.gson.Gson
 import java.io.IOException
@@ -8,9 +9,10 @@ import java.io.OutputStreamWriter
 
 
 const val FILE_NAME = "settingsConfig.json" // root/settings/
+const val DEBUG = true
 
 const val JSON_SETTINGS_STRING =
-    "{ \"hpWarningLevel\": { \"minValue\": 0,\"maxValue\": 100,\"currentValue\": 30 },\"bzWarningLevel\": { \"minValue\": -50,\"maxValue\": 0,\"currentValue\": -10 },\"notificationEnabled\": true }"
+    "{ \"hpWarningLevel\": { \"minValue\": 0,\"maxValue\": 100,\"currentValue\": 0 },\"bzWarningLevel\": { \"minValue\": -50,\"maxValue\": 0,\"currentValue\": 0 },\"notificationEnabled\": true }"
 
 
 data class WarningLevel(
@@ -67,6 +69,7 @@ class SettingsParser(context: Context) {
     }
 
     private fun writeSettingsToInternalStorage(context: Context, jsonString: String) {
+        if (DEBUG) Log.d("writeSettingsToInternalStorage", jsonString)
         try {
             val outputStreamWriter =
                 OutputStreamWriter(context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE))
@@ -85,10 +88,15 @@ class SettingsParser(context: Context) {
 
 
     private fun readSettingsFromInternalStorage(context: Context): String {
-        return try {
+        val text: String
+        try {
             context.openFileInput("settingsConfig.json").bufferedReader().use {
-                it.readText()
+                text = it.readText()
             }
+            if (DEBUG) {
+                Log.d("readSettingsFromInternalStorage", text)
+            }
+            return text
         } catch (e: RuntimeException) {
             fileLogger.writeLogsToInternalStorage(
                 context,
