@@ -28,7 +28,7 @@ class FileLogger private constructor(context: Context) {
     fun writeLogsToInternalStorage(context: Context, logString: String) {
         val currentDt = LocalDateTime.now()
         val logMsg = "$currentDt\n$logString\n\n"
-        Log.d("writeLogsToInternalStorage", "datetime: $currentDt")
+        Log.d("writeLogsToStorage", "datetime: $currentDt")
         try {
             val outputStream = context.openFileOutput(FILE_NAME,  Context.MODE_APPEND,)
             val outputStreamWriter = OutputStreamWriter(outputStream)

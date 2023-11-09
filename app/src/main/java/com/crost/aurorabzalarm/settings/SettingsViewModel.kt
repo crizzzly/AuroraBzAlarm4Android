@@ -1,25 +1,27 @@
 package com.crost.aurorabzalarm.settings
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
-class SettingsViewModel(): ViewModel() {
+class SettingsViewModel(application: Application): AndroidViewModel(application) {
+    private val settings = loadSettingsConfig(application.applicationContext)
 
-    private val _showSettings = MutableLiveData(true)
+    private val _showSettings = MutableLiveData(false)
     val showSettings: LiveData<Boolean> get() = _showSettings
 
 
 
-    private var _notificationEnabled = MutableLiveData(false)
+    private var _notificationEnabled = MutableLiveData(settings.notificationEnabled)
     val notificationEnabled get(): LiveData<Boolean> = _notificationEnabled
 
-    private val _hpSliderState = MutableLiveData(50f)
+    private val _hpSliderState = MutableLiveData(settings.hpWarningLevel.currentValue)
     val hpSliderState get(): LiveData<Float> = _hpSliderState
 
-    private val _bzSliderState = MutableLiveData(0f)
+    private val _bzSliderState = MutableLiveData(settings.bzWarningLevel.currentValue)
     val bzSliderState get(): LiveData<Float> = _bzSliderState
 
 //    var settingsConfig: Settings = getSettingsConfig(context)

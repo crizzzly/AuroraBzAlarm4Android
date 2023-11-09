@@ -37,7 +37,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
         super.onCreate()
         fileLogger=  FileLogger.getInstance(this.applicationContext)
         dataViewModel = DataViewModel(this)
-        settingsViewModel = SettingsViewModel()
+        settingsViewModel = SettingsViewModel(this)
 //        permissionManager = PermissionManager()
 
         Log.d("App-onCreate", "initializing WorkManager")

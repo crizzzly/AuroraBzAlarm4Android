@@ -12,7 +12,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -64,13 +66,16 @@ class MainActivity : ComponentActivity() {
                     val dataViewModel: DataViewModel = viewModel()
                     val settingsViewModel: SettingsViewModel = viewModel()
                     val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
-                    val bzThreshold = settingsConfig.bzWarningLevel.currentValue
+                    val bzThreshold by remember { mutableFloatStateOf(settingsConfig.bzWarningLevel.currentValue) }
 
                     val notificationEnabled = settingsViewModel.notificationEnabled
                     val showNotification = notificationEnabled.observeAsState(
                         initial = settingsConfig.notificationEnabled
                     )
-                    val bzState = remember{ dataViewModel.latestAceState.value?.bz ?: -999.9 }
+                    val bzState by remember {
+                        mutableFloatStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9f)
+                                as Float)
+                    }
 
                     if (showNotification.value && bzState <= bzThreshold){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")

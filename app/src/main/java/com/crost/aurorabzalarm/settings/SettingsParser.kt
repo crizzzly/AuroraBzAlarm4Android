@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.settings
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -48,10 +49,12 @@ private fun readSettingsFromAssets(context: Context): String {
     val jsonString = context.assets.open(FILE_NAME).bufferedReader().use {
         it.readText()
     }
+    Log.d("readSettingsFromAssets", jsonString)
     return jsonString
 }
 
 private fun writeSettingsToInternalStorage(context: Context, jsonString: String) {
+    Log.d("writeSettings", jsonString)
     try {
         val outputStreamWriter = OutputStreamWriter(context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE))
         outputStreamWriter.write(jsonString)
@@ -62,16 +65,22 @@ private fun writeSettingsToInternalStorage(context: Context, jsonString: String)
     }
 }
 
-
 private fun readSettingsFromInternalStorage(context: Context): String {
-    return try {
+//    var jsonString: String = ""
+    try {
         context.openFileInput("settingsConfig.json").bufferedReader().use {
-            it.readText()
+            val jsonString = it.readText()
+            Log.d("readSettingsFromInternalStorage", jsonString)
+            return jsonString
         }
-    } catch (e: RuntimeException) {
+
+    } catch (e: Exception){
+        Log.e("readSettingsFromInternalStorage", "error while loading SettingsConfig.\n" +
+                "returning defaults")
         return JSON_SETTINGS_STRING
     }
 }
+
 
 
 //private fun readSettingsFromFile(): String {

@@ -44,18 +44,18 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val _latestAceState = mutableStateOf<AceMagnetometerData?>(
         AceMagnetometerData(
             datetime = 0,
-            bx = -999.0,
-            by = -999.0,
-            bt = -999.0,
-            bz = -999.0
+            bx = -999.0f,
+            by = -999.0f,
+            bt = -999.0f,
+            bz = -999.0f
     ))
 
     private val _latestEpamState = mutableStateOf<AceEpamData?>(
         AceEpamData(
             datetime = 0,
-            density = -999.9,
-            speed = -999.9,
-            temp = -999.9
+            density = -999.9f,
+            speed = -999.9f,
+            temp = -999.9f
         )
     )
 
@@ -63,7 +63,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
     val latestEpamState: State<AceEpamData?> get() = _latestEpamState
 
-    val currentDurationOfFlight: Double get() = getTimeOfDataFlight(latestEpamState.value?.speed)
+    val currentDurationOfFlight: Float get() = getTimeOfDataFlight(latestEpamState.value?.speed)
 
     val dateTimeString: String get() = formatTimestamp(_latestAceState.value!!.datetime)
     

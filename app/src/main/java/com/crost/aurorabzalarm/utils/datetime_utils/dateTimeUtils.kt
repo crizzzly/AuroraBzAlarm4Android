@@ -74,7 +74,7 @@ fun formatTimestamp(timestamp: Long): String {
 }
 
 
-fun getTimeOfDataFlight(speed: Double?): Double {
+fun getTimeOfDataFlight(speed: Float?): Float {
 
     // TODO: Check this! app sais 33,41 min, spaceWeather says 52 min
     // 1,357e+6 km/h
@@ -82,7 +82,7 @@ fun getTimeOfDataFlight(speed: Double?): Double {
     val timeInS = distance/speed!!  // km/s
     val timeInM = timeInS/60
 //        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
-    return timeInM
+    return timeInM.toFloat()
 
 }
 

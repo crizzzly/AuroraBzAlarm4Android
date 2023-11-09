@@ -32,13 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.settings.uielements.SettingsScreen
 import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.PreviewAllPanels
 import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 import com.crost.aurorabzalarm.utils.PermissionManager
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
-import com.crost.aurorabzalarm.settings.uielements.SettingsScreen
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -113,11 +113,11 @@ fun MainComposable(
 @Composable
 fun MainScreen(
     time: String,
-    bz: Double,
+    bz: Float,
     hpNorth: Int,
-    speed: Double,
-    density: Double,
-    temp: Double,
+    speed: Float,
+    density: Float,
+    temp: Float,
     currentDuration: String,
 ) {
     val scrollState = rememberScrollState()
@@ -153,7 +153,7 @@ fun MainScreen(
 
                     PreviewAllPanels(
                         bz,
-                        hpNorth.toDouble(),
+                        hpNorth.toFloat(),
                         speed,
                         density,
                         temp
@@ -179,11 +179,11 @@ fun MainScreen(
 fun MainScreenPreview() {
     MainScreen(
         "02:22\n22.10.23",
-        -15.5,
+        -15.5f,
         25,
-        358.6,
-        56.2,
-        123.4,
+        358.6f,
+        56.2f,
+        123.4f,
         "54.2"
     )
 }

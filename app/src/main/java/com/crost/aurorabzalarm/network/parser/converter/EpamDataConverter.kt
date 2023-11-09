@@ -15,15 +15,15 @@ class EpamDataConverter {
     {
         val convertedDataTable = mutableListOf<MutableMap<String, Any>>()
 
-        var protonDensity: Double
-        var bulkSpeed: Double
-        var ionTemperature: Double
+        var protonDensity: Float
+        var bulkSpeed: Float
+        var ionTemperature: Float
 
         for (dataMap in dataTable){
             val row = mutableMapOf<String, Any>()
-            protonDensity = -9999.9
-            bulkSpeed = -9999.9
-            ionTemperature = -1.00e+05
+            protonDensity = -9999.9f
+            bulkSpeed = -9999.9f
+            ionTemperature = -1.00e+05f
 
             val datetime = try {
                 convertToLocalEpochMillis(
@@ -39,9 +39,9 @@ class EpamDataConverter {
             }
 
             try {
-                protonDensity = dataMap["ProtonDensity"]?.toDouble()!!
-                bulkSpeed = dataMap["BulkSpeed"]?.toDouble()!!
-                ionTemperature = dataMap["IonTemperature"]?.toDouble()!!
+                protonDensity = dataMap["ProtonDensity"]?.toFloat()!!
+                bulkSpeed = dataMap["BulkSpeed"]?.toFloat()!!
+                ionTemperature = dataMap["IonTemperature"]?.toFloat()!!
 //                Log.d("EpamDataConverter",
 //                    "values: $protonDensity, $bulkSpeed, $ionTemperature")
             } catch (e: Exception){
@@ -64,7 +64,7 @@ class EpamDataConverter {
     }
 
     fun scientificNotationToLong(number: String): Long {
-        val doubleValue = number.toDouble()
+        val doubleValue = number.toFloat()
         return doubleValue.toLong()
     }
 }

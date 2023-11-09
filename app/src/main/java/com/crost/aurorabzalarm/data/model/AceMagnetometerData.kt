@@ -8,9 +8,9 @@ import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
 data class AceMagnetometerData(
     @PrimaryKey(autoGenerate = false)
     var datetime: Long,
-    var bx: Double,
-    var by: Double,
-    var bz: Double,
-    var bt: Double,
+    var bx: Float,
+    var by: Float,
+    var bz: Float,
+    var bt: Float,
 )
 

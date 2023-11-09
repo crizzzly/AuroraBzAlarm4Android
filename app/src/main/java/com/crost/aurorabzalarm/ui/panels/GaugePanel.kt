@@ -48,12 +48,12 @@ import java.text.DecimalFormat
 @Preview
 @Composable
 fun PreviewPanel(){
-    GaugePanel(Constants.EPAM_SPEED_TITLE, 600.0)
+    GaugePanel(Constants.EPAM_SPEED_TITLE, 600.0f)
 }
 
 
 @Composable
-fun GaugePanel(text: String, value: Double){
+fun GaugePanel(text: String, value: Float){
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
     val panelWidth =( screenWidth / COMPONENT_COUNT) /3
     val panelHeight = panelWidth * 1.7
@@ -118,9 +118,9 @@ fun GaugePanel(text: String, value: Double){
 // TODO: set markers for values
 @Composable
 fun Gauge(
-    progress: Double,
-    valueRangeFrom: Double,
-    valueRangeTo: Double,
+    progress: Float,
+    valueRangeFrom: Float,
+    valueRangeTo: Float,
     mainColor: Color,
     secondaryColor: Color,
     drawProgressArcFromTop: Boolean,

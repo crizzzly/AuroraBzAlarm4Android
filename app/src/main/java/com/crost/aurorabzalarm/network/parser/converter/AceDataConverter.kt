@@ -15,10 +15,10 @@ class AceDataConverter {
 
         for (map in dataTable) {
             val row = mutableMapOf<String, Any>()
-            var bx = -999.9
-            var by = -999.9
-            var bz = -999.9
-            var bt = -999.9
+            var bx = -999.9f
+            var by = -999.9f
+            var bz = -999.9f
+            var bt = -999.9f
 
             val datetime = try {
                 convertToLocalEpochMillis(
@@ -34,10 +34,10 @@ class AceDataConverter {
             }
 
             try {
-                bx = map["Bx"]?.toDouble()!!
-                by = map["By"]?.toDouble()!!
-                bz = map["Bz"]?.toDouble()!!
-                bt = map["Bt"]?.toDouble()!!
+                bx = map["Bx"]?.toFloat()!!
+                by = map["By"]?.toFloat()!!
+                bz = map["Bz"]?.toFloat()!!
+                bt = map["Bt"]?.toFloat()!!
             } catch (e: Exception) {
                 Log.e("ACEConverter", "Bx, By, Bz"
                         + e.stackTraceToString())

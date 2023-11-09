@@ -43,10 +43,10 @@ class SpaceWeatherRepository(application: Application) {
         HemisphericPowerData(0, -999, -999)
     )
     private var _latestAceData = MutableLiveData(
-        AceMagnetometerData(0, -999.9, -999.9, -999.9, -999.9)
+        AceMagnetometerData(0, -999.9f, -999.9f, -999.9f, -999.9f)
     )
     private var _latestEpamData = MutableLiveData(
-        AceEpamData(0, -9999.9, -9999.9, -9999.9)
+        AceEpamData(0, -9999.9f, -9999.9f, -9999.9f)
     )
 
     val latestHpData get() = _latestHpData

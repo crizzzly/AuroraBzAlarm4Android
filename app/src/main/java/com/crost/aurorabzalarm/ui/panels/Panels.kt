@@ -23,18 +23,18 @@ import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 const val COMPONENT_COUNT = 3
 
 
-fun mapValueToRange(value: Double, fromMin: Double, fromMax: Double, toMin: Double, toMax: Double): Double {
+fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Double, toMax: Double): Double {
     return ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin)
 }
 
 
 @Composable
 fun ShowAllPanels(
-    bz: Double,
-    hp:Double,
-    speed:Double,
-    density: Double,
-    temp:Double
+    bz: Float,
+    hp: Float,
+    speed: Float,
+    density: Float,
+    temp: Float
 ){
     Column(
         modifier = Modifier
@@ -78,11 +78,11 @@ fun ShowAllPanels(
 @Preview
 @Composable
 fun PreviewAllPanels(
-    bz: Double = -15.6,
-    hp: Double = 35.0,
-    speed: Double = 476.4,
-    density: Double = 202.0,
-    temp: Double = 8.64e+05
+    bz: Float = -15.6f,
+    hp: Float = 35.0f,
+    speed: Float = 476.4f,
+    density: Float = 202.0f,
+    temp: Float = 8.64e+05f
 ){
     ShowAllPanels(
         bz,
@@ -95,7 +95,7 @@ fun PreviewAllPanels(
 
 @Composable
 fun BzChart(
-    progress: Double  = -17.0,
+    progress: Float = -17.0f,
     modifier:  Modifier
 ){
 
@@ -116,8 +116,8 @@ fun BzChart(
     val unit = "nT"
     Gauge(
         progress = progress,
-        valueRangeFrom.toDouble(),
-        valueRangeTo.toDouble(),
+        valueRangeFrom,
+        valueRangeTo,
         mainColor,
         secondaryColor,
         drawProgressArcFromTop,
@@ -131,7 +131,7 @@ fun BzChart(
 
 @Composable
 fun HpPanel(
-    progress:Double = 25.0,
+    progress: Float = 25.0f,
     modifier:  Modifier
 ){
     val valueRangeFrom= 0f
@@ -149,8 +149,8 @@ fun HpPanel(
     val unit = "GW"
     Gauge(
         progress,
-        valueRangeFrom.toDouble(),
-        valueRangeTo.toDouble(),
+        valueRangeFrom,
+        valueRangeTo,
         mainColor,
         secondaryColor,
         drawProgressArcFromTop,
@@ -162,12 +162,12 @@ fun HpPanel(
 
 @Composable
 fun SpeedPanel(
-    progress: Double = 400.0,
+    progress: Float = 400.0f,
     modifier:  Modifier
 ){
 
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 999.9
+    val valueRangeFrom = 0.0f
+    val valueRangeTo = 999.9f
     val (mainColor, secondaryColor) = when {
         progress < 400 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -194,12 +194,12 @@ fun SpeedPanel(
 
 @Composable
 fun DensityPanel(
-    progress: Double = 4.0,
+    progress: Float = 4.0f,
     modifier:  Modifier
 ){
 
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 100.0
+    val valueRangeFrom = 0.0f
+    val valueRangeTo = 100.0f
     val (mainColor, secondaryColor) = when {
         progress < 80 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
@@ -227,12 +227,12 @@ fun DensityPanel(
 
 @Composable
 fun TempPanel(
-    progress: Double,
+    progress: Float,
     modifier:  Modifier
 ){
 
-    val valueRangeFrom = 0.0
-    val valueRangeTo = 1e+06
+    val valueRangeFrom = 0.0f
+    val valueRangeTo = 1e+06f
     val (mainColor, secondaryColor) = when {
         progress < 5.0e+05 -> // Red
             Color(0xFF388E3C) to Color(0xFFC8E6C9)
