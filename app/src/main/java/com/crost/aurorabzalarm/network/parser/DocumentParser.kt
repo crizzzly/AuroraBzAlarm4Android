@@ -3,6 +3,10 @@ package com.crost.aurorabzalarm.network.parser
 import android.content.Context
 import android.util.Log
 import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.datetime_utils.convertUtcToLocal
+import com.crost.aurorabzalarm.utils.datetime_utils.parseDateTimeString
+import org.json.JSONArray
+import java.time.LocalDateTime
 
 
 const val DEBUG_DOCUMENT_SPLITTING = false
@@ -29,8 +33,32 @@ class DocumentParser{
         dataTableMapped = mapParsedValuesToValueNames(context, dataTable, valueNames, fileLogger)
         return dataTableMapped
     }
+
+    fun parseJson(jsonData: String): List<NoaaAlert> {
+        val alerts = mutableListOf<NoaaAlert>()
+        val jsonArray = JSONArray(jsonData)
+
+        for (i in 0 until jsonArray.length()) {
+            val jsonObject = jsonArray.getJSONObject(i)
+            val productId = jsonObject.getString("product_id")
+            val dtString = jsonObject.getString("issue_datetime")
+            val issueDatetime = dateTimeStringToLocalDateTime(dtString)
+            val message = jsonObject.getString("message")
+            val alert = NoaaAlert(productId, issueDatetime, message)
+            alerts.add(alert)
+        }
+
+        return alerts
+    }
+
+    private fun dateTimeStringToLocalDateTime(dtString: String): LocalDateTime {
+        val utc = parseDateTimeString(dtString)
+        return convertUtcToLocal(utc)
+
+    }
+
+
     private fun extractDataTable(valuesCount: Int, textDocument: String): List<List<String>>{
-//        Log.d("DocumentParser", "extracting DataTable  ${textDocument.length}")
         val table = mutableListOf<List<String>>()
 
         // cut off <body> tags by "\n" and split at "#". All data is behind last "#"

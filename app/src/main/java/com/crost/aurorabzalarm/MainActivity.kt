@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -73,12 +74,13 @@ class MainActivity : ComponentActivity() {
                         initial = settingsConfig.notificationEnabled
                     )
                     val bzState by remember {
-                        mutableFloatStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9f))
+                        mutableStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9)
+                        )
                     }
 
                     if(showNotification.value){
                         if(-900 < bzState && bzState <= bzThreshold ) {
-                            Log.d("MainActivity", "showing Notification")
+//                            Log.d("MainActivity", "showing Notification")
                             notificationService.showBasicNotification(this, dataViewModel)
                         }
                     }

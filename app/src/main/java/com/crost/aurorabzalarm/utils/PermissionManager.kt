@@ -46,26 +46,26 @@ class PermissionManager {
         context: Context,
         permissionLauncher: ActivityResultLauncher<Array<String>>
     ): Boolean {
-        Log.d("requestPermission", "requesting permission")
+//        Log.d("requestPermission", "requesting permission")
         // Check if the permission is already granted
         if (!hasPermission(context)) {
             _permissionState.value = false
             // Permission is not granted, request it
-            Log.d(
-                "requestPermission",
-                "permission is not granted. Requesting permission"
-            )
+//            Log.d(
+//                "requestPermission",
+//                "permission is not granted. Requesting permission"
+//            )
             permissionLauncher.launch(permissions)
         }
         val permission = hasPermission(context)
-        Log.d("hasPermission", "Value = $permission")
+//        Log.d("hasPermission", "Value = $permission")
 
         return permission
     }
 
     fun onPermissionGranted() {
         // Update the permission state flow when the permission is granted
-        Log.i("onPermissionGranted", "permissionState.value set to true")
+//        Log.i("onPermissionGranted", "permissionState.value set to true")
         _permissionState.value = true
     }
 }

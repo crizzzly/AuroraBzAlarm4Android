@@ -2,6 +2,7 @@ package com.crost.aurorabzalarm.utils
 
 
 object Constants {
+    // TODO: Move to packages
     const val DB_NAME = "SpaceWeatherData"
     const val ACE_TABLE_NAME = "ace_magnetometer"
     const val ACE_URL = "https://services.swpc.noaa.gov/text/ace-magnetometer.txt"
@@ -34,6 +35,8 @@ object Constants {
     const val EPAM_COL_DENSITY = "protonDensity-p/cc"
     const val EPAM_COL_SPEED = "bulkSpeed-km/s"
     const val EPAM_COL_TEMP = "ionTemperature-K"
+
+    const val ALERTS_PSEUDO_TABLE_NAME = "alerts"
 
 
     // worker repeat interval in sec

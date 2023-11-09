@@ -30,11 +30,11 @@ fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Double,
 
 @Composable
 fun ShowAllPanels(
-    bz: Float,
-    hp: Float,
-    speed: Float,
-    density: Float,
-    temp: Float
+    bz: Double,
+    hp: Int,
+    speed: Double,
+    density: Double,
+    temp: Double
 ){
     Column(
         modifier = Modifier
@@ -51,11 +51,11 @@ fun ShowAllPanels(
 //            verticalAlignment = Alignment,
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            GaugePanel(ACE_BZ_TITLE, bz)
+            GaugePanel(ACE_BZ_TITLE, bz.toFloat())
 
 
 
-            GaugePanel(HP_TITLE, hp)
+            GaugePanel(HP_TITLE, hp.toFloat())
 
         }
         Row(
@@ -65,9 +65,9 @@ fun ShowAllPanels(
             horizontalArrangement = Arrangement.SpaceEvenly,
 //            verticalAlignment = Alignment.
         ) {
-            GaugePanel(EPAM_SPEED_TITLE, speed)
-            GaugePanel(EPAM_DENS_TITLE, density)
-            GaugePanel(EPAM_TEMP_TITLE, temp)
+            GaugePanel(EPAM_SPEED_TITLE, speed.toFloat())
+            GaugePanel(EPAM_DENS_TITLE, density.toFloat())
+            GaugePanel(EPAM_TEMP_TITLE, temp.toFloat())
         }
     }
 }
@@ -78,11 +78,11 @@ fun ShowAllPanels(
 @Preview
 @Composable
 fun PreviewAllPanels(
-    bz: Float = -15.6f,
-    hp: Float = 35.0f,
-    speed: Float = 476.4f,
-    density: Float = 202.0f,
-    temp: Float = 8.64e+05f
+    bz: Double = -15.6,
+    hp: Int = 35,
+    speed: Double = 476.4,
+    density: Double = 202.0,
+    temp: Double = 8.64e+05
 ){
     ShowAllPanels(
         bz,

@@ -10,56 +10,79 @@ import com.crost.aurorabzalarm.utils.Constants.FILEPATH_HP_DATA
 import com.crost.aurorabzalarm.utils.Constants.HP_URL
 import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.utils.Constants.RETRY_DELAY_MS
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
 import kotlinx.coroutines.delay
 import org.jsoup.Jsoup
+import org.jsoup.UnsupportedMimeTypeException
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class DownloadManager(context: Context) {
     private val con = context
     private var retryCount = 0
+    private val exceptionHandler = ExceptionHandler.getInstance(context)
     private val fileLogger = FileLogger.getInstance(context)
     suspend fun loadSatelliteDatasheet(url: String): String {
         /*
-        * downloads document from https://services.swpc.noaa.gov/
+        * downloads document from @param url
         *
         * @param url: self explaining.
+        * @return: downloaded data as string
         * */
 //        Log.d("SatelliteDataDownloader", "loading $url")
+        val loggerTag = "loadSatelliteDatasheet"
+
         do {
+            if("json" in url){
+                Log.d(loggerTag, "downloading json")
+                return fetchDataFromUrl(url)
+
+            }
             try {
                 val aceDoc = Jsoup.connect(url).get()
                 val html = aceDoc.select("body").toString()
-//                Log.d("SatelliteDataDownloader", "length of doc${html.length}") // 7774 /2335
-//                saveDataSheetToFile(html, url)
                 return html
-            } catch (e: Exception) {
+            } catch (e: UnsupportedMimeTypeException) {
                 val msg = "$url\n ${e.stackTraceToString()}"
 
-                fileLogger.writeLogsToInternalStorage(
-                    con,
-                    "getSatelliteData" +msg
-                )
-
-                Log.e("getSatelliteData", msg)
+                exceptionHandler.handleExceptions(con, loggerTag, msg)
                 retryCount++
                 delay(RETRY_DELAY_MS.toLong())
             }
         } while (retryCount < MAX_RETRY_COUNT)
 
-        Log.e(
-            "getSatelliteData",
-            "Failed to download data from $url after $MAX_RETRY_COUNT attempts"
-        )
-//        readDataSheetFromFile(url)
+        val msg = "Failed to download data from $url after $MAX_RETRY_COUNT attempts"
+        exceptionHandler.handleExceptions(con, loggerTag, msg)
+
+        // TODO: Handle this ;)
         return "Error"
     }
 
+
+    private fun fetchDataFromUrl(urlString: String): String {
+        val url = URL(urlString)
+        val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+        return try {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val stringBuilder = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                stringBuilder.append(line)
+            }
+            stringBuilder.toString()
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     private fun saveDataSheetToFile(text: String, url: String) {
-        var path = when (url) {
+        val path = when (url) {
             ACE_URL -> FILEPATH_ACE_DATA
             HP_URL -> FILEPATH_HP_DATA
             else -> FILEPATH_EPAM_DATA

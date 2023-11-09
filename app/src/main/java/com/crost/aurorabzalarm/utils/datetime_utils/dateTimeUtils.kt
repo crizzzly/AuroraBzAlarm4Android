@@ -5,13 +5,29 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 
 private val localZoneId = ZoneId.systemDefault()
 
+fun parseDateTimeString(dateTimeString: String): LocalDateTime {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+    return LocalDateTime.parse(dateTimeString, formatter)
+}
 
-fun dateTimeToLocalMillis(dateTime: LocalDateTime, localZoneId: ZoneId): Long {
+fun convertUtcToLocal(utcDateTime: LocalDateTime): LocalDateTime {
+    val utcZoneId = ZoneId.of("UTC")
+    val targetZoneId = localZoneId
+
+    val utcZonedDateTime = ZonedDateTime.of(utcDateTime, utcZoneId)
+    val targetZonedDateTime = utcZonedDateTime.withZoneSameInstant(targetZoneId)
+
+    return targetZonedDateTime.toLocalDateTime()
+}
+
+
+fun dateTimeToLocalMillis(dateTime: LocalDateTime): Long {
     val instant = dateTime.toInstant(ZoneOffset.UTC)
     val zonedDateTime = instant.atZone(localZoneId)
     return zonedDateTime.toInstant().toEpochMilli()
@@ -35,7 +51,7 @@ fun convertToLocalEpochMillis(year:Int, month: Int, day: Int, secOfDay: Int): Lo
     * */
     val dateTime = LocalDateTime.of(year, month, day, 0, 0, 0)
         .plusSeconds(secOfDay.toLong())
-    return dateTimeToLocalMillis(dateTime, localZoneId)
+    return dateTimeToLocalMillis(dateTime)
 }
 
 
@@ -74,7 +90,7 @@ fun formatTimestamp(timestamp: Long): String {
 }
 
 
-fun getTimeOfDataFlight(speed: Float?): Float {
+fun getTimeOfDataFlight(speed: Double?): Float {
 
     // TODO: Check this! app sais 33,41 min, spaceWeather says 52 min
     // 1,357e+6 km/h

@@ -42,6 +42,7 @@ import com.crost.aurorabzalarm.viewmodels.DataViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
+const val DEBUG = false
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,6 @@ fun MainComposable(
 
     val permissionState by permissionManager.permissionState.collectAsState()
 
-    Log.d("MainComposable VM", dataViewModel.toString())
     val currentHpVals by remember { dataViewModel.latestHpState }
     val currentAceVals by remember { dataViewModel.latestAceState }
     val currentEpamVals by remember { dataViewModel.latestEpamState }
@@ -79,16 +79,19 @@ fun MainComposable(
         }
     }
 
-    try {
-        Log.d(
-            "Composable value",
-            "HP: $currentTime - ${currentHpVals!!.hpNorth}\n" +
-                    "ACE: $currentTime - ${currentAceVals!!.bz}\n" +
-                    "Epam: $currentTime - ${df.format(currentEpamVals!!.speed)}"
-        )
-    } catch (e: NullPointerException) {
-        Log.e("Composable value", e.toString())
+    if (DEBUG){
+        try {
+            Log.d(
+                "Composable value",
+                "HP: $currentTime - ${currentHpVals!!.hpNorth}\n" +
+                        "ACE: $currentTime - ${currentAceVals!!.bz}\n" +
+                        "Epam: $currentTime - ${df.format(currentEpamVals!!.speed)}"
+            )
+        } catch (e: NullPointerException) {
+            Log.e("Composable value", e.toString())
+        }
     }
+
 
     if(settingsVisible!!){
         SettingsScreen()
@@ -113,11 +116,11 @@ fun MainComposable(
 @Composable
 fun MainScreen(
     time: String,
-    bz: Float,
+    bz: Double,
     hpNorth: Int,
-    speed: Float,
-    density: Float,
-    temp: Float,
+    speed: Double,
+    density: Double,
+    temp: Double,
     currentDuration: String,
 ) {
     val scrollState = rememberScrollState()
@@ -153,7 +156,7 @@ fun MainScreen(
 
                     PreviewAllPanels(
                         bz,
-                        hpNorth.toFloat(),
+                        hpNorth,
                         speed,
                         density,
                         temp
@@ -179,11 +182,11 @@ fun MainScreen(
 fun MainScreenPreview() {
     MainScreen(
         "02:22\n22.10.23",
-        -15.5f,
+        -15.5,
         25,
-        358.6f,
-        56.2f,
-        123.4f,
+        358.6,
+        56.2,
+        123.4,
         "54.2"
     )
 }

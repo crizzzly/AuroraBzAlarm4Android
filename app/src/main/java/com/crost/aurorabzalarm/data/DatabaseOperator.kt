@@ -135,10 +135,10 @@ suspend fun saveAceModelInstance(
 
         val aceDataModel = AceMagnetometerData(
             datetime = datetime,
-            bx = row[ACE_COL_BX] as Float,
-            by = row[ACE_COL_BY] as Float,
-            bz = row[ACE_COL_BZ] as Float,
-            bt = row[ACE_COL_BT] as Float
+            bx = row[ACE_COL_BX] as Double,
+            by = row[ACE_COL_BY] as Double,
+            bz = row[ACE_COL_BZ] as Double,
+            bt = row[ACE_COL_BT] as Double
         )
         instances.add(aceDataModel)
     }
@@ -203,9 +203,9 @@ suspend fun saveEpamModelInstance(
 
         val epamDataModel = AceEpamData(
             datetime = datetime,
-            density = row[EPAM_COL_DENSITY] as Float,
-            speed = row[EPAM_COL_SPEED] as Float,
-            temp = row[EPAM_COL_TEMP] as Float,
+            density = row[EPAM_COL_DENSITY] as Double,
+            speed = row[EPAM_COL_SPEED] as Double,
+            temp = row[EPAM_COL_TEMP] as Double,
         )
         instances.add(epamDataModel)
     }

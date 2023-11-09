@@ -4,9 +4,11 @@ import android.content.Context
 import android.util.Log
 import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
+import com.crost.aurorabzalarm.network.parser.NoaaAlertHandler
 import com.crost.aurorabzalarm.network.parser.converter.DataShaper
 import com.crost.aurorabzalarm.repository.DataSourceConfig
 import com.crost.aurorabzalarm.repository.getDataSources
+import com.crost.aurorabzalarm.utils.Constants.ALERTS_PSEUDO_TABLE_NAME
 import com.crost.aurorabzalarm.utils.FileLogger
 
 
@@ -16,6 +18,7 @@ class NetworkOperator(applicationContext: Context) {
     private val parser = DocumentParser()
     private val dataSourceConfigs = getDataSources()
     private val dataShaper = DataShaper()
+    private val noaaAlertHandler = NoaaAlertHandler()
 
 
 
@@ -26,10 +29,13 @@ class NetworkOperator(applicationContext: Context) {
 //            Log.i("fetchData", dsConfig.url)
 
             try {
-                val convertedDataTable = downloadDataFromNetwork(
-                    context, dsConfig, downloadManager, parser, dataShaper
+                val downloadedData = downloadManager.loadSatelliteDatasheet(dsConfig.url)
+
+                val convertedDataTable = handleIncomingData(
+                    context, dsConfig, downloadedData
                 )
-                dsConfig.latestData = convertedDataTable
+                dsConfig.latestData = convertedDataTable as MutableList<MutableMap<String, Any>>
+
                 allTables[dsConfig.tableName] = convertedDataTable
 //                return convertedDataTable
             } catch (e: Exception) {
@@ -47,35 +53,26 @@ class NetworkOperator(applicationContext: Context) {
 
 
 
-    private suspend fun downloadDataFromNetwork(
+
+    private suspend fun handleIncomingData(
         context: Context,
         dsConfig: DataSourceConfig,
-        downloadManager:DownloadManager,
-        parser: DocumentParser,
-        dataShaper: DataShaper
-    ): MutableList<MutableMap<String, Any>> {
-        val valuesCount = dsConfig.keys.size
-        val downloadedDataTable = downloadManager.loadSatelliteDatasheet(dsConfig.url)
-        val parsedDataTable = parser.parseData(context, fileLogger, downloadedDataTable, dsConfig.keys, valuesCount)
-        val convertedTable = dataShaper.convertData(dsConfig, parsedDataTable)
+        downloadedData:String,
+    ): List<Any> {
+        if (dsConfig.tableName == ALERTS_PSEUDO_TABLE_NAME){
+            val data = parser.parseJson(downloadedData)
+            noaaAlertHandler.handleAlerts(data)
+            return data
+//            Log.d("handleIncomingData", downloadedData)
+//            return mutableListOf<MutableMap<String, Any>>()
+        } else {
+            val valuesCount = dsConfig.keys.size
+//        val downloadedData = downloadManager.loadSatelliteDatasheet(dsConfig.url)
+            val parsedDataTable =
+                parser.parseData(context, fileLogger, downloadedData, dsConfig.keys, valuesCount)
 
-//        when (dsConfig.tableName) {
-//            Constants.ACE_TABLE_NAME -> Log.d(
-//                "downloadDataFromNetwork",
-//                "${dsConfig.tableName} Bz: ${convertedTable[convertedTable.size - 1][Constants.ACE_COL_BZ]} "
-//            )
-//
-//            Constants.HP_TABLE_NAME -> Log.d(
-//                "downloadDataFromNetwork",
-//                "${dsConfig.tableName} Hp: ${convertedTable[convertedTable.size - 1][Constants.HP_COL_HPN]} "
-//            )
-//
-//            Constants.EPAM_TABLE_NAME -> Log.d(
-//                "downloadDataFromNetwork",
-//                "${dsConfig.tableName} Speed: ${convertedTable[convertedTable.size - 1][Constants.EPAM_COL_SPEED]} "
-//            )
-//        }
-        return convertedTable
+            return dataShaper.convertData(dsConfig, parsedDataTable)
+        }
     }
 
 
