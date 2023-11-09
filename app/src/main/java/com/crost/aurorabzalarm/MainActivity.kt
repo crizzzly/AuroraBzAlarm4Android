@@ -73,13 +73,14 @@ class MainActivity : ComponentActivity() {
                         initial = settingsConfig.notificationEnabled
                     )
                     val bzState by remember {
-                        mutableFloatStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9f)
-                                as Float)
+                        mutableFloatStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9f))
                     }
 
-                    if (showNotification.value && bzState <= bzThreshold){// && bzState.bz > -900){
-                        Log.d("MainActivity", "showing Notification")
-                        notificationService.showBasicNotification(this, dataViewModel)
+                    if(showNotification.value){
+                        if(-900 < bzState && bzState <= bzThreshold ) {
+                            Log.d("MainActivity", "showing Notification")
+                            notificationService.showBasicNotification(this, dataViewModel)
+                        }
                     }
 
                     MainComposable(
