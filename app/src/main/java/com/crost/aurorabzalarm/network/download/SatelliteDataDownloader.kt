@@ -1,5 +1,6 @@
 package com.crost.aurorabzalarm.network.download
 
+import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.crost.aurorabzalarm.utils.Constants.ACE_URL
@@ -9,6 +10,7 @@ import com.crost.aurorabzalarm.utils.Constants.FILEPATH_HP_DATA
 import com.crost.aurorabzalarm.utils.Constants.HP_URL
 import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.utils.Constants.RETRY_DELAY_MS
+import com.crost.aurorabzalarm.utils.FileLogger
 import kotlinx.coroutines.delay
 import org.jsoup.Jsoup
 import java.io.BufferedReader
@@ -16,15 +18,17 @@ import java.io.File
 import java.io.FileOutputStream
 
 
-class DownloadManager() {
+class DownloadManager(context: Context) {
+    private val con = context
     private var retryCount = 0
+    private val fileLogger = FileLogger.getInstance(context)
     suspend fun loadSatelliteDatasheet(url: String): String {
         /*
         * downloads document from https://services.swpc.noaa.gov/
         *
         * @param url: self explaining.
         * */
-        Log.d("SatelliteDataDownloader", "loading $url")
+//        Log.d("SatelliteDataDownloader", "loading $url")
         do {
             try {
                 val aceDoc = Jsoup.connect(url).get()
@@ -33,7 +37,14 @@ class DownloadManager() {
 //                saveDataSheetToFile(html, url)
                 return html
             } catch (e: Exception) {
-                Log.e("getSatelliteData", "$url\n ${e.stackTraceToString()}")
+                val msg = "$url\n ${e.stackTraceToString()}"
+
+                fileLogger.writeLogsToInternalStorage(
+                    con,
+                    "getSatelliteData" +msg
+                )
+
+                Log.e("getSatelliteData", msg)
                 retryCount++
                 delay(RETRY_DELAY_MS.toLong())
             }
@@ -60,6 +71,10 @@ class DownloadManager() {
         val file = try {
             File(path)
         } catch (e: Exception){
+            fileLogger.writeLogsToInternalStorage(
+                con,
+                "saveDataSheetToFile\n" +e.message
+            )
             Log.e("saveDataSheetToFile", e.message!!)
             null
         }
@@ -78,6 +93,10 @@ class DownloadManager() {
             Log.d("FileWrite", "File has been written successfully!")
 
         } catch (e: Exception) {
+            fileLogger.writeLogsToInternalStorage(
+                con,
+                "FileWrite\nError writing to file: ${e.message}"
+            )
             // Handle any exceptions that occur during the file write process
             Log.e("FileWrite", "Error writing to file: ${e.message}")
         }

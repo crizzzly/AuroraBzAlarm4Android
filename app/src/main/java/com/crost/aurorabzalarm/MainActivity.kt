@@ -19,6 +19,7 @@ import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
 import com.crost.aurorabzalarm.utils.AuroraNotificationService
+import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.PermissionManager
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
 
@@ -26,11 +27,13 @@ import com.crost.aurorabzalarm.viewmodels.DataViewModel
 class MainActivity : ComponentActivity() {
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var permissionManager: PermissionManager
+    private lateinit var fileLogger: FileLogger
+
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Log.d("MainActivity", "onCreate")
+        fileLogger = FileLogger.getInstance(this)
 
         permissionManager = PermissionManager()
         permissionLauncher = registerForActivityResult(
@@ -39,6 +42,7 @@ class MainActivity : ComponentActivity() {
             val allGranted = permissions.all { it.value }
             if (allGranted) {
                 Log.d("MainActivity", "All permissions granted, displaying ImageGallery")
+//                fileLogger.writeLogsToInternalStorage(this, "MainActivity\nAll permissions granted, displaying ImageGallery")
                 // All permissions are granted, proceed with your logic
                 // TODO: Start TimedWorkerThread
             } else {
@@ -58,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val dataViewModel: DataViewModel = viewModel()// AuroraViewModelFactory.getDataViewModel()
                     val settingsViewModel: SettingsViewModel = viewModel()// AuroraViewModelFactory.getSettingsViewModel()
-        Log.d("MainActivity viewModel", "data: $dataViewModel, settings: $settingsViewModel")
+            Log.d("MainActivity viewModel", "data: $dataViewModel, settings: $settingsViewModel")
 
                     val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
 //                    val settingsState = settingsViewModel.settingsState.observeAsState(
@@ -81,8 +85,6 @@ class MainActivity : ComponentActivity() {
                     }
 
                     MainComposable(
-                        dataViewModel,
-                        settingsViewModel,
                         permissionManager,
                         permissionLauncher
                     )

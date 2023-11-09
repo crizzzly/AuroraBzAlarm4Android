@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.PreviewAllPanels
@@ -45,25 +47,26 @@ import java.text.DecimalFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainComposable(
-    viewModel: DataViewModel,
-    settingsViewModel: SettingsViewModel,
     permissionManager: PermissionManager,
     permissionLauncher: ActivityResultLauncher<Array<String>>,
 ) {
+    val dataViewModel: DataViewModel = viewModel()
+    val settingsViewModel: SettingsViewModel = viewModel()
+
 
     val context = LocalContext.current
 
     val permissionState by permissionManager.permissionState.collectAsState()
 
-    Log.d("MainComposable VM", viewModel.toString())
-    val currentHpVals by remember { viewModel.latestHpState }
-    val currentAceVals by remember { viewModel.latestAceState }
-    val currentEpamVals by remember { viewModel.latestEpamState }
-    val currentTime = viewModel.datetime
-    val datetime = viewModel.dateTimeString
+    Log.d("MainComposable VM", dataViewModel.toString())
+    val currentHpVals by remember { dataViewModel.latestHpState }
+    val currentAceVals by remember { dataViewModel.latestAceState }
+    val currentEpamVals by remember { dataViewModel.latestEpamState }
+    val currentTime = dataViewModel.datetime
+    val datetime = dataViewModel.dateTimeString
     val settingsVisible by settingsViewModel.showSettings.observeAsState()
 
-    val currentDuration = viewModel.currentDurationOfFlight
+    val currentDuration = dataViewModel.currentDurationOfFlight
 
     val df = DecimalFormat("#.##")
     df.roundingMode = RoundingMode.CEILING
@@ -131,28 +134,36 @@ fun MainScreen(
                 .scrollable(scrollState, orientation = Orientation.Vertical)
                 .background(Color(0xFF303030))
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp, PADDING_L.dp)
-            ) {
-                Text(
-                    time,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, PADDING_S.dp)
-                )
-                Text("$currentDuration Minutes from DISCOVR to Earth")
+            Row {
 
 
-                PreviewAllPanels(
-                    bz,
-                    hpNorth.toDouble(),
-                    speed,
-                    density,
-                    temp
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp, PADDING_L.dp)
+                ) {
+                    Text(
+                        time,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, PADDING_S.dp)
+                    )
+                    Text("$currentDuration Minutes from DISCOVR to Earth")
+
+
+                    PreviewAllPanels(
+                        bz,
+                        hpNorth.toDouble(),
+                        speed,
+                        density,
+                        temp
+                    )
+                }
             }
+            // TODO: integrate navigation!
+//            Row {
+//                LogFileContent()
+//            }
         }
     }
 }

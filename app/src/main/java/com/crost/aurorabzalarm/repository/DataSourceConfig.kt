@@ -24,7 +24,7 @@ fun getDataSources(): List<DataSourceConfig> {
     val hpKeys = Constants.HP_KEYS.split(" ")
     val epamKeys = EPAM_KEYS.split(" ")
 
-    var dataSources = mutableListOf<DataSourceConfig>()
+    val dataSources = mutableListOf<DataSourceConfig>()
 
 
     val aceConfig = DataSourceConfig(

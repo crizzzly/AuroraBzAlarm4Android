@@ -1,34 +1,44 @@
 package com.crost.aurorabzalarm.network
 
+import android.content.Context
 import android.util.Log
 import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
 import com.crost.aurorabzalarm.network.parser.converter.DataShaper
 import com.crost.aurorabzalarm.repository.DataSourceConfig
 import com.crost.aurorabzalarm.repository.getDataSources
+import com.crost.aurorabzalarm.utils.FileLogger
 
 
-class NetworkOperator{
-    private val downloadManager = DownloadManager()
+class NetworkOperator(applicationContext: Context) {
+    private val fileLogger = FileLogger.getInstance(applicationContext)
+    private val downloadManager = DownloadManager(applicationContext)
     private val parser = DocumentParser()
     private val dataSourceConfigs = getDataSources()
     private val dataShaper = DataShaper()
 
 
-    suspend fun fetchData(): MutableMap<String, MutableList<MutableMap<String, Any>>> {
+
+
+    suspend fun fetchData(context: Context): MutableMap<String, MutableList<MutableMap<String, Any>>> {
         val allTables = mutableMapOf<String, MutableList<MutableMap<String, Any>>>()
         for (dsConfig in dataSourceConfigs) {
 //            Log.i("fetchData", dsConfig.url)
 
             try {
                 val convertedDataTable = downloadDataFromNetwork(
-                    dsConfig, downloadManager, parser, dataShaper
+                    context, dsConfig, downloadManager, parser, dataShaper
                 )
                 dsConfig.latestData = convertedDataTable
                 allTables[dsConfig.tableName] = convertedDataTable
 //                return convertedDataTable
             } catch (e: Exception) {
-                Log.e("fetchDataAndStore", "Error processing data: ${e.message}")
+                val msg = "Error processing data: ${e.message}"
+                fileLogger.writeLogsToInternalStorage(
+                    context,
+                    "storingDataInDb\n" +
+                            msg)
+                Log.e("fetchDataAndStore", msg)
                 throw e
             }
         }
@@ -38,6 +48,7 @@ class NetworkOperator{
 
 
     private suspend fun downloadDataFromNetwork(
+        context: Context,
         dsConfig: DataSourceConfig,
         downloadManager:DownloadManager,
         parser: DocumentParser,
@@ -45,7 +56,7 @@ class NetworkOperator{
     ): MutableList<MutableMap<String, Any>> {
         val valuesCount = dsConfig.keys.size
         val downloadedDataTable = downloadManager.loadSatelliteDatasheet(dsConfig.url)
-        val parsedDataTable = parser.parseData(downloadedDataTable, dsConfig.keys, valuesCount)
+        val parsedDataTable = parser.parseData(context, fileLogger, downloadedDataTable, dsConfig.keys, valuesCount)
         val convertedTable = dataShaper.convertData(dsConfig, parsedDataTable)
 
 //        when (dsConfig.tableName) {

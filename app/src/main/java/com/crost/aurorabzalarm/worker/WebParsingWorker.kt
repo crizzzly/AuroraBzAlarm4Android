@@ -14,6 +14,7 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.crost.aurorabzalarm.R
 import com.crost.aurorabzalarm.utils.Constants
+import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -25,12 +26,13 @@ class WebParsingWorker(
 ): CoroutineWorker(ctx,params) {
 
     private val notificationManager = ctx.getSystemService(Application.NOTIFICATION_SERVICE) as NotificationManager
+    private val fileLogger = FileLogger.getInstance(ctx)
+
 
     
     override suspend fun doWork(): Result {
-        Log.d("WebParsingWorker", "running")
          return try {
-                    viewModel.fetchSpaceWeatherData()
+                    viewModel.fetchSpaceWeatherData(ctx)
 
                 Result.success()
             } catch (throwable: Throwable) {
@@ -41,6 +43,10 @@ class WebParsingWorker(
                 toast.show()
                 Result.failure()
             } catch (e: IllegalStateException){
+                fileLogger.writeLogsToInternalStorage(
+                    ctx,
+                    "WebParsingWorker\n${e.stackTraceToString()}"
+                )
                 Log.e("WebParsingWorker", e.stackTraceToString())
 
                 val text = "WebParsingWorker\n${e.message}"
@@ -66,6 +72,10 @@ class WebParsingWorker(
         try {
             notificationManager.createNotificationChannel(notificationChannel)
         } catch (e: Exception){
+            fileLogger.writeLogsToInternalStorage(
+                ctx,
+                "Worker-createForegroundInfo\n${e.stackTraceToString()}"
+                )
             Log.e("App: createNotificChannel", e.stackTraceToString())
 
             val text = "createNotificationManager-app\n${e.message}"

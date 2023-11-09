@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.viewmodels
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +12,7 @@ import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
+import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
 import com.crost.aurorabzalarm.utils.datetime_utils.getTimeOfDataFlight
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,7 @@ import java.time.LocalDateTime
 
 
 class DataViewModel(application: Application) : AndroidViewModel(application) {
+    private  var fileLogger = FileLogger.getInstance(application.applicationContext)
     private var spaceWeatherRepository: SpaceWeatherRepository
 
     // TODO: Create Color-Set
@@ -71,55 +74,71 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         spaceWeatherRepository = SpaceWeatherRepository(application)
 
 //        Log.d("DataViewModel Init", "Observing values")
-        initAceObserver()
-        initEpamObserver()
-        initHpObserver()
+        initAceObserver(application.applicationContext)
+        initEpamObserver(application.applicationContext)
+        initHpObserver(application.applicationContext)
 
-        fetchSpaceWeatherData()
+        fetchSpaceWeatherData(application.applicationContext)
     }
 
-    private fun initHpObserver() {
+    private fun initHpObserver(applicationContext: Context) {
         spaceWeatherRepository.latestHpData.observeForever {
             try {
                 _latestHpState.value = it
 //                Log.d("HpObserver", "latest hp: ${it.hpNorth} GW")
             } catch (e: Exception){
+                fileLogger.writeLogsToInternalStorage(
+                    applicationContext,
+                    "HpObserver\n${e.stackTraceToString()}"
+                )
                 Log.e("HpObserver", "HpObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
-    private fun initEpamObserver() {
+    private fun initEpamObserver(applicationContext: Context) {
         spaceWeatherRepository.latestEpamData.observeForever {
             try {
                 _latestEpamState.value = it
 //                Log.d("EpamObserver", "LatestSpeedVal: ${it.speed} km/s")
             } catch (e: Exception){
+                fileLogger.writeLogsToInternalStorage(
+                    applicationContext,
+                    "EpamObserver\n${e.stackTraceToString()}"
+                )
                 Log.e("EpamObserver", "EpamObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
-    private fun initAceObserver(){
+    private fun initAceObserver(applicationContext: Context) {
         spaceWeatherRepository.latestAceData.observeForever {
             try {
                 _latestAceState.value = it
 //                Log.d("AceObserver", "initialized. latest: ${it.bz}")
             } catch (e: Exception){
+                fileLogger.writeLogsToInternalStorage(
+                    applicationContext,
+                    "AceObserver\n${e.stackTraceToString()}"
+                )
                 Log.e("AceObserver", "AceObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
 
-    fun fetchSpaceWeatherData() {
+    fun fetchSpaceWeatherData(applicationContext: Context) {
 //        Log.i("DataViewModel", "fetchSpaceWeatherData")
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                spaceWeatherRepository.fetchDataAndStore()
+                spaceWeatherRepository.fetchDataAndStore(applicationContext)
 //                async { spaceWeatherRepository.fetch/**/DataAndStore() }
             } catch (e: Exception) {/**/
+                fileLogger.writeLogsToInternalStorage(
+                    applicationContext,
+                    "fetchSpaceWeatherData\n${e.stackTraceToString()}"
+                )
                 Log.e("fetchSpaceWeatherData", e.stackTraceToString())
 
                 // TODO: user output

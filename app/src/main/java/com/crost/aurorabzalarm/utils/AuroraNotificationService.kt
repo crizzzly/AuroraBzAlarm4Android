@@ -18,6 +18,8 @@ class AuroraNotificationService(
 //    private val viewModel = AuroraViewModelFactory.getDataViewModel()
     private val notificationId = 17
 
+    // TODO: Check if urgent message is sth:
+    //  https://developer.android.com/develop/ui/views/notifications/build-notification#urgent-message
 
     fun showBasicNotification(viewModel: DataViewModel ){
 
@@ -35,8 +37,10 @@ class AuroraNotificationService(
             .setSmallIcon(androidx.core.R.drawable.notification_bg) //--> find icon!
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setOngoing(true)
+//            .setContentIntent()
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//            .setVibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))
+//            .setVibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK)) -> how does this work?
             .build()
 
         try {
@@ -47,6 +51,8 @@ class AuroraNotificationService(
             )
             Log.d("AuroraNotificationService", "notify ... done!")
         } catch (e: Exception){
+            val msg = "AuroraNotificationService ${e.stackTraceToString()}"
+            FileLogger.getInstance(context).writeLogsToInternalStorage(context, msg)
             Log.e("AuroraNotificationService", e.stackTraceToString())
 
             val text = "AuroraNotificationService\n${e.message}"
