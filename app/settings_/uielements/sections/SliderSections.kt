@@ -21,10 +21,10 @@ import com.crost.aurorabzalarm.settings.SettingsViewModel
 @Composable
 fun HpSliderSection(
     con: Context,
-    sliderVal: Float,
+    hpSliderVal: Float,
     settingsConfig: Settings
 ){
-    var hpSliderVal by remember { mutableFloatStateOf(sliderVal) }
+//    val hpSliderVal = remember { hpSliderV }
     val viewModel: SettingsViewModel = viewModel()
     val hpSliderState = remember {
         SliderState(
@@ -32,18 +32,16 @@ fun HpSliderSection(
             valueRange = settingsConfig.hpWarningLevel.minValue..settingsConfig.hpWarningLevel.maxValue,
             steps = 5,
             initialOnValueChange = {
-                Log.d("Hp: initialValChange", it.toString())
-                hpSliderVal = it
+//                Log.d("Hp: initialValChange", it.toString())
                 viewModel.updateHpState(it)
             },
             onValueChangeFinished = {
                 settingsConfig.hpWarningLevel.currentValue = hpSliderVal
-                Log.d("Hp: onValChangeFinish", "")
+//                Log.d("Hp: onValChangeFinish", "")
                 viewModel.saveConfig(con, settingsConfig)
             }
         )
     }
-    hpSliderState.value = hpSliderVal
 
     ListItem( // Slider HP
         headlineContent = { Text("Set Hemispheric Power Level") },
@@ -59,38 +57,39 @@ fun HpSliderSection(
 @Composable
 fun BzSliderSection(
     con: Context,
-    sliderVal: Float,
+    bzSliderVal: Float,
     settingsConfig: Settings
 ){
+    Log.d("BzSliderSection",
+        "current: sliderVal: $bzSliderVal, settings:${settingsConfig.hpWarningLevel.currentValue}")
+
     val viewModel: SettingsViewModel = viewModel()
-    var bzSliderVal by remember { mutableFloatStateOf(sliderVal) }
+    var bzVal by remember { mutableFloatStateOf(bzSliderVal) }
 
     val bzSliderState = remember {
         SliderState(
-            initialValue = bzSliderVal ,
+            initialValue = bzVal ,
             valueRange = settingsConfig.bzWarningLevel.minValue..settingsConfig.bzWarningLevel.maxValue,
             steps = 5,
             initialOnValueChange = {
-                bzSliderVal = it
+                bzVal = it
                 viewModel.updateBzState(it)
-                settingsConfig.bzWarningLevel.currentValue = bzSliderVal
-                Log.d("Bz initialOnValueChange",
-                    "it: $it\n" +
-                            "bzVal: ${bzSliderVal}\n" +
-                            "settings: ${settingsConfig.bzWarningLevel.currentValue}")
+                settingsConfig.bzWarningLevel.currentValue = bzVal
+//                Log.d("Bz initialOnValueChange",
+//                    "it: $it\n" +
+//                            "bzVal: $bzVal\n" +
+//                            "settings: ${settingsConfig.bzWarningLevel.currentValue}")
             },
             onValueChangeFinished = {
                 viewModel.saveConfig(con, settingsConfig)
-                Log.d("onValueChangeFinished", "settings: ${settingsConfig.bzWarningLevel}")
+//                Log.d("onValueChangeFinished", "settings: ${settingsConfig.bzWarningLevel}")
             }
         )
     }
 
-    bzSliderState.value = bzSliderVal
-
     ListItem(  // Slider Bz
         headlineContent = { Text("Set Bz Level") },
-        trailingContent = { Text(bzSliderState.value.toInt().toString()) },
+        trailingContent = { Text(bzSliderVal.toInt().toString()) },
         supportingContent = {
             Slider(state = bzSliderState)
         }

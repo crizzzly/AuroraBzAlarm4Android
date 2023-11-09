@@ -10,6 +10,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import com.crost.aurorabzalarm.utils.Constants.WORKER_REPEAT_INTERVAL
 import com.crost.aurorabzalarm.utils.FileLogger
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 //    private lateinit var permissionManager: PermissionManager
     private lateinit var dataViewModel:  DataViewModel// by viewModels()
+    private lateinit var settingsViewModel: SettingsViewModel// by viewModels()
     private lateinit var fileLogger: FileLogger
 
     override fun getWorkManagerConfiguration(): Configuration {
@@ -35,6 +37,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
         super.onCreate()
         fileLogger=  FileLogger.getInstance(this.applicationContext)
         dataViewModel = DataViewModel(this)
+        settingsViewModel = SettingsViewModel()
 //        permissionManager = PermissionManager()
 
         Log.d("App-onCreate", "initializing WorkManager")

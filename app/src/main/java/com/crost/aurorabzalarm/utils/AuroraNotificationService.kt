@@ -32,10 +32,7 @@ class AuroraNotificationService(
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             context, 0, intent, PendingIntent.FLAG_IMMUTABLE
         )
-//        val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
-//            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-//            putExtra(Settings.EXTRA_CHANNEL_ID, myNotificationChannel.getId())
-//        }
+
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         Log.d("AuroraNotificationService", "Showing Notification")
 

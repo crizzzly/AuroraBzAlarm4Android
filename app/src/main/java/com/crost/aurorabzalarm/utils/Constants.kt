@@ -37,7 +37,7 @@ object Constants {
 
 
     // worker repeat interval in sec
-    const val WORKER_REPEAT_INTERVAL = 300L
+    const val WORKER_REPEAT_INTERVAL = 300L*5L
 
     // Notification Service
     const val CHANNEL_ID = "aurora_notification"

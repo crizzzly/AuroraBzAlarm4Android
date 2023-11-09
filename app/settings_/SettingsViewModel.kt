@@ -1,19 +1,23 @@
 package com.crost.aurorabzalarm.settings
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.crost.aurorabzalarm.utils.FileLogger
 
-class SettingsViewModel(): ViewModel() {
+class SettingsViewModel(application: Application): AndroidViewModel(application) {
+    private val fileLogger = FileLogger.getInstance(application.applicationContext)
+    private val settingsParser = SettingsParser(application.applicationContext)
 
-    private val _showSettings = MutableLiveData(true)
+    private val _showSettings = MutableLiveData(false)
     val showSettings: LiveData<Boolean> get() = _showSettings
 
 
 
-    private var _notificationEnabled = MutableLiveData(false)
+    private var _notificationEnabled = MutableLiveData(true)
     val notificationEnabled get(): LiveData<Boolean> = _notificationEnabled
 
     private val _hpSliderState = MutableLiveData(50f)
@@ -22,14 +26,16 @@ class SettingsViewModel(): ViewModel() {
     private val _bzSliderState = MutableLiveData(0f)
     val bzSliderState get(): LiveData<Float> = _bzSliderState
 
+
+
 //    var settingsConfig: Settings = getSettingsConfig(context)
 
     fun saveConfig(context: Context, settings: Settings) {
-        saveSettingsConfig(context, settings)
+        settingsParser.saveSettingsConfig(context, settings)
     }
 
     fun loadAndReturnConfig(context: Context): Settings {
-        return loadSettingsConfig(context)
+        return settingsParser.loadSettingsConfig(context)
     }
 
     fun setSettingsVisible(value: Boolean) {

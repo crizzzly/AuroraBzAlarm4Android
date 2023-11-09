@@ -38,7 +38,7 @@ import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 import com.crost.aurorabzalarm.utils.PermissionManager
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
-import com.crost.settingsscreen.settings.uielements.SettingsScreen
+import com.crost.aurorabzalarm.settings.uielements.SettingsScreen
 import java.math.RoundingMode
 import java.text.DecimalFormat
 

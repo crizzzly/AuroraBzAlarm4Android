@@ -8,8 +8,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.settings.Settings
@@ -25,7 +23,7 @@ fun NotificationStateSection(
 ){
     val viewModel: SettingsViewModel = viewModel()
 
-    val notification = remember { mutableStateOf(notificationEnabled) }
+//    val notification = remember { mutableStateOf(notificationEnabled) }
 
     ListItem( // Enable/Disable
         headlineContent = {
@@ -36,11 +34,11 @@ fun NotificationStateSection(
         },
         trailingContent = {
             Switch(
-                checked = notification.value,
+                checked = notificationEnabled,
                 onCheckedChange =
                 { checked ->
                     Log.d("Settings Screen", "alarm switch enabled : $checked")
-                    notification.value = checked
+//                    notificationEnabled = checked
                     viewModel.setNotificationState(checked)
                     settingsConfig.notificationEnabled = checked
                     viewModel.saveConfig(con, settingsConfig)

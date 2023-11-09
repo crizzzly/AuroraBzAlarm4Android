@@ -9,15 +9,18 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.settings.SettingsViewModel
-import com.crost.aurorabzalarm.settings.uielements.sections.NotificationStateSection
 import com.crost.aurorabzalarm.settings.uielements.sections.BzSliderSection
 import com.crost.aurorabzalarm.settings.uielements.sections.HeadlineSection
 import com.crost.aurorabzalarm.settings.uielements.sections.HpSliderSection
+import com.crost.aurorabzalarm.settings.uielements.sections.NotificationStateSection
 
 
+
+@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsList() {
@@ -27,14 +30,12 @@ fun SettingsList() {
     val hpSliderVal = viewModel.hpSliderState.observeAsState(
         initial = settingsConfig.hpWarningLevel.currentValue
     )
-    var bzSliderVal = viewModel.bzSliderState.observeAsState(
+    val bzSliderVal = viewModel.bzSliderState.observeAsState(
         initial = settingsConfig.bzWarningLevel.currentValue
     )
     val notificationEnabled = viewModel.notificationEnabled.observeAsState(
         initial = settingsConfig.notificationEnabled
     )
-
-
 
     Log.d(
         "SettingsScreen",
@@ -57,13 +58,13 @@ fun SettingsList() {
         HeadlineSection()
         BzSliderSection(
             con,
-            bzSliderVal.value,
+            bzSliderVal = bzSliderVal.value,
             settingsConfig = settingsConfig
         )
 
         HpSliderSection(
             con = con,
-            sliderVal = hpSliderVal.value,
+            hpSliderVal = hpSliderVal.value,
             settingsConfig = settingsConfig
         )
     }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.settings.SettingsViewModel
@@ -60,26 +61,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val dataViewModel: DataViewModel = viewModel()// AuroraViewModelFactory.getDataViewModel()
-                    val settingsViewModel: SettingsViewModel = viewModel()// AuroraViewModelFactory.getSettingsViewModel()
-            Log.d("MainActivity viewModel", "data: $dataViewModel, settings: $settingsViewModel")
-
+                    val dataViewModel: DataViewModel = viewModel()
+                    val settingsViewModel: SettingsViewModel = viewModel()
                     val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
-//                    val settingsState = settingsViewModel.settingsState.observeAsState(
-//                        initial = SettingsState(
-//                            settingsConfig.notificationEnabled,
-//                            settingsConfig.bzWarningLevel.currentValue,
-//                            settingsConfig.hpWarningLevel.currentValue
-//                        )
-//                    )
-//                    val notification = remember {
-//                        settingsState.value.notificationEnabled
-//                    }
-//                    val bzState = remember { settingsState.value.bzThreshold }
+                    val bzThreshold = settingsConfig.bzWarningLevel.currentValue
+
                     val notificationEnabled = settingsViewModel.notificationEnabled
-                    val notification = notificationEnabled.observeAsState(initial = settingsConfig.notificationEnabled)
-                    val bzState = dataViewModel.latestAceState.value?.bz ?: -999.9
-                    if (true){// && bzState.bz > -900){
+                    val showNotification = notificationEnabled.observeAsState(
+                        initial = settingsConfig.notificationEnabled
+                    )
+                    val bzState = remember{ dataViewModel.latestAceState.value?.bz ?: -999.9 }
+
+                    if (showNotification.value && bzState <= bzThreshold){// && bzState.bz > -900){
                         Log.d("MainActivity", "showing Notification")
                         notificationService.showBasicNotification(this, dataViewModel)
                     }
