@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.utils.datetime_utils
 
 import java.sql.Date
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -10,6 +11,14 @@ import java.time.format.DateTimeFormatter
 
 
 private val localZoneId = ZoneId.systemDefault()
+
+fun calculateTimeDifferenceFromNow(endDateTime: LocalDateTime): Duration {
+    val startDateTime = LocalDateTime.now()
+    //    Log.d("calculateTimeDifferenceFromNow", "now: $startDateTime\n" +
+//            "then: $endDateTime\n" +
+//            "duration: ${duration.toMinutes()}")
+    return Duration.between(startDateTime, endDateTime).abs()
+}
 
 fun parseDateTimeString(dateTimeString: String): LocalDateTime {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")

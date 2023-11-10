@@ -44,6 +44,7 @@ object Constants {
 
     // Notification Service
     const val CHANNEL_ID = "aurora_notification"
+    const val CHANNEL_ID_NOAA = "noaa_alerts"
 
     // retries for time-consuming functions
     const val MAX_RETRY_COUNT = 3

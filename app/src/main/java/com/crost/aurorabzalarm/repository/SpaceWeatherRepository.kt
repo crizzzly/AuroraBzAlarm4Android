@@ -16,6 +16,8 @@ import com.crost.aurorabzalarm.data.saveDataModelInstances
 import com.crost.aurorabzalarm.network.NetworkOperator
 import com.crost.aurorabzalarm.network.parser.NoaaAlert
 import com.crost.aurorabzalarm.network.parser.NoaaAlertHandler
+import com.crost.aurorabzalarm.settings.loadSettingsConfig
+import com.crost.aurorabzalarm.utils.AuroraNotificationService
 import com.crost.aurorabzalarm.utils.Constants.ALERTS_PSEUDO_TABLE_NAME
 import com.crost.aurorabzalarm.utils.Constants.DB_NAME
 import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
@@ -26,15 +28,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 const val DEBUG_REPOSITORY = false
 
 class SpaceWeatherRepository(application: Application) {
+    private lateinit var db: SpaceWeatherDataBase
+    private lateinit var notificationService: AuroraNotificationService
+
     private val fileLogger = FileLogger.getInstance(application.applicationContext)
     private val networkOperator = NetworkOperator(application.applicationContext)
-    private lateinit var db: SpaceWeatherDataBase
     private val noaaAlertHandler = NoaaAlertHandler()
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val settings = loadSettingsConfig(application.applicationContext)
 
 
     private var _latestHpData = MutableLiveData(
@@ -46,23 +53,35 @@ class SpaceWeatherRepository(application: Application) {
     private var _latestEpamData = MutableLiveData(
         AceEpamData(0, -9999.9, -9999.9, -9999.9)
     )
+    private val _latestNoaaKpAlert = MutableLiveData(
+        NoaaAlert(
+            id = "0", issueDatetime = LocalDateTime.now(), message = "")
+        )
+    private val _latestNoaaKpWarning = MutableLiveData(
+        NoaaAlert(
+            id = "0", issueDatetime = LocalDateTime.now(), message = "")
+    )
+    private val _latestNoaaSolarStormAlert = MutableLiveData(
+        NoaaAlert(
+            id = "0", issueDatetime = LocalDateTime.now(), message = "")
+    )
+
 
     val latestHpData get() = _latestHpData
     val latestAceData get() = _latestAceData
     val latestEpamData get() = _latestEpamData
-
-    // Handle the error, e.g., show an error message to the user
-    // You could use LiveData or callbacks to communicate this error to the UI layer
-    // or provide a fallback mechanism to use some default data temporarily
-    // Or attempt to recreate the database or perform some recovery actions
+    val latestNoaaKpAlert get() = _latestNoaaKpAlert
+    val latestNoaaKpWarning get() = _latestNoaaKpWarning
+    val latestNoaaSolarStormAlert get() = _latestNoaaSolarStormAlert
 
 
     init {
         var retryCount = 0
+        notificationService = AuroraNotificationService(application.applicationContext)
 
         do {
             try {  // db init
-//                if (DEBUG_REPOSITORY) Log.i("SpaceWeatherRepository", "init db")
+                if (DEBUG_REPOSITORY) Log.i("SpaceWeatherRepository", "init db")
                 db = Room.databaseBuilder(application, SpaceWeatherDataBase::class.java, DB_NAME)
 //                        .addMigrations(migration1to2, migration1to3, migration2to3, )
 //                        .fallbackToDestructiveMigration() // This line ensures any existing database will be cleared
@@ -95,6 +114,7 @@ class SpaceWeatherRepository(application: Application) {
         setAceDataCollector(application.applicationContext)
         setHpDataCollector(application.applicationContext)
         setEpamDataCollector(application.applicationContext)
+        setNoaaAlertCollector(application.applicationContext)
 
         scope.launch {
             fetchDataAndStore(application.applicationContext)
@@ -113,9 +133,6 @@ class SpaceWeatherRepository(application: Application) {
     }
 
 
-
-
-
     private suspend fun handleIncomingData(
         context: Context,
         allDataLists: MutableMap<String, MutableList<Any>>,
@@ -123,6 +140,7 @@ class SpaceWeatherRepository(application: Application) {
         for (table in allDataLists.keys) {
             if (table == ALERTS_PSEUDO_TABLE_NAME) {
                 noaaAlertHandler.handleAlerts(allDataLists[table] as List<NoaaAlert>)
+
             }
             else{
                 try {
@@ -142,6 +160,29 @@ class SpaceWeatherRepository(application: Application) {
     }
 
 
+    private fun setNoaaAlertCollector(context: Context){
+        scope.launch {
+            try {
+                val latestKpAlerts = noaaAlertHandler.kpAlert as Flow<NoaaAlert>
+                latestKpAlerts.collect{kpAlert ->
+                    checkIfNotificationIsNecessary(kpAlert)
+                    Log.d("KpAlert", kpAlert.message)
+                    _latestNoaaKpAlert.postValue(kpAlert)
+                }
+                val latestKpWarnings = noaaAlertHandler.kpWarning as Flow<NoaaAlert>
+                latestKpWarnings.collect{ kpWarning ->
+                    _latestNoaaKpWarning.postValue(kpWarning)
+                }
+                val latestSolarStormAlert = noaaAlertHandler.geoAlert as Flow<NoaaAlert>
+                latestSolarStormAlert.collect{solarAlert ->
+                    _latestNoaaSolarStormAlert.postValue(solarAlert)
+                }
+
+            } catch (e: Exception){
+                Log.e("setNoaaAlertCollector", e.stackTraceToString())
+            }
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     private fun setHpDataCollector(context: Context) {
@@ -152,6 +193,7 @@ class SpaceWeatherRepository(application: Application) {
                 val latestData =
                     getLatestHpValuesFromDb(fileLogger, context, db) as Flow<HemisphericPowerData>
                 latestData.collect { hpData ->
+                    checkIfNotificationIsNecessary(hpData)
                     if (DEBUG_REPOSITORY) Log.d("HpDataCollector", hpData.hpNorth.toString())
                     _latestHpData.postValue(hpData)
                 }
@@ -178,6 +220,7 @@ class SpaceWeatherRepository(application: Application) {
                 ) as Flow<AceMagnetometerData>
 
                 latestData.collect { aceData ->
+                    checkIfNotificationIsNecessary(aceData)
                     if (DEBUG_REPOSITORY) {
                         Log.d(
                             "getLatestAceData",
@@ -195,6 +238,21 @@ class SpaceWeatherRepository(application: Application) {
         }
     }
 
+    private fun checkIfNotificationIsNecessary(data: Any) {
+        if(settings.notificationEnabled){
+            if (data is AceMagnetometerData){
+                if(data.bz >= settings.bzWarningLevel.currentValue){
+                    notificationService.showSpaceWeatherNotification(data.bz, 15)
+                }
+            }
+            else if (data is NoaaAlert){
+                notificationService.showNoaaAlert(data)
+            }
+        }
+
+
+    }
+
 
     @Suppress("UNCHECKED_CAST")
     private fun setEpamDataCollector(applicationContext: Context) {
@@ -207,6 +265,7 @@ class SpaceWeatherRepository(application: Application) {
                     db
                 ) as Flow<AceEpamData>
                 latestData.collect { epamData ->
+                    checkIfNotificationIsNecessary(epamData)
                     if (DEBUG_REPOSITORY) {
                         Log.d(
                             "getLatestEpamData",

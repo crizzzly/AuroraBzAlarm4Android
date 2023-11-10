@@ -1,7 +1,6 @@
 package com.crost.aurorabzalarm.settings.uielements.sections
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -56,13 +55,11 @@ fun HpSliderSection(
             valueRange = settingsConfig.hpWarningLevel.minValue..settingsConfig.hpWarningLevel.maxValue,
             steps = 5,
             initialOnValueChange = {
-                Log.d("Hp: initialValChange", it.toString())
                 hpSliderVal = it
                 viewModel.updateHpState(it)
             },
             onValueChangeFinished = {
                 settingsConfig.hpWarningLevel.currentValue = hpSliderVal
-                Log.d("Hp: onValChangeFinish", "")
                 viewModel.saveConfig(con, settingsConfig)
             }
         )
@@ -101,14 +98,9 @@ fun BzSliderSection(
                 bzSliderVal = it
                 viewModel.updateBzState(it)
                 settingsConfig.bzWarningLevel.currentValue = bzSliderVal
-                Log.d("Bz initialOnValueChange",
-                    "it: $it\n" +
-                            "bzVal: ${bzSliderVal}\n" +
-                            "settings: ${settingsConfig.bzWarningLevel.currentValue}")
             },
             onValueChangeFinished = {
                 viewModel.saveConfig(con, settingsConfig)
-                Log.d("onValueChangeFinished", "settings: ${settingsConfig.bzWarningLevel}")
             }
         )
     }

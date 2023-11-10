@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,13 +35,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var fileLogger: FileLogger
 
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fileLogger = FileLogger.getInstance(this)
-
-        permissionManager = PermissionManager()
-        permissionLauncher = registerForActivityResult(
+    private fun getPermissionLauncher(): ActivityResultLauncher<Array<String>> {
+        return registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             val allGranted = permissions.all { it.value }
@@ -54,6 +50,14 @@ class MainActivity : ComponentActivity() {
                 // Some or all permissions are denied, handle the case where the permission is required
             }
         }
+    }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fileLogger = FileLogger.getInstance(this)
+
+        permissionManager = PermissionManager()
+        permissionLauncher = getPermissionLauncher()
 
         val notificationService = AuroraNotificationService(this)
 
@@ -68,20 +72,24 @@ class MainActivity : ComponentActivity() {
                     val settingsViewModel: SettingsViewModel = viewModel()
                     val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
                     val bzThreshold by remember { mutableFloatStateOf(settingsConfig.bzWarningLevel.currentValue) }
-
-                    val notificationEnabled = settingsViewModel.notificationEnabled
-                    val showNotification = notificationEnabled.observeAsState(
+                    val notificationEnabled = settingsViewModel.notificationEnabled.observeAsState(
                         initial = settingsConfig.notificationEnabled
                     )
                     val bzState by remember {
-                        mutableStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9)
+                        mutableDoubleStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9)
                         )
                     }
 
-                    if(showNotification.value){
-                        if(-900 < bzState && bzState <= bzThreshold ) {
+                    val kpAlert by remember {
+                        mutableStateOf(dataViewModel.kpAlertState.value)
+                    }
+
+
+
+                    if(notificationEnabled.value){
+                        if(-900 <= bzState && bzState <= bzThreshold ) {
 //                            Log.d("MainActivity", "showing Notification")
-                            notificationService.showBasicNotification(this, dataViewModel)
+                            notificationService.showSpaceWeatherNotification(bzState, 0)
                         }
                     }
 

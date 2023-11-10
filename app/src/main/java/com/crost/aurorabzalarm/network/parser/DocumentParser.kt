@@ -35,6 +35,13 @@ class DocumentParser{
     }
 
     fun parseJson(jsonData: String): List<NoaaAlert> {
+        /**
+         * parses json out of jsonData String from website,
+         * converts issueDateTime (String - UTC) to LocalDateTime
+         * @param jsonData: NoaaAlerts as json
+         * @return: List<NoaaAlert>
+         */
+
         val alerts = mutableListOf<NoaaAlert>()
         val jsonArray = JSONArray(jsonData)
 
@@ -98,7 +105,6 @@ class DocumentParser{
         // calculate number of rows to get the table in the right shape
         val rowCount = valuesOnly.size / valuesCount
 //        Log.i("DocumentParser", "Number of rows: $rowCount, number of vals $valuesCount", )
-        val size = valuesOnly.size
         for (i in 0 until rowCount){
             val pos0 = i * valuesCount
             val pos1 = i * valuesCount + valuesCount

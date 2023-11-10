@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.crost.aurorabzalarm.data.model.AceEpamData
 import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
+import com.crost.aurorabzalarm.network.parser.NoaaAlert
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
@@ -59,9 +60,29 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         )
     )
 
+    private val _kpAlertState = mutableStateOf(
+        NoaaAlert(
+            "0", LocalDateTime.now(), ""
+        )
+    )
+    private val _kpWarningState = mutableStateOf(
+        NoaaAlert(
+            "0", LocalDateTime.now(), ""
+        )
+    )
+    private val _solarStormState = mutableStateOf(
+        NoaaAlert(
+            "0", LocalDateTime.now(), ""
+        )
+    )
+
+
     val latestHpState: State<HemisphericPowerData?> get() = _latestHpState
     val latestAceState: State<AceMagnetometerData?> get() = _latestAceState
     val latestEpamState: State<AceEpamData?> get() = _latestEpamState
+    val kpAlertState: State<NoaaAlert> get() = _kpAlertState
+    val kpWarningState: State<NoaaAlert> get() = _kpWarningState
+    val solarStormState: State<NoaaAlert> get() = _solarStormState
 
     val currentDurationOfFlight: Float get() = getTimeOfDataFlight(latestEpamState.value?.speed)
 
@@ -164,80 +185,3 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
-
-
-//
-//private fun updateCurrentSpaceWeatherState(newData: CurrentSpaceWeatherState){
-//    Log.d("Dvm - updateCurrentSpaceWeatherState", "length: ${newData.weatherData.size} \n" +
-//            newData.getAsPrintableString()
-//    )
-//    _currentSpaceWeatherStateFlow.value.weatherData = newData.weatherData as MutableMap<String, Any>
-//
-//    try {
-//        outputText = "CurrentDataState: \n" +
-////                    "Bz Value:\t ${currentLiveData.value?.get("bzVal")}\n" + // does not update!
-//                "Bz Value:\t ${currentSpaceWeatherLiveData.value?.weatherData?.get("bzVal")}\n" + // does not update!
-//                "Hemispheric Power: ${currentSpaceWeatherLiveData.value?.get("hpVal")} GW"
-//    } catch (e: NoSuchElementException){
-//        outputText = "Error \nProbs with accessing WeatherDataState"
-//        Log.e("MainComposables - Values", e.stackTraceToString())
-//        outputTextColor = Color.Red
-//    }
-//
-//
-//
-//            as MutableMap<String, Any>
-//
-//    Log.d("Dvm - currentSpaceWeatherLiveData.value ", currentSpaceWeatherLiveData.value.toString())
-//}
-//
-//private lateinit var _newData: MutableStateFlow<MutableMap<String, Any>>
-//
-//private val _currentSpaceWeatherStateFlow = MutableStateFlow(MutableCurrentSpaceWeatherState())
-////    val currentSpaceWeatherState: StateFlow<CurrentSpaceWeatherState> = _currentSpaceWeatherStateFlow
-//
-//val currentSpaceWeatherLiveData: LiveData<CurrentSpaceWeatherState>  =
-//    _currentSpaceWeatherStateFlow.asLiveData(Dispatchers.IO)
-//
-//
-//// ------------------------------------------------------------------- //
-
-
-//
-//@Stable
-//interface CurrentSpaceWeatherState {
-//    val weatherData: Map<String, Any>
-//
-//    fun getAsPrintableString(): String{
-//        var string = ""
-//        val iter = weatherData.iterator()
-//
-//        iter.forEach {entry: Map.Entry<String, Any> ->
-//            string += "${entry.key}: ${entry.value}\n"
-//        }
-//
-//        return string
-//    }
-//
-//    operator fun get(s: String): Any? {
-//        return weatherData[s]
-//
-//    }
-//}
-//
-//private class MutableCurrentSpaceWeatherState : CurrentSpaceWeatherState {
-//    override var weatherData: MutableMap<String, Any> by mutableMapOf<String, Any>()
-//}
-
-//data class SpaceWeatherState(
-//    override val weatherData: Map<String, Any>,
-//) : CurrentSpaceWeatherState
-
-
-//            var newData: Flow<SpaceWeatherState>
-//            try {
-//                 newData = spaceWeatherRepository.fetchDataAndStoreInDatabase()
-//                Log.i("ViewModel - new data", newData.toString())
-//            } catch (e: Exception){
-//                Log.e("DataViewModel fetchData", e.stackTraceToString())
-//            }

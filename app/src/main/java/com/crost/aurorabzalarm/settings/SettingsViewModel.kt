@@ -41,19 +41,19 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
 
     fun updateBzState(value: Float) {
         _bzSliderState.value = value
-        Log.d("BzState", value.toString())
-        Log.d("_bzSliderState", _bzSliderState.value.toString())
+//        Log.d("BzState", value.toString())
+//        Log.d("_bzSliderState", _bzSliderState.value.toString())
     }
 
     fun updateHpState(value: Float) {
         _hpSliderState.value = value
-        Log.d("HpState", value.toString())
-        Log.d("_hpSliderState", _hpSliderState.value.toString())
+//        Log.d("HpState", value.toString())
+//        Log.d("_hpSliderState", _hpSliderState.value.toString())
     }
 
     fun setNotificationState(value: Boolean) {
         _notificationEnabled.value = value
-        Log.d("settings visible", value.toString())
+//        Log.d("settings visible", value.toString())
     }
 }
 

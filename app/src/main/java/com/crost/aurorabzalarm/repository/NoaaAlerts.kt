@@ -11,6 +11,9 @@ object ReadoutKeys{
 // NOAA Alerts
 object NoaaAlerts {
 
+
+    const val MAX_MINUTES_BETWEEN_ALERT_AND_NOW = 24*60
+
     // https://services.swpc.noaa.gov/products/animations/geospace/
     const val KP4_ALERT_ID = "K04A"
     const val KP4_WARNING_ID = "K04W"
