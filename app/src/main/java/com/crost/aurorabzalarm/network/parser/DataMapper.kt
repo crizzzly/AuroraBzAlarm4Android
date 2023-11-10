@@ -1,15 +1,14 @@
 package com.crost.aurorabzalarm.network.parser
 
 import android.content.Context
-import android.util.Log
-import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 
 
 fun mapParsedValuesToValueNames(
     context: Context,
     dataTable: List<List<String>>,
     valueNames: List<String>,
-    fileLogger: FileLogger
+    exceptionHandler: ExceptionHandler
 ): MutableList<Map<String, String>> {
 
     val mappedValueTable = mutableListOf<Map<String, String>>()
@@ -24,12 +23,7 @@ fun mapParsedValuesToValueNames(
                 }
             } catch (e: IndexOutOfBoundsException){
                 val msg = "index: $index, value: $value\n" + e.stackTraceToString()
-                fileLogger.writeLogsToInternalStorage(
-                    context,
-                    "mapParsedValuesToValueNames" +
-                    msg
-                )
-                Log.e("mapParsedValuesToValueNames", msg)
+                exceptionHandler.handleExceptions(context, "mapParsedValuesToValueNames", msg)
             }
             index += 1
         }

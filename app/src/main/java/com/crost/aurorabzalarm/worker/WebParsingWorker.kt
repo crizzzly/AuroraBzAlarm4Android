@@ -37,6 +37,7 @@ class WebParsingWorker(
             toast.show()
             Result.failure()
         } catch (e: IllegalStateException) {
+            // TODO: ExceptionHandler
             fileLogger.writeLogsToInternalStorage(
                 ctx, "WebParsingWorker\n${e.stackTraceToString()}"
             )

@@ -1,13 +1,11 @@
 package com.crost.aurorabzalarm.utils
 
-//import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.MainActivity
 import com.crost.aurorabzalarm.R
@@ -21,6 +19,7 @@ const val DEBUG = true
 class AuroraNotificationService(
     private val context: Context
 ) {
+    private val exceptionHandler = ExceptionHandler.getInstance(context)
     private val fileLogger = FileLogger.getInstance(context)
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
 
@@ -64,14 +63,9 @@ class AuroraNotificationService(
             )
             Log.d("AuroraNotificationService", "notify ... done!")
         } catch (e: Exception){
-            // TODO: ExceptionHandlerClass
-            val msg = "AuroraNotificationService ${e.stackTraceToString()}"
-            fileLogger.writeLogsToInternalStorage(context, msg)
-            Log.e("AuroraNotificationService", e.stackTraceToString())
-
-            val text = "AuroraNotificationService\n${e.message}"
-            val toast = Toast.makeText(context, text, Toast.LENGTH_LONG)
-            toast.show()
+            exceptionHandler.handleExceptions(
+                context, "AuroraNotificationService", e.stackTraceToString()
+            )
         }
     }
 

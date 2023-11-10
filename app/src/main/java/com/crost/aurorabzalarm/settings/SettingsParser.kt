@@ -60,6 +60,7 @@ private fun writeSettingsToInternalStorage(context: Context, jsonString: String)
         outputStreamWriter.write(jsonString)
         outputStreamWriter.close()
     } catch (e: IOException) {
+        // TODO: ExceptionHandler?
         e.printStackTrace()
         // Handle the exception
     }

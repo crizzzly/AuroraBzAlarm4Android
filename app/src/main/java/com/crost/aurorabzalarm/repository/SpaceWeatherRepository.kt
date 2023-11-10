@@ -21,7 +21,7 @@ import com.crost.aurorabzalarm.utils.AuroraNotificationService
 import com.crost.aurorabzalarm.utils.Constants.ALERTS_PSEUDO_TABLE_NAME
 import com.crost.aurorabzalarm.utils.Constants.DB_NAME
 import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
-import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,15 +33,16 @@ import java.time.LocalDateTime
 const val DEBUG_REPOSITORY = false
 
 class SpaceWeatherRepository(application: Application) {
+    private val con = application.applicationContext
     private lateinit var db: SpaceWeatherDataBase
-    private lateinit var notificationService: AuroraNotificationService
+    private var notificationService: AuroraNotificationService
+    private var exceptionHandler = ExceptionHandler.getInstance(con)
 
-    private val fileLogger = FileLogger.getInstance(application.applicationContext)
-    private val networkOperator = NetworkOperator(application.applicationContext)
+    private val networkOperator = NetworkOperator(con)
     private val noaaAlertHandler = NoaaAlertHandler()
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val settings = loadSettingsConfig(application.applicationContext)
+    private val settings = loadSettingsConfig(con)
 
 
     private var _latestHpData = MutableLiveData(
@@ -77,7 +78,7 @@ class SpaceWeatherRepository(application: Application) {
 
     init {
         var retryCount = 0
-        notificationService = AuroraNotificationService(application.applicationContext)
+        notificationService = AuroraNotificationService(con)
 
         do {
             try {  // db init
@@ -88,48 +89,40 @@ class SpaceWeatherRepository(application: Application) {
                     .build()
                 retryCount = 3
             } catch (e: RuntimeException) {
-                fileLogger.writeLogsToInternalStorage(
-                    application.applicationContext,
-                    "SpaceWeatherRepository Init Error: \n " + "unable to instantiate database:\n" + "${e.stackTraceToString()} "
-                )
-                Log.e(
-                    "SpaceWeatherRepository",
-                    "unable to instantiate database: \n${e.stackTraceToString()}"
-                )
+                val msg = "unable to instantiate database: \n${e.stackTraceToString()}"
+                exceptionHandler.handleExceptions(
+                    con, "SpaceWeatherRepository", msg)
+
                 retryCount++
 //                delay()
             } catch (e: NullPointerException) {
-                fileLogger.writeLogsToInternalStorage(
-                    application.applicationContext,
-                    "SpaceWeatherRepository Init Error: \n " + "unable to instantiate database:\n" + "${e.stackTraceToString()} "
-                )
-                Log.e(
-                    "SpaceWeatherRepository",
-                    "unable to instantiate database: \n${e.stackTraceToString()}"
-                )
+                val msg = "SpaceWeatherRepository Init Error: \n " + "unable to instantiate database:\n" + "${e.stackTraceToString()} "
+                exceptionHandler.handleExceptions(
+                    con, "SpaceWeatherRepository", msg)
+
                 retryCount++
             }
         } while (retryCount < MAX_RETRY_COUNT)
 
-        setAceDataCollector(application.applicationContext)
-        setHpDataCollector(application.applicationContext)
-        setEpamDataCollector(application.applicationContext)
-        setNoaaAlertCollector(application.applicationContext)
+        setAceDataCollector()
+        setHpDataCollector()
+        setEpamDataCollector()
+        setNoaaAlertCollector()
 
         scope.launch {
-            fetchDataAndStore(application.applicationContext)
+            fetchDataAndStore()
         }
     }
 
 
-    suspend fun fetchDataAndStore(context: Context) {
+    suspend fun fetchDataAndStore() {
         var data: MutableMap<String, MutableList<Any>>
         do {
-            data = networkOperator.fetchData(context) as MutableMap<String, MutableList<Any>>
+            data = networkOperator.fetchData(con) as MutableMap<String, MutableList<Any>>
             delay(500)
         } while (data.isEmpty())
 
-        handleIncomingData(context, data)
+        handleIncomingData(con, data)
     }
 
 
@@ -146,13 +139,15 @@ class SpaceWeatherRepository(application: Application) {
                 try {
                     saveDataModelInstances(
                         context = context,
-                        fileLogger = fileLogger,
+                        exceptionHandler = exceptionHandler,
                         db = db,
                         dataTable = allDataLists[table]!! as MutableList<MutableMap<String, Any>>,
                         tableName = table
                     )
-                } catch (e: Exception) {
-                    Log.e("storeDataInDb", "Error processing data: ${e.message}")
+                } catch (e: Exception){
+                    exceptionHandler.handleExceptions(
+                        con, "storeDataInDb", "Error processing data: ${e.message}"
+                    )
                     throw e
                 }
             }
@@ -160,7 +155,7 @@ class SpaceWeatherRepository(application: Application) {
     }
 
 
-    private fun setNoaaAlertCollector(context: Context){
+    private fun setNoaaAlertCollector(){
         scope.launch {
             try {
                 val latestKpAlerts = noaaAlertHandler.kpAlert as Flow<NoaaAlert>
@@ -179,43 +174,41 @@ class SpaceWeatherRepository(application: Application) {
                 }
 
             } catch (e: Exception){
-                Log.e("setNoaaAlertCollector", e.stackTraceToString())
+                exceptionHandler.handleExceptions(
+                    con, "setNoaaAlertCollector", e.stackTraceToString()
+                )
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun setHpDataCollector(context: Context) {
+    private fun setHpDataCollector() {
         if (DEBUG_REPOSITORY) Log.d("setHpDataCollector", "setHpDat Collector")
 
         scope.launch {
             try {
                 val latestData =
-                    getLatestHpValuesFromDb(fileLogger, context, db) as Flow<HemisphericPowerData>
+                    getLatestHpValuesFromDb(exceptionHandler, con, db) as Flow<HemisphericPowerData>
                 latestData.collect { hpData ->
                     checkIfNotificationIsNecessary(hpData)
                     if (DEBUG_REPOSITORY) Log.d("HpDataCollector", hpData.hpNorth.toString())
                     _latestHpData.postValue(hpData)
                 }
             } catch (e: Exception) {
-                fileLogger.writeLogsToInternalStorage(
-                    context,
-                    "SpaceWeatherRepository Init Error: \n " + "unable to instantiate database:\n" + "${e.stackTraceToString()} "
-                )
-                Log.e("HpDataCollector", e.stackTraceToString())
+                exceptionHandler.handleExceptions(con, "HpDataCollector", e.stackTraceToString())
             }
         }
     }
 
 
     @Suppress("UNCHECKED_CAST")
-    private fun setAceDataCollector(applicationContext: Context) {
+    private fun setAceDataCollector() {
         if (DEBUG_REPOSITORY) Log.d("setAceDataCollector", "setAceDataCollector")
         scope.launch {
             try {
                 val latestData = getLatestAceValuesFromDb(
-                    fileLogger,
-                    applicationContext,
+                    exceptionHandler,
+                    con,
                     db
                 ) as Flow<AceMagnetometerData>
 
@@ -230,10 +223,7 @@ class SpaceWeatherRepository(application: Application) {
                     _latestAceData.postValue(aceData)
                 }
             } catch (e: Exception) {
-                fileLogger.writeLogsToInternalStorage(
-                    applicationContext, "AceDataCollector\n" + "${e.stackTraceToString()} "
-                )
-                Log.e("AceDataCollector", e.stackTraceToString())
+                exceptionHandler.handleExceptions(con, "AceDataCollector", e.stackTraceToString())
             }
         }
     }
@@ -246,22 +236,20 @@ class SpaceWeatherRepository(application: Application) {
                 }
             }
             else if (data is NoaaAlert){
-                notificationService.showNoaaAlert(data)
+                if (data.id != "0") notificationService.showNoaaAlert(data)
             }
         }
-
-
     }
 
 
     @Suppress("UNCHECKED_CAST")
-    private fun setEpamDataCollector(applicationContext: Context) {
+    private fun setEpamDataCollector() {
         if (DEBUG_REPOSITORY) Log.d("setEpamDataCollector", "setEpamDataCollector")
         scope.launch {
             try {
                 val latestData = getLatestEpamValuesFromDb(
-                    fileLogger,
-                    applicationContext,
+                    exceptionHandler,
+                    con,
                     db
                 ) as Flow<AceEpamData>
                 latestData.collect { epamData ->
@@ -276,10 +264,9 @@ class SpaceWeatherRepository(application: Application) {
                     _latestEpamData.postValue(epamData)
                 }
             } catch (e: Exception) {
-                fileLogger.writeLogsToInternalStorage(
-                    applicationContext, "AceDataCollector\n" + "${e.stackTraceToString()} "
+                exceptionHandler.handleExceptions(
+                    con, "AceDataCollector", "${e.stackTraceToString()} "
                 )
-                Log.e("EpamDataCollector", e.stackTraceToString())
             }
         }
     }

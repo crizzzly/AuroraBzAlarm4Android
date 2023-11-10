@@ -2,7 +2,7 @@ package com.crost.aurorabzalarm.network.parser
 
 import android.content.Context
 import android.util.Log
-import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.datetime_utils.convertUtcToLocal
 import com.crost.aurorabzalarm.utils.datetime_utils.parseDateTimeString
 import org.json.JSONArray
@@ -16,12 +16,11 @@ const val DEBUG_TABLE_SPLITTING = false
 class DocumentParser{
     private lateinit var dataTableMapped: MutableList<Map<String, String>>
 
-    fun parseData(context: Context, fileLogger: FileLogger, textDocument: String, valueNames: List<String>, valuesCount: Int): MutableList<Map<String, String>> {
+    fun parseData(context: Context, textDocument: String, valueNames: List<String>, valuesCount: Int): MutableList<Map<String, String>> {
         /**
          * Parses a structured text document and extracts information from the table.
          *
          * @param context
-         * @param fileLogger
          * @param valuesCount Number of values per row to put the table in the right shape
          * @param textDocument Text document in a specific format (form https://services.swpc.noaa.gov/).
          *                     The document contains descriptions and table data separated by specific markers.
@@ -30,7 +29,8 @@ class DocumentParser{
          * @throws ParseException if the input text document does not conform to the expected format.
          */
         val dataTable = extractDataTable(valuesCount, textDocument)
-        dataTableMapped = mapParsedValuesToValueNames(context, dataTable, valueNames, fileLogger)
+        dataTableMapped = mapParsedValuesToValueNames(
+            context, dataTable, valueNames, ExceptionHandler.getInstance(context))
         return dataTableMapped
     }
 

@@ -23,33 +23,33 @@ import com.crost.aurorabzalarm.utils.Constants.HP_COL_HPS
 import com.crost.aurorabzalarm.utils.Constants.HP_TABLE_NAME
 import com.crost.aurorabzalarm.utils.Constants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.utils.Constants.RETRY_DELAY_MS
-import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import kotlinx.coroutines.delay
 
 
 suspend fun saveDataModelInstances(
     context: Context,
-    fileLogger: FileLogger,
+    exceptionHandler: ExceptionHandler,
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>,
     tableName: String,
 ) {
     when (tableName) {
         ACE_TABLE_NAME -> {
-            saveAceModelInstance(context, fileLogger, db, dataTable)
+            saveAceModelInstance(context, exceptionHandler, db, dataTable)
         }
         HP_TABLE_NAME -> {
-            saveHpModelInstance(context, fileLogger, db, dataTable)
+            saveHpModelInstance(context, exceptionHandler, db, dataTable)
         }
         EPAM_TABLE_NAME -> {
-            saveEpamModelInstance(context, fileLogger, db, dataTable)
+            saveEpamModelInstance(context, exceptionHandler, db, dataTable)
         }
     }
 }
 
 
 
-suspend fun getLatestAceValuesFromDb(fileLogger: FileLogger, context: Context, db: SpaceWeatherDataBase): Any {
+suspend fun getLatestAceValuesFromDb(exceptionHandler: ExceptionHandler, context: Context, db: SpaceWeatherDataBase): Any {
 //    Log.d("DatabaseOperator", "getLatestAceValuesFromDb")
     var retryCount = 0
 
@@ -57,16 +57,12 @@ suspend fun getLatestAceValuesFromDb(fileLogger: FileLogger, context: Context, d
         try {
             return db.aceDao().getLastRow()
         } catch (e: Exception) {
-            val msg = "getLatestAceValuesFromDb" +
-                    "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
+            val title = "getLatestAceValuesFromDb" 
+            val msg = "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
                     e.stackTraceToString()
-            fileLogger.writeLogsToInternalStorage(
-                context,
-                msg
-            )
+            exceptionHandler.handleExceptions(context, title, msg)
 
             retryCount += 1
-            Log.e("getLatestAceValuesFromDb", e.stackTraceToString())
             delay(RETRY_DELAY_MS)
         }
     } while(retryCount < MAX_RETRY_COUNT)
@@ -75,19 +71,18 @@ suspend fun getLatestAceValuesFromDb(fileLogger: FileLogger, context: Context, d
 }
 
 
-suspend fun getLatestHpValuesFromDb(fileLogger: FileLogger, context: Context, db: SpaceWeatherDataBase): Any {
+suspend fun getLatestHpValuesFromDb(exceptionHandler: ExceptionHandler, context: Context, db: SpaceWeatherDataBase): Any {
     var retryCount = 0
     do {
         try {
             return db.hpDao().getLastRow()
 
         } catch (e: Exception) {
-            val msg = "getLatestHpValuesFromDb" +
-                    "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
+            val title = "getLatestHpValuesFromDb"
+            val msg =        "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
                     e.stackTraceToString()
-            fileLogger.writeLogsToInternalStorage(
-                context,
-                msg
+            exceptionHandler.handleExceptions(
+                context, title, msg
             )
             Log.e("getLatestHpValuesFromDb", e.stackTraceToString())
             retryCount++
@@ -97,23 +92,15 @@ suspend fun getLatestHpValuesFromDb(fileLogger: FileLogger, context: Context, db
     return "Error"
 }
 
-suspend fun getLatestEpamValuesFromDb(fileLogger: FileLogger, context: Context, db: SpaceWeatherDataBase): Any {
+suspend fun getLatestEpamValuesFromDb(exceptionHandler: ExceptionHandler, context: Context, db: SpaceWeatherDataBase): Any {
     var retryCount = 0
     do {
         try {
             return db.epamDao().getLastRow()
         } catch (e: Exception) {
-            val msg = "getLatestEpamValuesFromDb" +
-                    "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
+            val msg = "$retryCount attempt failed. ${MAX_RETRY_COUNT-retryCount} left\n" +
                     e.stackTraceToString()
-            fileLogger.writeLogsToInternalStorage(
-                context,
-                msg
-            )
-            Log.e(
-                "getLatestEpamValuesFromDb",
-                "Retry No $retryCount ${e.stackTraceToString()}"
-            )
+            exceptionHandler.handleExceptions(context, "getLatestEpamValuesFromDb", msg)
             retryCount++
             delay(RETRY_DELAY_MS)
         }
@@ -123,7 +110,7 @@ suspend fun getLatestEpamValuesFromDb(fileLogger: FileLogger, context: Context, 
 
 suspend fun saveAceModelInstance(
     context: Context,
-    fileLogger: FileLogger,
+    exceptionHandler: ExceptionHandler,
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>
 ) {
@@ -147,11 +134,10 @@ suspend fun saveAceModelInstance(
         db.aceDao().insertAll(instances)
 
     } catch (e: Exception) {
-        fileLogger.writeLogsToInternalStorage(
+        exceptionHandler.handleExceptions(
             context,
-            "SpaceWeatherRepo createAceInstance\n" + e.stackTraceToString()
+            "SpaceWeatherRepo createAceInstance",  e.stackTraceToString()
         )
-        Log.e("SpaceWeatherRepo createAceInstance", e.stackTraceToString())
         db.aceDao().insertAll(instances)
     }
 }
@@ -159,7 +145,7 @@ suspend fun saveAceModelInstance(
 
 suspend fun saveHpModelInstance(
     context: Context,
-    fileLogger: FileLogger,
+    exceptionHandler: ExceptionHandler,
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>
 ) {
@@ -180,11 +166,9 @@ suspend fun saveHpModelInstance(
         // Add new rows to the db
         db.hpDao().insertAll(instances)
     } catch (e: Exception) {
-        fileLogger.writeLogsToInternalStorage(
-            context,
-            "SpaceWeatherRepo createHpInstance\n" + e.stackTraceToString()
+        exceptionHandler.handleExceptions(
+            context, "SpaceWeatherRepo createHpInstance", e.stackTraceToString()
         )
-        Log.e("SpaceWeatherRepo createHpInstance", e.stackTraceToString())
         delay(200)
         db.hpDao().insertAll(instances)
     }
@@ -192,7 +176,7 @@ suspend fun saveHpModelInstance(
 
 suspend fun saveEpamModelInstance(
     context: Context,
-    fileLogger: FileLogger,
+    exceptionHandler: ExceptionHandler,
     db: SpaceWeatherDataBase,
     dataTable: MutableList<MutableMap<String, Any>>
 ) {
@@ -214,9 +198,8 @@ suspend fun saveEpamModelInstance(
         // Add new rows to the db
         db.epamDao().insertAll(instances)
     } catch (e: Exception) {
-        fileLogger.writeLogsToInternalStorage(
-            context,
-            "SpaceWeatherRepo createEpamInstance\n" + e.stackTraceToString()
+        exceptionHandler.handleExceptions(
+            context, "SpaceWeatherRepo createEpamInstance", e.stackTraceToString()
         )
         Log.e("SpaceWeatherRepo createHpInstance", e.stackTraceToString())
         delay(200)

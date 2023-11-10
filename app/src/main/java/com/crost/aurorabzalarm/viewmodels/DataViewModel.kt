@@ -13,6 +13,7 @@ import com.crost.aurorabzalarm.data.model.AceMagnetometerData
 import com.crost.aurorabzalarm.data.model.HemisphericPowerData
 import com.crost.aurorabzalarm.network.parser.NoaaAlert
 import com.crost.aurorabzalarm.repository.SpaceWeatherRepository
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.datetime_utils.formatTimestamp
 import com.crost.aurorabzalarm.utils.datetime_utils.getTimeOfDataFlight
@@ -24,6 +25,7 @@ import java.time.LocalDateTime
 class DataViewModel(application: Application) : AndroidViewModel(application) {
     private  var fileLogger = FileLogger.getInstance(application.applicationContext)
     private var spaceWeatherRepository: SpaceWeatherRepository
+    private val exceptionHandler = ExceptionHandler.getInstance(application.applicationContext)
 
     // TODO: Create Color-Set
     var colorOnSatDataError: Color = Color.LightGray
@@ -108,6 +110,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
                 _latestHpState.value = it
 //                Log.d("HpObserver", "latest hp: ${it.hpNorth} GW")
             } catch (e: Exception){
+                // TODO: EXCEption handler
                 fileLogger.writeLogsToInternalStorage(
                     applicationContext,
                     "HpObserver\n${e.stackTraceToString()}"
@@ -123,11 +126,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
                 _latestEpamState.value = it
 //                Log.d("EpamObserver", "LatestSpeedVal: ${it.speed} km/s")
             } catch (e: Exception){
-                fileLogger.writeLogsToInternalStorage(
-                    applicationContext,
-                    "EpamObserver\n${e.stackTraceToString()}"
+                exceptionHandler.handleExceptions(
+                    applicationContext, "EpamObserver", "EpamObserver: ${e.stackTraceToString()}"
                 )
-                Log.e("EpamObserver", "EpamObserver: ${e.stackTraceToString()}")
             }
         }
     }
@@ -138,31 +139,20 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
                 _latestAceState.value = it
 //                Log.d("AceObserver", "initialized. latest: ${it.bz}")
             } catch (e: Exception){
-                fileLogger.writeLogsToInternalStorage(
-                    applicationContext,
-                    "AceObserver\n${e.stackTraceToString()}"
-                )
-                Log.e("AceObserver", "AceObserver: ${e.stackTraceToString()}")
+                exceptionHandler.handleExceptions(applicationContext, "AceObserver", "AceObserver: ${e.stackTraceToString()}")
             }
         }
     }
 
 
     fun fetchSpaceWeatherData(applicationContext: Context) {
-//        Log.i("DataViewModel", "fetchSpaceWeatherData")
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                spaceWeatherRepository.fetchDataAndStore(applicationContext)
-//                async { spaceWeatherRepository.fetch/**/DataAndStore() }
-            } catch (e: Exception) {/**/
-                fileLogger.writeLogsToInternalStorage(
-                    applicationContext,
-                    "fetchSpaceWeatherData\n${e.stackTraceToString()}"
+                spaceWeatherRepository.fetchDataAndStore()
+            } catch (e: Exception) {
+                exceptionHandler.handleExceptions(
+                    applicationContext, "fetchSpaceWeatherData", e.stackTraceToString()
                 )
-                Log.e("fetchSpaceWeatherData", e.stackTraceToString())
-
-                // TODO: user output
 
             }
         }

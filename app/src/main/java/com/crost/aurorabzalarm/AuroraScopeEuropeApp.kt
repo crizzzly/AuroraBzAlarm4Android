@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.util.Log
-import android.widget.Toast
 import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -13,6 +12,7 @@ import androidx.work.WorkManager
 import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import com.crost.aurorabzalarm.utils.Constants.WORKER_REPEAT_INTERVAL
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
 import com.crost.aurorabzalarm.worker.MyWorkerFactory
@@ -24,6 +24,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 //    private lateinit var permissionManager: PermissionManager
     private lateinit var dataViewModel:  DataViewModel// by viewModels()
     private lateinit var settingsViewModel: SettingsViewModel// by viewModels()
+    private lateinit var exceptionHandler: ExceptionHandler
     private lateinit var fileLogger: FileLogger
 
     override fun getWorkManagerConfiguration(): Configuration {
@@ -35,6 +36,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        exceptionHandler = ExceptionHandler.getInstance(this)
         fileLogger=  FileLogger.getInstance(this.applicationContext)
         dataViewModel = DataViewModel(this)
         settingsViewModel = SettingsViewModel(this)
@@ -67,12 +69,9 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
         try {
             notificationManager.createNotificationChannel(notificationChannel)
         } catch (e: Exception){
-            Log.e("App: createNotificChannel", e.stackTraceToString())
-            val msg = "App: createNotificChannel\n${e.printStackTrace()}"
-            fileLogger.writeLogsToInternalStorage(this.applicationContext, msg)
-            val text = "createNotificationManager-app\n${e.message}"
-            val toast = Toast.makeText(applicationContext, text, Toast.LENGTH_LONG)
-            toast.show()
+            exceptionHandler.handleExceptions(
+                this,"App: createNotificChannel", e.stackTraceToString()
+            )
         }
   }
 }

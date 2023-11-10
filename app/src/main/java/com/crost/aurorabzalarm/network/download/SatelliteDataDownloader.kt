@@ -116,12 +116,9 @@ class DownloadManager(context: Context) {
             Log.d("FileWrite", "File has been written successfully!")
 
         } catch (e: Exception) {
-            fileLogger.writeLogsToInternalStorage(
-                con,
-                "FileWrite\nError writing to file: ${e.message}"
+            exceptionHandler.handleExceptions(
+                con, "FileWrite", "Error writing to file: ${e.message}"
             )
-            // Handle any exceptions that occur during the file write process
-            Log.e("FileWrite", "Error writing to file: ${e.message}")
         }
     }
 }
