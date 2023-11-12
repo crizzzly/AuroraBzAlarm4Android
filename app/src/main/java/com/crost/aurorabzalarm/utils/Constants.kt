@@ -61,6 +61,7 @@ object Constants {
     const val EPAM_SPEED_TITLE = "ACE EPAM\nSpeed"
     const val EPAM_DENS_TITLE = "ACE EPAM\nDensity"
     const val EPAM_TEMP_TITLE = "ACE EPAM\nTemperature"
+    const val ACE_BT_TITLE = "ACE\nBt"
 
     // Padding Values
     const val PADDING_XS = 4

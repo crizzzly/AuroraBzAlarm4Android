@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.crost.aurorabzalarm.utils.Constants.ACE_BT_TITLE
 import com.crost.aurorabzalarm.utils.Constants.ACE_BZ_TITLE
 import com.crost.aurorabzalarm.utils.Constants.EPAM_DENS_TITLE
 import com.crost.aurorabzalarm.utils.Constants.EPAM_SPEED_TITLE
@@ -26,10 +27,16 @@ fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Double,
     return ((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin)
 }
 
+val redIsh =  Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+val orangeIsh = Color(0xFFF57C00) to Color(0xFFFFE0B2)
+val yellowIsh = Color(0xFFFFFF00) to Color(0xFFEBE386)
+val greenIsh = Color(0xFF388E3C) to Color(0xFFC8E6C9)
+
 
 @Composable
 fun ShowAllPanels(
     bz: Double,
+    bt: Double,
     speed: Double,
     density: Double,
     temp: Double
@@ -50,9 +57,7 @@ fun ShowAllPanels(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             GaugePanel(ACE_BZ_TITLE, bz.toFloat())
-
-
-
+            GaugePanel(text = ACE_BT_TITLE, value = bt.toFloat())
 
         }
         Row(
@@ -70,26 +75,27 @@ fun ShowAllPanels(
 }
 
 
-
-
 @Preview
 @Composable
 fun PreviewAllPanels(
     bz: Double = -15.6,
+    bt: Double = 20.0,
     speed: Double = 476.4,
     density: Double = 202.0,
     temp: Double = 8.64e+05
 ){
     ShowAllPanels(
         bz,
+        bt,
         speed,
         density,
         temp,
     )
 }
 
+
 @Composable
-fun BzChart(
+fun BzPanel(
     progress: Float = -17.0f,
     modifier:  Modifier
 ){
@@ -97,12 +103,14 @@ fun BzChart(
     val valueRangeFrom= -100f
     val valueRangeTo = 100f
     val (mainColor, secondaryColor) = when {
-        progress < 0 -> // Red
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 0f..70f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
+        progress < -15 -> // Red
+            redIsh  //Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+        progress in -15f..-11f -> // Orange
+            orangeIsh //Color(0xFFF57C00) to Color(0xFFFFE0B2)
+        progress in -10f .. 0f -> // yellow
+            yellowIsh  //Color(0xFFFFFF00) to Color(0xFFFFF78E)
         else -> // Green
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
+            greenIsh  //Color(0xFF388E3C) to Color(0xFFC8E6C9)
     }
 
 //    val startAngleDrawArc = 270f
@@ -121,29 +129,30 @@ fun BzChart(
     )
 }
 
-
-
-
 @Composable
-fun HpPanel(
-    progress: Float = 25.0f,
+fun BtPanel(
+    progress: Float = 17.0f,
     modifier:  Modifier
 ){
     val valueRangeFrom= 0f
-    val valueRangeTo = 100f
+    val valueRangeTo = 70f
     val (mainColor, secondaryColor) = when {
-        progress < 50 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 50f..70f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
+        progress < 10 -> // Red
+            greenIsh
+        progress in 10f..19f -> // Orange
+            yellowIsh
+        progress in 20f .. 29f ->
+            orangeIsh
         else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+            redIsh
     }
+
+//    val startAngleDrawArc = 270f
+//    val EndAngleDrawArc = (degreesMarkerStep * mappedProgress-135).toFloat(),
     val drawProgressArcFromTop = false
-    val unit = "GW"
+    val unit = "nT"
     Gauge(
-        progress,
+        progress = progress,
         valueRangeFrom,
         valueRangeTo,
         mainColor,
@@ -151,8 +160,12 @@ fun HpPanel(
         drawProgressArcFromTop,
         unit,
         modifier
-        )
+    )
 }
+
+
+
+
 
 
 @Composable
@@ -160,17 +173,17 @@ fun SpeedPanel(
     progress: Float = 400.0f,
     modifier:  Modifier
 ){
-
     val valueRangeFrom = 0.0f
     val valueRangeTo = 999.9f
     val (mainColor, secondaryColor) = when {
-        progress < 400 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 400f..600f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
+        progress > 700 -> // Red
+            redIsh
+        progress in 500f..700f -> // Orange
+            orangeIsh
+        progress in 350f .. 499f ->
+            yellowIsh
         else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+            greenIsh
     }
     val drawProgressArcFromTop = false
     val unit = "km/s"
@@ -192,17 +205,17 @@ fun DensityPanel(
     progress: Float = 4.0f,
     modifier:  Modifier
 ){
-
     val valueRangeFrom = 0.0f
-    val valueRangeTo = 100.0f
+    val valueRangeTo = 30.0f
     val (mainColor, secondaryColor) = when {
-        progress < 80 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-        progress in 80f..130f -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
+        progress > 15 -> // Red
+            redIsh
+        progress in 10f..15f -> // Orange
+            orangeIsh
+        progress in 5f .. 10f ->
+            yellowIsh
         else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+            greenIsh
     }
     val drawProgressArcFromTop = false
     val unit = "p/cc"
@@ -230,12 +243,11 @@ fun TempPanel(
     val valueRangeTo = 1e+06f
     val (mainColor, secondaryColor) = when {
         progress < 5.0e+05 -> // Red
-            Color(0xFF388E3C) to Color(0xFFC8E6C9)
-//                        Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+            redIsh
         progress in 5.0e+05..0.9e+06 -> // Orange
-            Color(0xFFF57C00) to Color(0xFFFFE0B2)
+            orangeIsh
         else -> // Green
-            Color(0xFFD32F2F) to Color(0xFFFFCDD2)
+            greenIsh
     }
     val drawProgressArcFromTop = false
     val unit = "°K"

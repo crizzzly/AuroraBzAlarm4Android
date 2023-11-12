@@ -101,8 +101,8 @@ fun GaugePanel(text: String, value: Float){
         )
 
         when (text){
-            Constants.ACE_BZ_TITLE -> BzChart(value, modifier = previewModifier)
-            Constants.HP_TITLE -> HpPanel(value, modifier = previewModifier)
+            Constants.ACE_BZ_TITLE -> BzPanel(value, modifier = previewModifier)
+            Constants.ACE_BT_TITLE -> BtPanel(value, modifier = previewModifier)
             Constants.EPAM_SPEED_TITLE -> SpeedPanel(value, modifier = previewModifier)
             Constants.EPAM_DENS_TITLE -> DensityPanel(value, modifier = previewModifier)
             Constants.EPAM_TEMP_TITLE -> TempPanel(value, modifier = previewModifier)
