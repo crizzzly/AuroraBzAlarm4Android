@@ -4,15 +4,15 @@ import android.content.Context
 import android.util.Log
 import com.crost.aurorabzalarm.data.DataSourceConfig
 import com.crost.aurorabzalarm.data.NoaaAlert
-import com.crost.aurorabzalarm.data.NoaaAlerts
 import com.crost.aurorabzalarm.data.getDataSources
 import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
-import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.utils.Constants.ALERTS_PSEUDO_TABLE_NAME
-import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
 import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ALERTS_PSEUDO_TABLE_NAME
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_TABLE_NAME
 import java.time.LocalDateTime
 
 const val DEBUG = false
@@ -80,7 +80,7 @@ class DataOperator(val applicationContext: Context) {
         * searches the alerts list backwards to ensure to get the latest Alerts/Warnings
         * for KpWarning, KpAlert, SolarStormAlert.
         *
-        * @param alerts: list with all NoaaAlerts fetched from Noaa Website
+        * @param alerts: list with all NoaaAlertConstants fetched from Noaa Website
         * @return: list, size 3 with the latest kpAlert, kpWarning, solarStormAlert
         * */
 
@@ -94,15 +94,15 @@ class DataOperator(val applicationContext: Context) {
 
         for (alert in alerts){ //.asReversed()){
                 when (alert.id) {
-                    in NoaaAlerts.KP_WARNING_IDs -> {
+                    in NoaaAlertConstants.KP_WARNING_IDs -> {
 //                        kpw = alert
                         kpwList.add(alert)
                     }
-                    in NoaaAlerts.KP_ALERT_IDs -> {
+                    in NoaaAlertConstants.KP_ALERT_IDs -> {
 //                        kpa = alert
                         kpaList.add(alert)
                     }
-                    in NoaaAlerts.GEO_STORM_ALERT_IDs -> {
+                    in NoaaAlertConstants.GEO_STORM_ALERT_IDs -> {
                         gsaList.add(alert)
 //                        gsa = alert
                     }

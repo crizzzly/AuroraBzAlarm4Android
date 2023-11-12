@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.utils
+package com.crost.aurorabzalarm.utils.constants
 
 object NotificationConstants {
     const val G2A_TITLE = "G2 Detected!"

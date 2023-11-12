@@ -14,12 +14,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.crost.aurorabzalarm.ui.appbars.LogFileAppBar
-import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.PADDING_L
 
 
 @Composable
-fun LogFileScreen(){
+fun LogFileScreen() {
     val con = LocalContext.current
     val fileLogger = FileLogger.getInstance(con)
     val logText = fileLogger.getLogFileContent(con)
@@ -27,35 +27,26 @@ fun LogFileScreen(){
 //    Log.d("LogFileScreen", "linesLength: ${textAsLines.length}")
 
     val scrollState = rememberScrollState()
-    Scaffold(
-        topBar = {
-            LogFileAppBar()
-        }
-    ) { paddingVals ->
+    Scaffold(topBar = {
+        LogFileAppBar()
+    }) { paddingVals ->
         Surface(
             modifier = Modifier.fillMaxSize()
 //            .scrollable()
         ) {
-            val textHeight = (paddingVals.calculateBottomPadding()/3*2)
+            val textHeight = (paddingVals.calculateBottomPadding() / 3 * 2)
             Column(
-                modifier = Modifier
-                    .padding(PADDING_L.dp)
+                modifier = Modifier.padding(PADDING_L.dp)
 //                    .height(textHeight)
 //                    .verticalScroll(scrollState)
             ) {
                 val distFromLeft = paddingVals.calculateLeftPadding(LayoutDirection.Ltr)
 
-//                items(textAsLines.){
-                    Text(
-                        text = logText,
-                        Modifier
-    //                        .fillMaxWidth(.95f)
-                            .height(textHeight)
-    //                        .width(300.dp)
-                            .padding(start = distFromLeft)
-//                            .verticalScroll(scrollState)
-                    )
-
+                Text(
+                    text = logText, Modifier
+                        .height(textHeight)
+                        .padding(start = distFromLeft)
+                )
             }
         }
     }

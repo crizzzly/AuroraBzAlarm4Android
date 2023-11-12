@@ -5,15 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.crost.aurorabzalarm.data.ImfData
 import com.crost.aurorabzalarm.data.NoaaAlert
-import com.crost.aurorabzalarm.data.NoaaAlerts.GEO_STORM_ALERT_IDs
-import com.crost.aurorabzalarm.data.NoaaAlerts.KP_ALERT_IDs
-import com.crost.aurorabzalarm.data.NoaaAlerts.KP_WARNING_IDs
-import com.crost.aurorabzalarm.data.NoaaAlerts.MAX_MINUTES_BETWEEN_ALERT_AND_NOW
 import com.crost.aurorabzalarm.data.SolarWindData
 import com.crost.aurorabzalarm.network.DataOperator
 import com.crost.aurorabzalarm.ui.screens.settings.loadSettingsConfig
 import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.SpaceWeatherNotificationService
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.GEO_STORM_ALERT_IDs
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.KP_ALERT_IDs
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.KP_WARNING_IDs
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.MAX_MINUTES_BETWEEN_ALERT_AND_NOW
 import com.crost.aurorabzalarm.utils.datetime_utils.calculateTimeDifferenceFromNow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -165,7 +165,7 @@ class SpaceWeatherRepository(application: Application) {
     private fun checkIfNotificationIsNecessary(data: Any) {
         if (settings.notificationEnabled) {
             if (data is ImfData) {
-                if (data.bz <= settings.bzWarningLevel.currentValue) {
+                if (data.bz < settings.bzWarningLevel.currentValue) {
                     notificationService.showSpaceWeatherNotification(data.bz, data.bt)
                 }
             } else if (data is NoaaAlert) {

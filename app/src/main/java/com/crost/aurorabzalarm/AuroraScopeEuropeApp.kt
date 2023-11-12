@@ -10,8 +10,8 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
-import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
-import com.crost.aurorabzalarm.utils.Constants.WORKER_REPEAT_INTERVAL
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.CHANNEL_ID
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.WORKER_REPEAT_INTERVAL
 import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.viewmodels.DataViewModel

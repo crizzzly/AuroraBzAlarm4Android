@@ -1,7 +1,7 @@
-package com.crost.aurorabzalarm.utils
+package com.crost.aurorabzalarm.utils.constants
 
 
-object Constants {
+object SpaceWeatherDataConstants {
     // TODO: Move to packages
     const val DB_NAME = "SpaceWeatherData"
     const val ACE_TABLE_NAME = "ace_magnetometer"

@@ -1,7 +1,4 @@
-package com.crost.aurorabzalarm.data
-
-// TODO: Implement NOAA Basic Warnings
-
+package com.crost.aurorabzalarm.utils.constants
 
 
 object ReadoutKeys{
@@ -9,7 +6,7 @@ object ReadoutKeys{
 }
 
 // NOAA Alerts
-object NoaaAlerts {
+object NoaaAlertConstants {
 
 
     const val MAX_MINUTES_BETWEEN_ALERT_AND_NOW = 20

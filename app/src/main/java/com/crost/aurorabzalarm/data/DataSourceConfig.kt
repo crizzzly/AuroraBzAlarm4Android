@@ -1,17 +1,17 @@
 package com.crost.aurorabzalarm.data
 
-//import com.crost.aurorabzalarm.utils.Constants.ACE_URL
-//import com.crost.aurorabzalarm.utils.Constants.EPAM_URL
-import com.crost.aurorabzalarm.data.DataSourceConstants.ACE_JSON_5MINUTELY
-import com.crost.aurorabzalarm.data.DataSourceConstants.ALERTS_URL
-import com.crost.aurorabzalarm.data.DataSourceConstants.EPAM_JSON_5MINUTELY
-import com.crost.aurorabzalarm.utils.Constants
-import com.crost.aurorabzalarm.utils.Constants.ACE_TABLE_NAME
-import com.crost.aurorabzalarm.utils.Constants.ALERTS_PSEUDO_TABLE_NAME
-import com.crost.aurorabzalarm.utils.Constants.EPAM_KEYS
-import com.crost.aurorabzalarm.utils.Constants.EPAM_TABLE_NAME
+//import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_URL
+//import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_URL
+import com.crost.aurorabzalarm.utils.constants.DataSourceConstants.ACE_JSON_5MINUTELY
+import com.crost.aurorabzalarm.utils.constants.DataSourceConstants.ALERTS_URL
+import com.crost.aurorabzalarm.utils.constants.DataSourceConstants.EPAM_JSON_5MINUTELY
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_TABLE_NAME
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ALERTS_PSEUDO_TABLE_NAME
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_KEYS
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_TABLE_NAME
 
-//import com.crost.aurorabzalarm.utils.Constants.HP_URL
+//import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.HP_URL
 
 data class DataSourceConfig(
     val tableName: String,
@@ -23,7 +23,7 @@ data class DataSourceConfig(
 
 
 fun getDataSources(): List<DataSourceConfig> {
-    val aceKeys = Constants.ACE_KEYS.split(" ")
+    val aceKeys = SpaceWeatherDataConstants.ACE_KEYS.split(" ")
     val epamKeys = EPAM_KEYS.split(" ")
 
     val dataSources = mutableListOf<DataSourceConfig>()

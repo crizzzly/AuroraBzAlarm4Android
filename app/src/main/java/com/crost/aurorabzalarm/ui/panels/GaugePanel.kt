@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.crost.aurorabzalarm.utils.Constants
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -48,7 +48,7 @@ import java.text.DecimalFormat
 @Preview
 @Composable
 fun PreviewPanel(){
-    GaugePanel(Constants.EPAM_SPEED_TITLE, 600.0f)
+    GaugePanel(SpaceWeatherDataConstants.EPAM_SPEED_TITLE, 600.0f)
 }
 
 
@@ -77,7 +77,7 @@ fun GaugePanel(text: String, value: Float){
 
         val previewModifier = Modifier
             .size(panelWidth.dp, panelWidth.dp)
-            .padding(Constants.PADDING_S.dp, Constants.PADDING_S.dp)
+            .padding(SpaceWeatherDataConstants.PADDING_S.dp, SpaceWeatherDataConstants.PADDING_S.dp)
             .aspectRatio(1f)
             .align(Alignment.CenterHorizontally)
 
@@ -86,7 +86,7 @@ fun GaugePanel(text: String, value: Float){
             textAlign = TextAlign.Center,
             lineHeight = 1.5.em,
             modifier = Modifier
-                .padding( Constants.PADDING_S.dp)
+                .padding( SpaceWeatherDataConstants.PADDING_S.dp)
                 .width(IntrinsicSize.Max)
                 .align(Alignment.CenterHorizontally)
         )
@@ -101,11 +101,11 @@ fun GaugePanel(text: String, value: Float){
         )
 
         when (text){
-            Constants.ACE_BZ_TITLE -> BzPanel(value, modifier = previewModifier)
-            Constants.ACE_BT_TITLE -> BtPanel(value, modifier = previewModifier)
-            Constants.EPAM_SPEED_TITLE -> SpeedPanel(value, modifier = previewModifier)
-            Constants.EPAM_DENS_TITLE -> DensityPanel(value, modifier = previewModifier)
-            Constants.EPAM_TEMP_TITLE -> TempPanel(value, modifier = previewModifier)
+            SpaceWeatherDataConstants.ACE_BZ_TITLE -> BzPanel(value, modifier = previewModifier)
+            SpaceWeatherDataConstants.ACE_BT_TITLE -> BtPanel(value, modifier = previewModifier)
+            SpaceWeatherDataConstants.EPAM_SPEED_TITLE -> SpeedPanel(value, modifier = previewModifier)
+            SpaceWeatherDataConstants.EPAM_DENS_TITLE -> DensityPanel(value, modifier = previewModifier)
+            SpaceWeatherDataConstants.EPAM_TEMP_TITLE -> TempPanel(value, modifier = previewModifier)
 
         }
     }
@@ -135,7 +135,7 @@ fun Gauge(
     val degreesMarkerStep = arcDegrees / numberOfMarkers
 
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
-    val cardWidth = screenWidth / COMPONENT_COUNT - (2 * Constants.PADDING_L)
+    val cardWidth = screenWidth / COMPONENT_COUNT - (2 * SpaceWeatherDataConstants.PADDING_L)
 //    val cardHeight = cardWidth * 1.7
     // valRanges: from 0 to 90 - -100 - 100
     val mappedProgress = mapValueToRange(progress, valueRangeFrom, valueRangeTo, 0.0, 90.0)

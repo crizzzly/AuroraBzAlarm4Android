@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.ShowAllPanels
-import com.crost.aurorabzalarm.utils.Constants
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -88,12 +88,12 @@ fun MainScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(0.dp, Constants.PADDING_L.dp)
+                        .padding(0.dp, SpaceWeatherDataConstants.PADDING_L.dp)
                 ) {
                     Text(
                         time,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, Constants.PADDING_S.dp)
+                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, SpaceWeatherDataConstants.PADDING_S.dp)
                     )
                     Text("$currentDuration Minutes from DISCOVR to Earth")
 

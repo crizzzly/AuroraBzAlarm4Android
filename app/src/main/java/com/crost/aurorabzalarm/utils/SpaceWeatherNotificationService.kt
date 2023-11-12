@@ -10,10 +10,10 @@ import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.MainActivity
 import com.crost.aurorabzalarm.R
 import com.crost.aurorabzalarm.data.NoaaAlert
-import com.crost.aurorabzalarm.data.NoaaAlerts.GEO_STORM_ALERT_IDs
-import com.crost.aurorabzalarm.data.NoaaAlerts.KP_ALERT_IDs
-import com.crost.aurorabzalarm.data.NoaaAlerts.KP_WARNING_IDs
-import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.GEO_STORM_ALERT_IDs
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.KP_ALERT_IDs
+import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants.KP_WARNING_IDs
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.CHANNEL_ID
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

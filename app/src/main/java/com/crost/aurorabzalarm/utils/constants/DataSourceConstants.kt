@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.data
+package com.crost.aurorabzalarm.utils.constants
 
 object DataSourceConstants{
     const val HP_URL = "https://services.swpc.noaa.gov/text/aurora-nowcast-hemi-power.txt"

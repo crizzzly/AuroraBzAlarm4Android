@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.crost.aurorabzalarm.utils.Constants.ACE_BT_TITLE
-import com.crost.aurorabzalarm.utils.Constants.ACE_BZ_TITLE
-import com.crost.aurorabzalarm.utils.Constants.EPAM_DENS_TITLE
-import com.crost.aurorabzalarm.utils.Constants.EPAM_SPEED_TITLE
-import com.crost.aurorabzalarm.utils.Constants.EPAM_TEMP_TITLE
-import com.crost.aurorabzalarm.utils.Constants.PADDING_L
-import com.crost.aurorabzalarm.utils.Constants.PADDING_S
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_BT_TITLE
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_BZ_TITLE
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_DENS_TITLE
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_SPEED_TITLE
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_TEMP_TITLE
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.PADDING_L
+import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.PADDING_S
 
 const val COMPONENT_COUNT = 3
 
