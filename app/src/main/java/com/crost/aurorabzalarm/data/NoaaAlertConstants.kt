@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.repository
+package com.crost.aurorabzalarm.data
 
 // TODO: Implement NOAA Basic Warnings
 
@@ -12,7 +12,7 @@ object ReadoutKeys{
 object NoaaAlerts {
 
 
-    const val MAX_MINUTES_BETWEEN_ALERT_AND_NOW = 24*60
+    const val MAX_MINUTES_BETWEEN_ALERT_AND_NOW = 20
 
     // https://services.swpc.noaa.gov/products/animations/geospace/
     const val KP4_ALERT_ID = "K04A"

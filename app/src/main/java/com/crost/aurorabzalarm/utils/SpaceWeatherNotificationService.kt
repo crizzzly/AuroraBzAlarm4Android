@@ -9,14 +9,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.MainActivity
 import com.crost.aurorabzalarm.R
-import com.crost.aurorabzalarm.network.parser.NoaaAlert
+import com.crost.aurorabzalarm.data.NoaaAlert
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-const val DEBUG = true
+const val DEBUG = false
 
-class AuroraNotificationService(
+class SpaceWeatherNotificationService(
     private val context: Context
 ) {
     private val exceptionHandler = ExceptionHandler.getInstance(context)
@@ -31,9 +31,9 @@ class AuroraNotificationService(
 
     fun showNoaaAlert(alert: NoaaAlert){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-        if (DEBUG) Log.d("AuroraNotificationService", "Showing Noaa Alert")
+        if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing Noaa Alert")
 
-        val title = "Noaa ${alert.id}, time: ${alert.issueDatetime}"
+        val title = "Noaa ${alert.id}, time: ${alert.datetime}"
         val text = alert.message
 
         val notification = createNotification(title, text)
@@ -43,7 +43,7 @@ class AuroraNotificationService(
 
     fun showSpaceWeatherNotification(bz: Double, hp: Int){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-        if (DEBUG) Log.d("AuroraNotificationService", "Showing SpaceWeather Notification")
+        if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing SpaceWeather Notification")
 
         val title = "Aurora Probability: Bz has fallen!"
         val text = "$time: Bz is currently at ${bz}\n" +
@@ -56,15 +56,15 @@ class AuroraNotificationService(
 
     private fun notify(id: Int, notification: Notification) {
         try {
-            Log.d("AuroraNotificationService", "notify ...")
+            Log.d("SpaceWeatherNotificationService", "notify ...")
             notificationManager.notify(
                 id,
                 notification
             )
-            Log.d("AuroraNotificationService", "notify ... done!")
+            Log.d("SpaceWeatherNotificationService", "notify ... done!")
         } catch (e: Exception){
             exceptionHandler.handleExceptions(
-                context, "AuroraNotificationService", e.stackTraceToString()
+                context, "SpaceWeatherNotificationService", e.stackTraceToString()
             )
         }
     }

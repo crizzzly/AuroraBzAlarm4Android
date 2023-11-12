@@ -21,6 +21,10 @@ class ExceptionHandler private constructor(con: Context) {
     fun handleExceptions(context: Context, tag: String, msg: String){
         logger.writeLogsToInternalStorage(context, "$tag\n$msg")
         Log.e(tag, msg)
+
+//        Toast
+//            .makeText(context, tag+"\n"+msg, Toast.LENGTH_LONG)
+//            .show()
     }
 
 

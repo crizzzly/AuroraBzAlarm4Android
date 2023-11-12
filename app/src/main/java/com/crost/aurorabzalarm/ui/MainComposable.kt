@@ -51,22 +51,30 @@ fun MainComposable(
     permissionManager: PermissionManager,
     permissionLauncher: ActivityResultLauncher<Array<String>>,
 ) {
+    val context = LocalContext.current
+
     val dataViewModel: DataViewModel = viewModel()
     val settingsViewModel: SettingsViewModel = viewModel()
 
-
-    val context = LocalContext.current
-
     val permissionState by permissionManager.permissionState.collectAsState()
-
-    val currentHpVals by remember { dataViewModel.latestHpState }
-    val currentAceVals by remember { dataViewModel.latestAceState }
-    val currentEpamVals by remember { dataViewModel.latestEpamState }
-    val currentTime = dataViewModel.datetime
-    val datetime = dataViewModel.dateTimeString
     val settingsVisible by settingsViewModel.showSettings.observeAsState()
 
+    val currentSolarWindData by remember { dataViewModel.latestSolarWindData }
+    val currentImfData by remember { dataViewModel.latestImfData }
+    val currentKpAlert by remember { dataViewModel.kpAlertState }
+    val currentKpWarning by remember { dataViewModel.kpWarningState }
+    val currentSolarStormAlert by remember { dataViewModel.solarStormState }
+
+    val currentTime = dataViewModel.dateTime
+    val dateTimeString = dataViewModel.dateTimeString
     val currentDuration = dataViewModel.currentDurationOfFlight
+    
+    val debugString = "Current Vals: bz: ${currentImfData!!.bz}, " +
+            "speed: ${currentSolarWindData!!.speed},\n" +
+            "KpAlert: ${currentKpAlert.message}, \n" +
+            "KpWarning: ${currentKpWarning.message}"+"\n" +
+            "SolarStorm, ${currentSolarStormAlert.message}" +"\n"
+
 
     val df = DecimalFormat("#.##")
     df.roundingMode = RoundingMode.CEILING
@@ -83,9 +91,8 @@ fun MainComposable(
         try {
             Log.d(
                 "Composable value",
-                "HP: $currentTime - ${currentHpVals!!.hpNorth}\n" +
-                        "ACE: $currentTime - ${currentAceVals!!.bz}\n" +
-                        "Epam: $currentTime - ${df.format(currentEpamVals!!.speed)}"
+                        "ACE: $currentTime - ${currentSolarWindData!!.speed}\n" +
+                        "Epam: $currentTime - ${df.format(currentImfData!!.bz)}"
             )
         } catch (e: NullPointerException) {
             Log.e("Composable value", e.toString())
@@ -99,13 +106,13 @@ fun MainComposable(
     else{
         MainScreen(
     //        formatter.format(currentTime),
-            datetime,
-            currentAceVals!!.bz,
-            currentHpVals!!.hpNorth ,
-            currentEpamVals!!.speed,
-            currentEpamVals!!.density,
-            currentEpamVals!!.temp,
-            df.format(currentDuration) ,
+            dateTimeString,
+            currentImfData!!.bz,
+            currentSolarWindData!!.speed,
+            currentSolarWindData!!.density,
+            currentSolarWindData!!.temperature,
+            debugString,
+            df.format(currentDuration),
 
         )
     }
@@ -117,10 +124,11 @@ fun MainComposable(
 fun MainScreen(
     time: String,
     bz: Double,
-    hpNorth: Int,
     speed: Double,
     density: Double,
     temp: Double,
+    noaaAlerts: String,
+
     currentDuration: String,
 ) {
     val scrollState = rememberScrollState()
@@ -156,11 +164,13 @@ fun MainScreen(
 
                     PreviewAllPanels(
                         bz,
-                        hpNorth,
                         speed,
                         density,
                         temp
                     )
+                    
+                    Text(text = noaaAlerts, color = Color.LightGray)
+                    
                 }
             }
             // TODO: integrate navigation!
@@ -183,11 +193,11 @@ fun MainScreenPreview() {
     MainScreen(
         "02:22\n22.10.23",
         -15.5,
-        25,
         358.6,
         56.2,
         123.4,
-        "54.2"
+        "",
+        "54.2",
     )
 }
 

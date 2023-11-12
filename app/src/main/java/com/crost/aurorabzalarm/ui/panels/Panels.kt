@@ -16,7 +16,6 @@ import com.crost.aurorabzalarm.utils.Constants.ACE_BZ_TITLE
 import com.crost.aurorabzalarm.utils.Constants.EPAM_DENS_TITLE
 import com.crost.aurorabzalarm.utils.Constants.EPAM_SPEED_TITLE
 import com.crost.aurorabzalarm.utils.Constants.EPAM_TEMP_TITLE
-import com.crost.aurorabzalarm.utils.Constants.HP_TITLE
 import com.crost.aurorabzalarm.utils.Constants.PADDING_L
 import com.crost.aurorabzalarm.utils.Constants.PADDING_S
 
@@ -31,7 +30,6 @@ fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Double,
 @Composable
 fun ShowAllPanels(
     bz: Double,
-    hp: Int,
     speed: Double,
     density: Double,
     temp: Double
@@ -55,7 +53,6 @@ fun ShowAllPanels(
 
 
 
-            GaugePanel(HP_TITLE, hp.toFloat())
 
         }
         Row(
@@ -79,14 +76,12 @@ fun ShowAllPanels(
 @Composable
 fun PreviewAllPanels(
     bz: Double = -15.6,
-    hp: Int = 35,
     speed: Double = 476.4,
     density: Double = 202.0,
     temp: Double = 8.64e+05
 ){
     ShowAllPanels(
         bz,
-        hp,
         speed,
         density,
         temp,

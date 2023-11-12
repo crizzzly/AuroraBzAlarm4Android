@@ -12,21 +12,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.settings.SettingsViewModel
 import com.crost.aurorabzalarm.ui.MainComposable
 import com.crost.aurorabzalarm.ui.theme.AuroraBzAlarmTheme
-import com.crost.aurorabzalarm.utils.AuroraNotificationService
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.PermissionManager
-import com.crost.aurorabzalarm.viewmodels.DataViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -59,8 +49,6 @@ class MainActivity : ComponentActivity() {
         permissionManager = PermissionManager()
         permissionLauncher = getPermissionLauncher()
 
-        val notificationService = AuroraNotificationService(this)
-
         setContent {
             AuroraBzAlarmTheme {
                 // A surface container using the 'background' color from the theme
@@ -68,31 +56,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val dataViewModel: DataViewModel = viewModel()
-                    val settingsViewModel: SettingsViewModel = viewModel()
-                    val settingsConfig = settingsViewModel.loadAndReturnConfig(this)
-                    val bzThreshold by remember { mutableFloatStateOf(settingsConfig.bzWarningLevel.currentValue) }
-                    val notificationEnabled = settingsViewModel.notificationEnabled.observeAsState(
-                        initial = settingsConfig.notificationEnabled
-                    )
-                    val bzState by remember {
-                        mutableDoubleStateOf((dataViewModel.latestAceState.value?.bz ?: -999.9)
-                        )
-                    }
-
-                    val kpAlert by remember {
-                        mutableStateOf(dataViewModel.kpAlertState.value)
-                    }
-
-
-
-                    if(notificationEnabled.value){
-                        if(-900 <= bzState && bzState <= bzThreshold ) {
-//                            Log.d("MainActivity", "showing Notification")
-                            notificationService.showSpaceWeatherNotification(bzState, 0)
-                        }
-                    }
-
                     MainComposable(
                         permissionManager,
                         permissionLauncher

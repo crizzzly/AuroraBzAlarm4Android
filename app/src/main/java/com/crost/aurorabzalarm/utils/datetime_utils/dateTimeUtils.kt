@@ -1,8 +1,8 @@
 package com.crost.aurorabzalarm.utils.datetime_utils
 
+import android.util.Log
 import java.sql.Date
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter
 
 
 private val localZoneId = ZoneId.systemDefault()
+private val DEBBUG_TOF = false
 
 fun calculateTimeDifferenceFromNow(endDateTime: LocalDateTime): Duration {
     val startDateTime = LocalDateTime.now()
@@ -64,38 +65,15 @@ fun convertToLocalEpochMillis(year:Int, month: Int, day: Int, secOfDay: Int): Lo
 }
 
 
-fun convertToLocalDateTime(
-    year: Int?,
-    month: Int?,
-    day: Int?,
-    secOfDay: Int?,
-): LocalDateTime {
-    val gmtZoneId = ZoneId.of("GMT")
-    val h = secOfDay?.div(3600)
-    val m = (secOfDay?.rem(3600))?.div(60)
-    val s = secOfDay?.rem(60)
-    val time = LocalDateTime.of(year!!, month!!, day!!, h!!, m!!, s!!)
-    //        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-    return time.atZone(gmtZoneId).withZoneSameInstant(localZoneId).toLocalDateTime()
-}
-
-fun getSecOfDayFromTime(h: Int,m: Int): Int {
-    val minInSec = m * 60
-    val hourInSec = h * 60 * 60
-    return minInSec + hourInSec
-}
 
 
-//fun getCurrentDateTimeAsString(){
-//    val now : LocalDateTime = LocalDateTime.now()
-//}
 
 
-fun formatTimestamp(timestamp: Long): String {
-    val instant = Instant.ofEpochMilli(timestamp)
-    val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    return formatter.format(localDateTime)
+fun formatTimestamp(time: LocalDateTime): String {
+//    val instant = Instant.ofEpochMilli(timestamp)
+//    val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+    return formatter.format(time)
 }
 
 
@@ -106,8 +84,8 @@ fun getTimeOfDataFlight(speed: Double?): Float {
     val distance = 1500000.0 // km
     val timeInS = distance/speed!!  // km/s
     val timeInM = timeInS/60
-//        Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
-    return timeInM.toFloat()
+    if(DEBBUG_TOF) Log.d("getTimeOfDataFlight", "distance: $distance, speed:$speed, time: $timeInM")
 
+    return timeInM.toFloat()
 }
 

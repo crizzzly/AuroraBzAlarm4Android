@@ -1,10 +1,10 @@
-package com.crost.aurorabzalarm.network.parser
+package com.crost.aurorabzalarm.data
 
 import android.util.Log
-import com.crost.aurorabzalarm.repository.NoaaAlerts.GEO_STORM_ALERT_IDs
-import com.crost.aurorabzalarm.repository.NoaaAlerts.KP_ALERT_IDs
-import com.crost.aurorabzalarm.repository.NoaaAlerts.KP_WARNING_IDs
-import com.crost.aurorabzalarm.repository.NoaaAlerts.MAX_MINUTES_BETWEEN_ALERT_AND_NOW
+import com.crost.aurorabzalarm.data.NoaaAlerts.GEO_STORM_ALERT_IDs
+import com.crost.aurorabzalarm.data.NoaaAlerts.KP_ALERT_IDs
+import com.crost.aurorabzalarm.data.NoaaAlerts.KP_WARNING_IDs
+import com.crost.aurorabzalarm.data.NoaaAlerts.MAX_MINUTES_BETWEEN_ALERT_AND_NOW
 import com.crost.aurorabzalarm.utils.datetime_utils.calculateTimeDifferenceFromNow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.Duration
@@ -13,12 +13,12 @@ import java.time.LocalDateTime
 const val DEBUG = true
 data class NoaaAlert(
     var id: String,
-    var issueDatetime: LocalDateTime,
+    var datetime: LocalDateTime,
     var message: String,
 )
 
 
-class NoaaAlertHandler() {
+class NoaaAlertDataHandler() {
     val kpWarningIds = KP_WARNING_IDs
     val kpAlertIds = KP_ALERT_IDs
     val geoStormIds = GEO_STORM_ALERT_IDs
@@ -38,16 +38,9 @@ class NoaaAlertHandler() {
 
 
 
-    fun handleAlerts(alerts: List<NoaaAlert>) {
-        checkForRelevantAlerts(alerts)
-    }
-
-
-
-    private fun checkForRelevantAlerts(alerts: List<NoaaAlert>){
-
-        for (alert in alerts){
-            val duration = calculateTimeDifferenceFromNow(alert.issueDatetime)
+    fun checkForRelevantAlerts(alerts: List<NoaaAlert>):List<NoaaAlert> {
+        for (alert in alerts.asReversed()){
+            val duration = calculateTimeDifferenceFromNow(alert.datetime)
             if(duration.toMinutes() < MAX_MINUTES_BETWEEN_ALERT_AND_NOW){
                 if (DEBUG) Log.d("NoaaAlert:", alert.id+"\n"+alert.message)
                 when (alert.id) {
@@ -63,6 +56,7 @@ class NoaaAlertHandler() {
                 }
             }
         }
+        return listOf(kpAlert.value, kpWarning.value, geoAlert.value)
     }
 
     private fun calculateTimeDifference(startDateTime: LocalDateTime, endDateTime: LocalDateTime): Duration? {
