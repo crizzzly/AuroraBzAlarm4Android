@@ -26,8 +26,7 @@ class SpaceWeatherNotificationService(
     private val notificationIdBasic = 17
     private val notificationIdNoaaAlert = 18
 
-    // TODO: Check if urgent message is sth:
-    //  https://developer.android.com/develop/ui/views/notifications/build-notification#urgent-message
+
 
     fun showNoaaAlert(alert: NoaaAlert){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))

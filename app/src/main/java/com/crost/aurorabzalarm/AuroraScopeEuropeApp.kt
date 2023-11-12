@@ -19,6 +19,7 @@ import com.crost.aurorabzalarm.worker.MyWorkerFactory
 import com.crost.aurorabzalarm.worker.WebParsingWorker
 import java.util.concurrent.TimeUnit
 
+const val DEBUG_APP = false
 // androidx.fragment:fragment-ktx
 class AuroraScopeEuropeApp: Application(), Configuration.Provider {
 //    private lateinit var permissionManager: PermissionManager
@@ -42,7 +43,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
         settingsViewModel = SettingsViewModel(this)
 //        permissionManager = PermissionManager()
 
-        Log.d("App-onCreate", "initializing WorkManager")
+        if (DEBUG_APP) Log.d("App-onCreate", "initializing WorkManager")
 //      Remove entry in manifest when deleting WorkManager.init
         WorkManager.initialize(this, workManagerConfiguration)
         val workManager = WorkManager.getInstance(this)
@@ -55,7 +56,7 @@ class AuroraScopeEuropeApp: Application(), Configuration.Provider {
             .build()
 
         workManager.enqueue(parsingWorkRequest)
-        Log.d("App", "WorkManager enqueued")
+        if (DEBUG_APP) Log.d("App", "WorkManager enqueued")
 
 
         // Create Notification Channel

@@ -22,6 +22,11 @@ import java.text.DecimalFormat
 
 const val DEBUG = true
 
+// TODO: Show Bt Vals and integrate in Notification
+// TODO: Scroll!
+// TODO: SnackBarHost in Scaffold
+// show some graphs/animations from noaa like WSA_ENLIL
+
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
