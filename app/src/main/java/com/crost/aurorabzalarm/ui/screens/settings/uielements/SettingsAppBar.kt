@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements
+package com.crost.aurorabzalarm.ui.screens.settings.uielements
 
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -12,7 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
 
 
 @Preview

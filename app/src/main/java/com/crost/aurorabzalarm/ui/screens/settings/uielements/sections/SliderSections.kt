@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements.sections
+package com.crost.aurorabzalarm.ui.screens.settings.uielements.sections
 
 import android.content.Context
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,8 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.settings.Settings
-import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.Settings
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
 

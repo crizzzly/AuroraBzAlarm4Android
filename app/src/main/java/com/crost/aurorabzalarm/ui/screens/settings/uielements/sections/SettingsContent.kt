@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements.sections
+package com.crost.aurorabzalarm.ui.screens.settings.uielements.sections
 
 import androidx.compose.runtime.Composable
 

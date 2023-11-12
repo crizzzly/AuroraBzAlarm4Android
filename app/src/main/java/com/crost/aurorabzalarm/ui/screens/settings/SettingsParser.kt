@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings
+package com.crost.aurorabzalarm.ui.screens.settings
 
 import android.content.Context
 import android.util.Log

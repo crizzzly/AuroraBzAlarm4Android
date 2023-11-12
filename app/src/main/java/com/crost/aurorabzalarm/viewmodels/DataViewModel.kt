@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-const val DEBUG_OBSERVER = true
+const val DEBUG_OBSERVER = false
 
 
 class DataViewModel(application: Application) : AndroidViewModel(application) {
@@ -37,6 +37,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _alarmSettingsVisible = mutableStateOf(false)
     val alarmSettingsVisible = _alarmSettingsVisible
+
+    private val _showLogs = mutableStateOf(false)
+    val showLogs = _showLogs
     
 
     private val _latestImfData = mutableStateOf(
@@ -60,23 +63,23 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _kpAlertState = mutableStateOf(
         NoaaAlert(
-            "0", LocalDateTime.now(), ""
+            "0", LocalDateTime.now().minusHours(1L), ""
         )
     )
     private val _kpWarningState = mutableStateOf(
         NoaaAlert(
-            "0", LocalDateTime.now(), ""
+            "0", LocalDateTime.now().minusHours(1L), ""
         )
     )
     private val _solarStormState = mutableStateOf(
         NoaaAlert(
-            "0", LocalDateTime.now(), ""
+            "0", LocalDateTime.now().minusHours(1L), ""
         )
     )
 
 
-    val latestSolarWindData: State<SolarWindData?> get() = _latestSolarWindData
-    val latestImfData: State<ImfData?> get() = _latestImfData
+    val latestSolarWindData: State<SolarWindData> get() = _latestSolarWindData
+    val latestImfData: State<ImfData> get() = _latestImfData
     val kpAlertState: State<NoaaAlert> get() = _kpAlertState
     val kpWarningState: State<NoaaAlert> get() = _kpWarningState
     val solarStormState: State<NoaaAlert> get() = _solarStormState
@@ -179,6 +182,9 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setAlarmSettingsVisible(){
         _alarmSettingsVisible.value = true
+    }
+    fun setLogfileVisible(isVisible: Boolean){
+        _showLogs.value = isVisible
     }
 
     fun setAlarmSettingsInvisible(){

@@ -2,6 +2,7 @@ package com.crost.aurorabzalarm.utils
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 
 
 // TODO: Use this!
@@ -22,10 +23,13 @@ class ExceptionHandler private constructor(con: Context) {
         logger.writeLogsToInternalStorage(context, "$tag\n$msg")
         Log.e(tag, msg)
 
-//        Toast
-//            .makeText(context, tag+"\n"+msg, Toast.LENGTH_LONG)
-//            .show()
+        try {
+        Toast
+            .makeText(context, tag+"\n"+msg, Toast.LENGTH_LONG)
+            .show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
-
-
 }
+

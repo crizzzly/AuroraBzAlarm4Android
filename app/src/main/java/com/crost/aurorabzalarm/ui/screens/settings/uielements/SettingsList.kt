@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements
+package com.crost.aurorabzalarm.ui.screens.settings.uielements
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.settings.SettingsViewModel
-import com.crost.aurorabzalarm.settings.uielements.sections.NotificationStateSection
-import com.crost.aurorabzalarm.settings.uielements.sections.BzSliderSection
-import com.crost.aurorabzalarm.settings.uielements.sections.HeadlineSection
-import com.crost.aurorabzalarm.settings.uielements.sections.HpSliderSection
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.NotificationStateSection
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.BzSliderSection
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.HeadlineSection
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.HpSliderSection
 
 
 @OptIn(ExperimentalMaterial3Api::class)

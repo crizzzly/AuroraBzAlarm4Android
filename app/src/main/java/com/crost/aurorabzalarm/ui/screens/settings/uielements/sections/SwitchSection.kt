@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements.sections
+package com.crost.aurorabzalarm.ui.screens.settings.uielements.sections
 
 import android.content.Context
 import android.util.Log
@@ -12,8 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.crost.aurorabzalarm.settings.Settings
-import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.Settings
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

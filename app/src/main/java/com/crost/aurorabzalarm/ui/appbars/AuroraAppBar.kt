@@ -11,10 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.R
-import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
 
-//import com.crost.aurorabzalarm.viewmodels.AuroraViewModelFactory
 
 @Preview//(uiMode = Configuration.UI_MODE_NIGHT_MASK)
 @OptIn(ExperimentalMaterial3Api::class)

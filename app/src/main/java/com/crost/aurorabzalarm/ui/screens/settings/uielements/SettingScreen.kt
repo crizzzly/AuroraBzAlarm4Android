@@ -1,4 +1,4 @@
-package com.crost.aurorabzalarm.settings.uielements
+package com.crost.aurorabzalarm.ui.screens.settings.uielements
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

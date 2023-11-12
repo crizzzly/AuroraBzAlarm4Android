@@ -13,6 +13,13 @@ import java.time.format.DateTimeFormatter
 private val localZoneId = ZoneId.systemDefault()
 private val DEBBUG_TOF = false
 
+
+fun dateTimeStringToLocalDateTime(dtString: String): LocalDateTime {
+    val utc = parseDateTimeString(dtString)
+    return convertUtcToLocal(utc)
+}
+
+
 fun calculateTimeDifferenceFromNow(endDateTime: LocalDateTime): Duration {
     val startDateTime = LocalDateTime.now()
     //    Log.d("calculateTimeDifferenceFromNow", "now: $startDateTime\n" +

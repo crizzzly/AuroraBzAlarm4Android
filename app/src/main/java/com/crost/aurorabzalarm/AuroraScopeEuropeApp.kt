@@ -9,7 +9,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.crost.aurorabzalarm.settings.SettingsViewModel
+import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import com.crost.aurorabzalarm.utils.Constants.WORKER_REPEAT_INTERVAL
 import com.crost.aurorabzalarm.utils.ExceptionHandler
