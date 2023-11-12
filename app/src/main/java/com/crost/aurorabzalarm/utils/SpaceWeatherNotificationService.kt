@@ -10,6 +10,9 @@ import androidx.core.app.NotificationCompat
 import com.crost.aurorabzalarm.MainActivity
 import com.crost.aurorabzalarm.R
 import com.crost.aurorabzalarm.data.NoaaAlert
+import com.crost.aurorabzalarm.data.NoaaAlerts.GEO_STORM_ALERT_IDs
+import com.crost.aurorabzalarm.data.NoaaAlerts.KP_ALERT_IDs
+import com.crost.aurorabzalarm.data.NoaaAlerts.KP_WARNING_IDs
 import com.crost.aurorabzalarm.utils.Constants.CHANNEL_ID
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -25,18 +28,46 @@ class SpaceWeatherNotificationService(
 
     private val notificationIdBasic = 17
     private val notificationIdNoaaAlert = 18
+    private val idKpAlert = 19
+    private val idKpWarning = 20
+    private val idSolarStorm = 21
 
 
+    private fun getIdAndTitle(alert: NoaaAlert):List<Any>{
+        val idTitle = mutableListOf<Any>()
+
+        when(alert.id){
+            in KP_WARNING_IDs -> {
+                idTitle.add(idKpWarning)
+                val kLevel = alert.id[2]
+                idTitle.add("KP$kLevel Predicted!")
+            }
+            in KP_ALERT_IDs -> {
+                idTitle.add(idKpAlert)
+                val kLevel = alert.id[2]
+                idTitle.add("KP$kLevel Detected!")
+            }
+            in GEO_STORM_ALERT_IDs -> {
+                idTitle.add(idSolarStorm)
+                val stormLevel = alert.id[1]
+                idTitle.add("G$stormLevel Detected!")
+            }
+        }
+        return idTitle
+    }
 
     fun showNoaaAlert(alert: NoaaAlert){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing Noaa Alert")
 
-        val title = "Noaa ${alert.id}, time: ${alert.datetime}"
+        val idAndTitle = getIdAndTitle(alert)
+
+        val title = "${idAndTitle[1]}: ${alert.datetime}"
+        val id = idAndTitle[0] as Int
         val text = alert.message
 
         val notification = createNotification(title, text)
-        notify(notificationIdNoaaAlert, notification)
+        notify(id, notification)
     }
 
 
@@ -45,8 +76,7 @@ class SpaceWeatherNotificationService(
         if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing SpaceWeather Notification")
 
         val title = "Aurora Probability: Bz has fallen!"
-        val text = "$time: Bz is currently at ${bz}\n" +
-                "Hemispheric Power at ${hp}"
+        val text = "$time: Bz is currently at $bz"
 
         val notification = createNotification(title, text)
 
@@ -55,12 +85,12 @@ class SpaceWeatherNotificationService(
 
     private fun notify(id: Int, notification: Notification) {
         try {
-            Log.d("SpaceWeatherNotificationService", "notify ...")
+            if (DEBUG) Log.d("SpaceWeatherNotificationService", "notify ...")
             notificationManager.notify(
                 id,
                 notification
             )
-            Log.d("SpaceWeatherNotificationService", "notify ... done!")
+            if (DEBUG) Log.d("SpaceWeatherNotificationService", "notify ... done!")
         } catch (e: Exception){
             exceptionHandler.handleExceptions(
                 context, "SpaceWeatherNotificationService", e.stackTraceToString()
