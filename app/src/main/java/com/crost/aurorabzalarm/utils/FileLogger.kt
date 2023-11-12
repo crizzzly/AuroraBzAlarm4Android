@@ -8,10 +8,12 @@ import java.io.OutputStreamWriter
 import java.time.LocalDateTime
 
 const val FILE_NAME = "logs.txt"
+const val MAX_FILES = 3
 class FileLogger private constructor(context: Context) {
+    private var today = LocalDateTime.now()
     private val logFile: File by lazy {
 
-        File(context.filesDir, FILE_NAME)
+        File(context.filesDir, FILE_NAME) //"+"${today.year}-${today.month}-${today.dayOfMonth}")
     }
 
     companion object {
@@ -26,6 +28,7 @@ class FileLogger private constructor(context: Context) {
     }
 
     fun writeLogsToInternalStorage(context: Context, logString: String) {
+
         val currentDt = LocalDateTime.now()
         val logMsg = "$currentDt\n$logString\n\n"
         Log.d("writeLogsToStorage", "datetime: $currentDt")
