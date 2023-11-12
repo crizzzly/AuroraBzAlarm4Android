@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.fragment.ktx)
     implementation(libs.coil.compose)
+    implementation(libs.accompanist.coil)
     ksp(libs.androidx.room.compiler)
     implementation(libs.mockito.kotlin)
     implementation(libs.kotlinx.coroutines.test)

@@ -77,12 +77,17 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         )
     )
 
+    private val _enlilUrlList = mutableStateOf(
+        listOf<String>()
+    )
+
 
     val latestSolarWindData: State<SolarWindData> get() = _latestSolarWindData
     val latestImfData: State<ImfData> get() = _latestImfData
     val kpAlertState: State<NoaaAlert> get() = _kpAlertState
     val kpWarningState: State<NoaaAlert> get() = _kpWarningState
     val solarStormState: State<NoaaAlert> get() = _solarStormState
+    val enlilUrlList: State<List<String>> get() = _enlilUrlList
 
     val currentDurationOfFlight: Float get() = getTimeOfDataFlight(latestSolarWindData.value.speed)
 
@@ -98,8 +103,22 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         initParticleDataObserver(application.applicationContext)
         initImfDataObserver(application.applicationContext)
         initNoaaKpAlertObserver(application.applicationContext)
+        initEnlilUrlObserver(application.applicationContext)
 
-        fetchSpaceWeatherData(application.applicationContext)
+//        fetchSpaceWeatherData(application.applicationContext)
+    }
+
+    private fun initEnlilUrlObserver(applicationContext: Context) {
+        spaceWeatherRepository.latestEnlilUrlList.observeForever{
+            try {
+                _enlilUrlList.value = it
+                if (DEBUG_OBSERVER)Log.d("enlilObserver", it.toString())
+            } catch (e: Exception){
+                exceptionHandler.handleExceptions(
+                    applicationContext, "EnlilObserver", e.stackTraceToString()
+                )
+            }
+        }
     }
 
 

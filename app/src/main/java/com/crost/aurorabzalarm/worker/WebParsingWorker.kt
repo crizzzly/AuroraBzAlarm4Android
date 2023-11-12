@@ -11,6 +11,9 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.viewmodels.DataViewModel
+import java.time.LocalDateTime
+
+private const val DEBUG = false
 
 
 class WebParsingWorker(
@@ -25,7 +28,9 @@ class WebParsingWorker(
 
 
     override suspend fun doWork(): Result {
+        val now = LocalDateTime.now()
         return try {
+            if (DEBUG) Log.d("Worker Working", now.toString())
             viewModel.fetchSpaceWeatherData(ctx)
 
             Result.success()

@@ -10,4 +10,8 @@ object DataSourceConstants{
     const val ALERTS_URL = "https://services.swpc.noaa.gov/products/alerts.json"
     const val ALERTS_JSON = "https://services.swpc.noaa.gov/products/alerts.json"
     const val K_INDEX_JSON = "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"
+    const val ENLIN_JSON = "https://services.swpc.noaa.gov/products/animations/enlil.json"
+
+
+    const val ENLIL_NAME = "wsaEnlil"
 }

@@ -72,6 +72,22 @@ class DocumentParser {
         return dataEntries
     }
 
+    fun parseEnlilJson(
+        jsonData: String,
+        con: Context,
+        exceptionHandler: ExceptionHandler
+    ): List<String>{
+        val urlList = mutableListOf<String>()
+        val jsonArray = JSONArray(jsonData)
+        val urlStart = "https://services.swpc.noaa.gov/"
+        for (i in 0 until jsonArray.length()) {
+            val jsonObject = jsonArray.getJSONObject(i)
+            val url = urlStart+jsonObject.getString("url")
+            if (DEBUG_LIST) Log.d("parseEnlilJson", url)
+            urlList.add(url)
+        }
+        return urlList
+    }
     fun parseAlertJson(
         jsonData: String,
         applicationContext: Context,

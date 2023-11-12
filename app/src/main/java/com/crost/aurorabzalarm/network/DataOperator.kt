@@ -9,13 +9,15 @@ import com.crost.aurorabzalarm.network.download.DownloadManager
 import com.crost.aurorabzalarm.network.parser.DocumentParser
 import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
+import com.crost.aurorabzalarm.utils.constants.DataSourceConstants.ENLIL_NAME
 import com.crost.aurorabzalarm.utils.constants.NoaaAlertConstants
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_TABLE_NAME
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ALERTS_PSEUDO_TABLE_NAME
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.EPAM_TABLE_NAME
+import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
-const val DEBUG = false
+const val DEBUG = true
 
 class DataOperator(val applicationContext: Context) {
     private val fileLogger = FileLogger.getInstance(applicationContext)
@@ -43,6 +45,7 @@ class DataOperator(val applicationContext: Context) {
                 exceptionHandler.handleExceptions(context, "fetchDataAndStore", msg)
                 throw e
             }
+            delay(100)
         }
         return allTables
     }
@@ -64,6 +67,9 @@ class DataOperator(val applicationContext: Context) {
             }
             ACE_TABLE_NAME -> {
                 parser.parseSolarWindJson(downloadedData, applicationContext, exceptionHandler)
+            }
+            ENLIL_NAME -> {
+                parser.parseEnlilJson(downloadedData, applicationContext, exceptionHandler)
             }
             else -> {
                 emptyList()

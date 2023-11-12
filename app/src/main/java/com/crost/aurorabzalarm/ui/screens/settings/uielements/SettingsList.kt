@@ -12,10 +12,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.ui.screens.settings.SettingsViewModel
-import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.NotificationStateSection
 import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.BzSliderSection
-import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.HeadlineSection
 import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.HpSliderSection
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.NotificationStateSection
+import com.crost.aurorabzalarm.ui.screens.settings.uielements.sections.SettingsHeadlineSection
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +54,7 @@ fun SettingsList() {
             columnScope = this
         )
 
-        HeadlineSection()
+        SettingsHeadlineSection()
         BzSliderSection(
             con,
             bzSliderVal.value,

@@ -3,6 +3,8 @@ package com.crost.aurorabzalarm.network.download
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import com.crost.aurorabzalarm.utils.ExceptionHandler
+import com.crost.aurorabzalarm.utils.FileLogger
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.ACE_URL
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.FILEPATH_ACE_DATA
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.FILEPATH_EPAM_DATA
@@ -10,24 +12,24 @@ import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.FILEPAT
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.HP_URL
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.MAX_RETRY_COUNT
 import com.crost.aurorabzalarm.utils.constants.SpaceWeatherDataConstants.RETRY_DELAY_MS
-import com.crost.aurorabzalarm.utils.ExceptionHandler
-import com.crost.aurorabzalarm.utils.FileLogger
 import kotlinx.coroutines.delay
 import org.jsoup.Jsoup
-import org.jsoup.UnsupportedMimeTypeException
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.time.LocalDateTime
 
+private const val DEBUG = false
 
 class DownloadManager(context: Context) {
     private val con = context
     private var retryCount = 0
     private val exceptionHandler = ExceptionHandler.getInstance(context)
     private val fileLogger = FileLogger.getInstance(context)
+    val loggerTag = "loadSatelliteDatasheet"
     suspend fun loadSatelliteDatasheet(url: String): String {
         /*
         * downloads document from @param url
@@ -35,12 +37,13 @@ class DownloadManager(context: Context) {
         * @param url: self explaining.
         * @return: downloaded data as string
         * */
-//        Log.d("SatelliteDataDownloader", "loading $url")
-        val loggerTag = "loadSatelliteDatasheet"
+
+        val now = LocalDateTime.now()
 
         do {
             if("json" in url){
-                Log.d(loggerTag, "downloading json")
+               Log.d("loadSatelliteDatasheet", "loadingNr $retryCount: $url")
+
                 return fetchDataFromUrl(url)
 
             }
@@ -48,7 +51,7 @@ class DownloadManager(context: Context) {
                 val aceDoc = Jsoup.connect(url).get()
                 val html = aceDoc.select("body").toString()
                 return html
-            } catch (e: UnsupportedMimeTypeException) {
+            } catch (e: Exception) {
                 val msg = "$url\n ${e.stackTraceToString()}"
 
                 exceptionHandler.handleExceptions(con, loggerTag, msg)
@@ -59,8 +62,6 @@ class DownloadManager(context: Context) {
 
         val msg = "Failed to download data from $url after $MAX_RETRY_COUNT attempts"
         exceptionHandler.handleExceptions(con, loggerTag, msg)
-
-        // TODO: Handle this ;)
         return "Error"
     }
 
@@ -69,6 +70,7 @@ class DownloadManager(context: Context) {
         val url = URL(urlString)
         val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
         return try {
+            if (DEBUG)Log.d(loggerTag, "${LocalDateTime.now()} - ${url.path}")
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
             val stringBuilder = StringBuilder()
             var line: String?
@@ -76,7 +78,7 @@ class DownloadManager(context: Context) {
                 stringBuilder.append(line)
             }
             stringBuilder.toString()
-        } finally {
+        }  finally {
             connection.disconnect()
         }
     }
@@ -133,29 +135,3 @@ class DownloadManager(context: Context) {
 //        reader = BufferedReader(InputStreamReader(file.byteInputStream()))
     }
 
-
-
-//
-//fun loadSatelliteDatasheet(url: String): String {
-//    var retryCount = 0
-//    var html: String
-//
-//    do {
-//        try {
-//            val aceDoc = Jsoup.connect(url).get()
-//            html = aceDoc.select("body").toString()
-//            Log.d("SatelliteDataDownloader", "length of doc ${html.length}") // 7774 /2335
-//            return html
-//        } catch (e: UnknownHostException) {
-//            // Handle network errors (UnknownHostException) here
-//            Log.e("getSatelliteData", "$url\n${e.stackTraceToString()}")
-//            retryCount++
-//            Thread.sleep(RETRY_DELAY_MS.toLong()) // Wait before the next retry
-//        }
-//    } while (retryCount < MAX_RETRY_COUNT)
-//
-//    // If all retries fail, return an error message
-//    Log.e("getSatelliteData", "Failed to download data from $url after $MAX_RETRY_COUNT attempts")
-//    return "Error"
-//}
-//}

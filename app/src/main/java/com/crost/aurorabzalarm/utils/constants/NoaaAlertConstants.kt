@@ -1,9 +1,7 @@
 package com.crost.aurorabzalarm.utils.constants
 
 
-object ReadoutKeys{
-    const val ALERTS_KEYS = "id issue_datetime issue_datetime"
-}
+
 
 // NOAA Alerts
 object NoaaAlertConstants {

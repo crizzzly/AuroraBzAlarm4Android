@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.repository
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.crost.aurorabzalarm.data.ImfData
@@ -64,6 +65,9 @@ class SpaceWeatherRepository(application: Application) {
         SolarWindData(LocalDateTime.now(), -999.9, -999.9, -999.9)
     )
 
+    private val _latestEnlilUrlList = MutableLiveData(mutableListOf<String>())
+    val latestEnlilUrlList get() = _latestEnlilUrlList
+
     val latestImfData: LiveData<ImfData> get() = _latestImfData
     val latestParticleData:LiveData<SolarWindData> get() = _latestParticleData
 
@@ -111,6 +115,11 @@ class SpaceWeatherRepository(application: Application) {
                 is SolarWindData -> {
                     val newSolarWindData = dataList.last() as SolarWindData
                     _latestParticleData.postValue(newSolarWindData)
+                }
+
+                is String -> {
+                    if (DEBUG_REPOSITORY) Log.d("SWR handleData", "url: ${dataList.last()}")
+                    _latestEnlilUrlList.postValue(dataList as MutableList<String>)
                 }
 
                 is NoaaAlert -> {

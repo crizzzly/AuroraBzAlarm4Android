@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 
 
 @Composable
-fun HeadlineSection() {
+fun SettingsHeadlineSection() {
     ListItem(  // Headline Warning Level
         headlineContent = { Text("Warning Levels") },
         colors = ListItemColors(
