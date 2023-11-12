@@ -84,7 +84,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     val kpWarningState: State<NoaaAlert> get() = _kpWarningState
     val solarStormState: State<NoaaAlert> get() = _solarStormState
 
-    val currentDurationOfFlight: Float get() = getTimeOfDataFlight(latestSolarWindData.value?.speed)
+    val currentDurationOfFlight: Float get() = getTimeOfDataFlight(latestSolarWindData.value.speed)
 
     val dateTimeString: String get() = formatTimestamp(_latestSolarWindData.value.dateTime)
     

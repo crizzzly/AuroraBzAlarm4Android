@@ -127,9 +127,10 @@ class SpaceWeatherRepository(application: Application) {
             when (alert.id) {
                 in KP_ALERT_IDs -> {
                     if (alert.datetime != latestKpAlertTime) {
-                        latestKpAlertTime = latestNoaaKpAlert.value!!.datetime
+                        latestKpAlertTime = alert.datetime
+
                         if (duration.toMinutes() <= MAX_MINUTES_BETWEEN_ALERT_AND_NOW) {
-                            notificationService.showNoaaAlert(alert)
+                            notificationService.showNoaaAlertNotification(alert)
                         }
                     }
                     _latestNoaaKpAlert.postValue(alert)
@@ -137,9 +138,10 @@ class SpaceWeatherRepository(application: Application) {
 
                 in KP_WARNING_IDs -> {
                     if (alert.datetime != latestKpWarningTime) {
-                        latestKpWarningTime = latestNoaaKpWarning.value!!.datetime
+                        latestKpWarningTime = alert.datetime
+
                         if (duration.toMinutes() <= MAX_MINUTES_BETWEEN_ALERT_AND_NOW) {
-                            notificationService.showNoaaAlert(alert)
+                            notificationService.showNoaaAlertNotification(alert)
                         }
                     }
                     _latestNoaaKpWarning.postValue(alert)
@@ -147,9 +149,10 @@ class SpaceWeatherRepository(application: Application) {
 
                 in GEO_STORM_ALERT_IDs -> {
                     if (alert.datetime != latestSolarAlertTime) {
-                        latestSolarAlertTime = latestNoaaSolarStormAlert.value!!.datetime
+                        latestSolarAlertTime = alert.datetime
+
                         if (duration.toMinutes() <= MAX_MINUTES_BETWEEN_ALERT_AND_NOW) {
-                            notificationService.showNoaaAlert(alert)
+                            notificationService.showNoaaAlertNotification(alert)
                         }
                     }
                     _latestNoaaSolarStormAlert.postValue(alert)
@@ -163,10 +166,10 @@ class SpaceWeatherRepository(application: Application) {
         if (settings.notificationEnabled) {
             if (data is ImfData) {
                 if (data.bz <= settings.bzWarningLevel.currentValue) {
-                    notificationService.showSpaceWeatherNotification(data.bz, 15)
+                    notificationService.showSpaceWeatherNotification(data.bz, data.bt)
                 }
             } else if (data is NoaaAlert) {
-                if (data.id != "0") notificationService.showNoaaAlert(data)
+                if (data.id != "0") notificationService.showNoaaAlertNotification(data)
             }
         }
     }

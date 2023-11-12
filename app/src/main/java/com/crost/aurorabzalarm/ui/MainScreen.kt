@@ -1,6 +1,7 @@
 package com.crost.aurorabzalarm.ui
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,30 +14,62 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crost.aurorabzalarm.ui.appbars.AuroraAppBar
 import com.crost.aurorabzalarm.ui.panels.ShowAllPanels
 import com.crost.aurorabzalarm.utils.Constants
+import com.crost.aurorabzalarm.viewmodels.DataViewModel
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
+
+private const val DEBUG = false
 
 @Composable
-fun MainScreen(
-    time: String,
-    bz: Double,
-    bt: Double,
-    speed: Double,
-    density: Double,
-    temp: Double,
-
-    noaaAlerts: String,
-    currentDuration: String,
-) {
+fun MainScreen() {
     val scrollState = rememberScrollState()
+    val dataViewModel: DataViewModel = viewModel()
+
+    val currentSolarWindData by remember { dataViewModel.latestSolarWindData }
+    val currentImfData by remember { dataViewModel.latestImfData }
+    val currentKpAlert by remember { dataViewModel.kpAlertState }
+    val currentKpWarning by remember { dataViewModel.kpWarningState }
+    val currentSolarStormAlert by remember { dataViewModel.solarStormState }
+
+    val currentTime = dataViewModel.dateTime
+    val time = dataViewModel.dateTimeString
+    val currentDuration = dataViewModel.currentDurationOfFlight
+
+    val debugString = "Current Vals: bz: ${currentImfData.bz}, " +
+            "speed: ${currentSolarWindData.speed},\n" +
+            "KpAlert: ${currentKpAlert.message}, \n" +
+            "KpWarning: ${currentKpWarning.message}"+"\n" +
+            "SolarStorm, ${currentSolarStormAlert.message}" +"\n"
+
+
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.CEILING
+
+
+
+    if (DEBUG){
+        try {
+            Log.d(
+                "Composable value",
+                debugString
+            )
+        } catch (e: NullPointerException) {
+            Log.e("Composable value", e.toString())
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -64,24 +97,16 @@ fun MainScreen(
                     )
                     Text("$currentDuration Minutes from DISCOVR to Earth")
 
-
                     ShowAllPanels(
-                        bz,
-                        bt,
-                        speed,
-                        density,
-                        temp
+                        currentImfData.bz,
+                        currentImfData.bt,
+                        currentSolarWindData.speed,
+                        currentSolarWindData.density,
+                        currentSolarWindData.temperature
                     )
-
-                    // TODO: Why not showing?
-                    Text(text = noaaAlerts, color = Color.LightGray)
-
+                    Text(text = debugString, color = Color.LightGray)
                 }
             }
-            // TODO: integrate navigation!
-//            Row {
-//                LogFileContent()
-//            }
         }
     }
 }
@@ -92,14 +117,5 @@ fun MainScreen(
 )
 @Composable
 fun MainScreenPreview() {
-    MainScreen(
-        "02:22\n22.10.23",
-        -15.5,
-        23.5,
-        358.6,
-        56.2,
-        123.4,
-        "",
-        "54.2",
-    )
+    MainScreen()
 }

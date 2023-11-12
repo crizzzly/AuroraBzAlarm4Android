@@ -29,7 +29,7 @@ fun mapValueToRange(value: Float, fromMin: Float, fromMax: Float, toMin: Double,
 
 val redIsh =  Color(0xFFD32F2F) to Color(0xFFFFCDD2)
 val orangeIsh = Color(0xFFF57C00) to Color(0xFFFFE0B2)
-val yellowIsh = Color(0xFFFFFF00) to Color(0xFFEBE386)
+val yellowIsh = Color(0xFFFFFF00) to Color(0xFFDDD791)
 val greenIsh = Color(0xFF388E3C) to Color(0xFFC8E6C9)
 
 
@@ -81,7 +81,7 @@ fun PreviewAllPanels(
     bz: Double = -15.6,
     bt: Double = 20.0,
     speed: Double = 476.4,
-    density: Double = 202.0,
+    density: Double = 10.0,
     temp: Double = 8.64e+05
 ){
     ShowAllPanels(
@@ -164,16 +164,12 @@ fun BtPanel(
 }
 
 
-
-
-
-
 @Composable
 fun SpeedPanel(
     progress: Float = 400.0f,
     modifier:  Modifier
 ){
-    val valueRangeFrom = 0.0f
+    val valueRangeFrom = 100.0f
     val valueRangeTo = 999.9f
     val (mainColor, secondaryColor) = when {
         progress > 700 -> // Red
@@ -243,11 +239,11 @@ fun TempPanel(
     val valueRangeTo = 1e+06f
     val (mainColor, secondaryColor) = when {
         progress < 5.0e+05 -> // Red
-            redIsh
+            greenIsh
         progress in 5.0e+05..0.9e+06 -> // Orange
             orangeIsh
         else -> // Green
-            greenIsh
+            redIsh
     }
     val drawProgressArcFromTop = false
     val unit = "°K"

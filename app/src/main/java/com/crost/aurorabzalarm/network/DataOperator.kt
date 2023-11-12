@@ -2,7 +2,6 @@ package com.crost.aurorabzalarm.network
 
 import android.content.Context
 import android.util.Log
-import com.crost.aurorabzalarm.data.DEBUG
 import com.crost.aurorabzalarm.data.DataSourceConfig
 import com.crost.aurorabzalarm.data.NoaaAlert
 import com.crost.aurorabzalarm.data.NoaaAlerts
@@ -16,8 +15,9 @@ import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.FileLogger
 import java.time.LocalDateTime
 
+const val DEBUG = false
 
-class DataOperator(applicationContext: Context) {
+class DataOperator(val applicationContext: Context) {
     private val fileLogger = FileLogger.getInstance(applicationContext)
     private val downloadManager = DownloadManager(applicationContext)
     private val parser = DocumentParser()
@@ -53,18 +53,17 @@ class DataOperator(applicationContext: Context) {
     ): List<Any> {
         return when (dsConfig.tableName) {
             ALERTS_PSEUDO_TABLE_NAME -> {
-                val data = parser.parseAlertJson(downloadedData)
+                val data = parser.parseAlertJson(downloadedData, applicationContext, exceptionHandler)
                 // reduce alertsList to latest alerts that happened within the last minutes
-                getLatestAlerts (data)
-                data
+                getLatestAlerts(data, applicationContext, exceptionHandler)
+//                data
             }
             EPAM_TABLE_NAME -> {
                 EPAM_TABLE_NAME
-                val data = parser.parseIMFJson(downloadedData)
-                data
+                parser.parseIMFJson(downloadedData, applicationContext, exceptionHandler)
             }
             ACE_TABLE_NAME -> {
-                parser.parseSolarWindJson(downloadedData)
+                parser.parseSolarWindJson(downloadedData, applicationContext, exceptionHandler)
             }
             else -> {
                 emptyList()
@@ -72,7 +71,11 @@ class DataOperator(applicationContext: Context) {
         }
     }
 
-    private fun getLatestAlerts(alerts: List<NoaaAlert>):List<NoaaAlert> {
+    private fun getLatestAlerts(
+        alerts: List<NoaaAlert>,
+        applicationContext: Context,
+        exceptionHandler: ExceptionHandler
+    ):List<NoaaAlert> {
         /*
         * searches the alerts list backwards to ensure to get the latest Alerts/Warnings
         * for KpWarning, KpAlert, SolarStormAlert.
@@ -80,23 +83,40 @@ class DataOperator(applicationContext: Context) {
         * @param alerts: list with all NoaaAlerts fetched from Noaa Website
         * @return: list, size 3 with the latest kpAlert, kpWarning, solarStormAlert
         * */
+
+        val kpwList = mutableListOf<NoaaAlert>()
+        val kpaList = mutableListOf<NoaaAlert>()
+        val gsaList = mutableListOf<NoaaAlert> ()
+
         var kpw = NoaaAlert("0", LocalDateTime.now().minusHours(1L), "")
         var kpa = NoaaAlert("0", LocalDateTime.now().minusHours(1L), "")
         var gsa = NoaaAlert("0", LocalDateTime.now().minusHours(1L), "")
 
-        for (alert in alerts.asReversed()){
+        for (alert in alerts){ //.asReversed()){
                 when (alert.id) {
                     in NoaaAlerts.KP_WARNING_IDs -> {
-                        kpw = alert
+//                        kpw = alert
+                        kpwList.add(alert)
                     }
                     in NoaaAlerts.KP_ALERT_IDs -> {
-                        kpa = alert
+//                        kpa = alert
+                        kpaList.add(alert)
                     }
                     in NoaaAlerts.GEO_STORM_ALERT_IDs -> {
-                        gsa = alert
+                        gsaList.add(alert)
+//                        gsa = alert
                     }
                 }
         }
+
+        if (DEBUG)
+            Log.d("getLatestAlerts", "sortedList first: ${kpwList.first().datetime}\n" +
+                "last: ${kpwList.last().datetime}")
+
+        kpa = kpaList.first()
+        kpw = kpaList.first()
+        gsa = gsaList.first()
+
         val list = listOf(kpa, kpw, gsa)
         val alertString = "${kpa.id}: ${kpa.datetime}\n" +
         "${kpw.id}, ${kpw.datetime}\n" +

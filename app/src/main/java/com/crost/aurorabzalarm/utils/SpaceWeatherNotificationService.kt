@@ -56,7 +56,7 @@ class SpaceWeatherNotificationService(
         return idTitle
     }
 
-    fun showNoaaAlert(alert: NoaaAlert){
+    fun showNoaaAlertNotification(alert: NoaaAlert){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing Noaa Alert")
 
@@ -71,12 +71,14 @@ class SpaceWeatherNotificationService(
     }
 
 
-    fun showSpaceWeatherNotification(bz: Double, hp: Int){
+    fun showSpaceWeatherNotification(bz: Double, bt: Double){
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         if (DEBUG) Log.d("SpaceWeatherNotificationService", "Showing SpaceWeather Notification")
 
         val title = "Aurora Probability: Bz has fallen!"
-        val text = "$time: Bz is currently at $bz"
+        val text = "$time: \n" +
+                "Bz is currently at $bz\n" +
+                "Bt is currently at $bt"
 
         val notification = createNotification(title, text)
 

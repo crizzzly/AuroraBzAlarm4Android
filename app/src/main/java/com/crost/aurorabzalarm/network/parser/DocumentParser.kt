@@ -1,13 +1,16 @@
 package com.crost.aurorabzalarm.network.parser
 
+import android.content.Context
 import android.util.Log
 import com.crost.aurorabzalarm.data.ImfData
 import com.crost.aurorabzalarm.data.NoaaAlert
 import com.crost.aurorabzalarm.data.SolarWindData
+import com.crost.aurorabzalarm.utils.ExceptionHandler
 import com.crost.aurorabzalarm.utils.datetime_utils.dateTimeStringToLocalDateTime
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
+import java.time.LocalDateTime
 
 
 const val DEBUG_DOCUMENT_SPLITTING = false
@@ -17,39 +20,63 @@ const val DEBUG_LIST = false
 
 class DocumentParser {
 
-    fun parseSolarWindJson(jsonData: String): List<Any> {
+    fun parseSolarWindJson(jsonData: String, con: Context, exceptionHandler: ExceptionHandler): List<Any> {
         val dataList = convertListStringToList(jsonData)
         // Map the arrays to DataEntry objects
         val dataEntries = dataList.drop(1).map { entry ->
-            SolarWindData(
-                dateTime = dateTimeStringToLocalDateTime(entry[0]),// ,
-                density = entry[1].toDouble(),
-                speed = entry[2].toDouble(),
-                temperature = entry[3].toDouble(),
-            )
+            try{
+                SolarWindData(
+                    dateTime = dateTimeStringToLocalDateTime(entry[0]),// ,
+                    density = entry[1].toDouble(),
+                    speed = entry[2].toDouble(),
+                    temperature = entry[3].toDouble(),
+                )
+            } catch (e: Exception){
+                exceptionHandler.handleExceptions(
+                    context = con, "parseSolarWindJson", e.stackTraceToString()
+                )
+                SolarWindData(
+                    LocalDateTime.now(), -999.4, -999.4,-999.4,
+                )
+            }
         }
         return dataEntries
     }
 
 
-    fun parseIMFJson(jsonData: String): List<ImfData> {
+    fun parseIMFJson(jsonData: String, con: Context, exceptionHandler: ExceptionHandler): List<ImfData> {
         val dataList: List<List<String>> =
             convertListStringToList(jsonData)
         // Map the arrays to DataEntry objects
         val dataEntries = dataList.drop(1).map { entry ->
             if (DEBUG_LIST) Log.d("parseIMFJson", entry.toString())
-            ImfData(
-                dateTime = dateTimeStringToLocalDateTime(entry[0]),// ,
-                bx = entry[1].toDouble(),
-                by = entry[2].toDouble(),
-                bz = entry[3].toDouble(),
-                bt = entry[6].toDouble()
-            )
+            try {
+                ImfData(
+                    dateTime = dateTimeStringToLocalDateTime(entry[0]),// ,
+                    bx = entry[1].toDouble(),
+                    by = entry[2].toDouble(),
+                    bz = entry[3].toDouble(),
+                    bt = entry[6].toDouble()
+                )
+            }catch (e: Exception) {
+                exceptionHandler.handleExceptions(con, "parseImfJson", e.stackTraceToString())
+                ImfData(
+                    LocalDateTime.now(),
+                    -999.4,
+                    -999.4,
+                    -999.4,
+                    -999.4,
+                )
+            }
         }
         return dataEntries
     }
 
-    fun parseAlertJson(jsonData: String): List<NoaaAlert> {
+    fun parseAlertJson(
+        jsonData: String,
+        applicationContext: Context,
+        exceptionHandler: ExceptionHandler
+    ): List<NoaaAlert> {
         /**
          * parses alerts from jsonData String from
          * https://services.swpc.noaa.gov/products/alerts.json
